@@ -24,6 +24,27 @@
 
     <main>
         {{ $slot }}
+
+        @if (session()->has('message'))
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+                <div class="toast show align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            {{ session('message') }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+            <script>
+                setTimeout(() => {
+                    const toast = document.querySelector('.toast.show');
+                    if (toast) {
+                        toast.classList.remove('show');
+                    }
+                }, 3000);
+            </script>
+        @endif
     </main>
 
     <x-layouts.client.footer />

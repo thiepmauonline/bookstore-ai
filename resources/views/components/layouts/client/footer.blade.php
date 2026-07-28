@@ -63,7 +63,7 @@
                 <div class="copyright">
                     <div class="row">
                         <div class="col-md-6">
-                            <p>© 2026 Bookstore-AI. All rights reserved.</p>
+                            <p>© 2026 Bookstore-AI. Bảo lưu mọi quyền.</p>
                         </div>
                         <div class="col-md-6">
                             <div class="social-links align-right">

@@ -16,11 +16,20 @@
                     <div class="right-element">
                         @auth
                             <a href="#" class="user-account for-buy"><i class="icon icon-user"></i><span>{{ auth()->user()->name }}</span></a>
-                            <a href="#" wire:click.prevent="logout" class="user-account for-buy"><i class="icon icon-sign-out"></i><span>Logout</span></a>
+                            <a href="{{ route('admin.dashboard') }}" class="user-account for-buy ms-2"><i class="icon icon-clipboard"></i><span>Quản trị</span></a>
+                            <a href="#" wire:click.prevent="logout" class="user-account for-buy ms-2"><i class="icon icon-sign-out"></i><span>Đăng xuất</span></a>
                         @else
-                            <a href="{{ route('login') }}" class="user-account for-buy"><i class="icon icon-user"></i><span>Account</span></a>
+                            <a href="{{ route('login') }}" class="user-account for-buy"><i class="icon icon-user"></i><span>Tài khoản</span></a>
                         @endauth
-                        <a href="#" class="cart for-buy"><i class="icon icon-clipboard"></i><span>Cart:(0 $)</span></a>
+                        
+                        @php
+                            $cartTotal = app(\App\Services\CartService::class)->getTotal();
+                            $cartCount = app(\App\Services\CartService::class)->getCount();
+                        @endphp
+                        <a href="{{ route('cart') }}" class="cart for-buy ms-3">
+                            <i class="icon icon-shopping-cart"></i>
+                            <span>Giỏ hàng: {{ $cartCount }} ({{ number_format($cartTotal, 0, ',', '.') }}đ)</span>
+                        </a>
 
                         <div class="action-menu">
                             <div class="search-bar">
@@ -28,7 +37,7 @@
                                     <i class="icon icon-search"></i>
                                 </a>
                                 <form role="search" method="get" class="search-box">
-                                    <input class="search-field text search-input" placeholder="Search" type="search">
+                                    <input class="search-field text search-input" placeholder="Tìm kiếm sách..." type="search">
                                 </form>
                             </div>
                         </div>
@@ -50,18 +59,10 @@
                     <nav id="navbar">
                         <div class="main-menu stellarnav">
                             <ul class="menu-list">
-                                <li class="menu-item active"><a href="/">Home</a></li>
-                                <li class="menu-item has-sub">
-                                    <a href="#" class="nav-link">Pages</a>
-                                    <ul>
-                                        <li class="active"><a href="/">Home</a></li>
-                                        <li><a href="#">About</a></li>
-                                    </ul>
-                                </li>
-                                <li class="menu-item"><a href="#featured-books" class="nav-link">Featured</a></li>
-                                <li class="menu-item"><a href="#popular-books" class="nav-link">Popular</a></li>
-                                <li class="menu-item"><a href="#special-offer" class="nav-link">Offer</a></li>
-                                <li class="menu-item"><a href="#latest-blog" class="nav-link">Articles</a></li>
+                                <li class="menu-item {{ request()->routeIs('home') ? 'active' : '' }}"><a href="{{ route('home') }}">Trang chủ</a></li>
+                                <li class="menu-item {{ request()->routeIs('about') ? 'active' : '' }}"><a href="{{ route('about') }}">Về chúng tôi</a></li>
+                                <li class="menu-item"><a href="{{ route('home') }}#featured-books">Sản phẩm nổi bật</a></li>
+                                <li class="menu-item {{ request()->routeIs('contact') ? 'active' : '' }}"><a href="{{ route('contact') }}">Liên hệ</a></li>
                             </ul>
                             <div class="hamburger">
                                 <span class="bar"></span>
