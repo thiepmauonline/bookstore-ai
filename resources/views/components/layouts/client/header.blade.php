@@ -16,8 +16,11 @@
                     <div class="right-element">
                         @auth
                             <a href="#" class="user-account for-buy"><i class="icon icon-user"></i><span>{{ auth()->user()->name }}</span></a>
-                            <a href="{{ route('admin.dashboard') }}" class="user-account for-buy ms-2"><i class="icon icon-clipboard"></i><span>Quản trị</span></a>
-                            <a href="#" wire:click.prevent="logout" class="user-account for-buy ms-2"><i class="icon icon-sign-out"></i><span>Đăng xuất</span></a>
+                            @if(auth()->user()->role === 'admin')
+                                <a href="{{ route('admin.dashboard') }}" class="user-account for-buy ms-2"><i class="icon icon-clipboard"></i><span>Quản trị</span></a>
+                            @endif
+                            <a href="{{ route('my.orders') }}" class="user-account for-buy ms-2"><i class="icon icon-shopping-bag"></i><span>Đơn hàng của tôi</span></a>
+                            <a href="{{ route('logout') }}" class="user-account for-buy ms-2"><i class="icon icon-sign-out"></i><span>Đăng xuất</span></a>
                         @else
                             <a href="{{ route('login') }}" class="user-account for-buy"><i class="icon icon-user"></i><span>Tài khoản</span></a>
                         @endauth

@@ -21,10 +21,14 @@ use App\Livewire\Admin\CouponManager;
 use App\Livewire\Admin\OrderManager;
 
 Route::get('/', Home::class)->name('home');
+Route::get('/book/{id}', \App\Livewire\Client\BookDetail::class)->name('book.detail');
 Route::get('/about', About::class)->name('about');
 Route::get('/contact', Contact::class)->name('contact');
 Route::get('/cart', Cart::class)->name('cart');
 Route::get('/checkout', Checkout::class)->name('checkout');
+Route::middleware('auth')->group(function () {
+    Route::get('/my-orders', \App\Livewire\Client\MyOrders::class)->name('my.orders');
+});
 
 Route::prefix('admin')->group(function () {
     Route::get('/login', AdminLogin::class)->name('admin.login');
@@ -38,8 +42,15 @@ Route::prefix('admin')->group(function () {
         Route::get('/majors', MajorManager::class)->name('admin.majors');
         Route::get('/coupons', CouponManager::class)->name('admin.coupons');
         Route::get('/orders', OrderManager::class)->name('admin.orders');
+        Route::get('/profile', \App\Livewire\Admin\Profile::class)->name('admin.profile');
     });
 });
 
 Route::get('/login', Login::class)->name('login');
 Route::get('/register', Register::class)->name('register');
+Route::get('/logout', function () {
+    auth()->logout();
+    session()->invalidate();
+    session()->regenerateToken();
+    return redirect('/');
+})->name('logout');

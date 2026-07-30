@@ -294,5 +294,78 @@ class DatabaseSeeder extends Seeder
                 'cover_image' => $b['img']
             ]);
         }
+        // 8. Addresses & Orders (Dummy data for Chart)
+        $userSv = \App\Models\User::where('email', 'sv@bookstore.test')->first();
+        $userKh = \App\Models\User::where('email', 'kh@bookstore.test')->first();
+
+        $addressSv = \App\Models\Address::create([
+            'user_id' => $userSv->id,
+            'receiver_name' => 'Nguyễn Văn Sinh Viên',
+            'phone' => '0987654321',
+            'province' => 'Hà Nội', 'district' => 'Cầu Giấy', 'ward' => 'Dịch Vọng',
+            'address' => 'Ký túc xá ĐH Quốc Gia',
+            'is_default' => true
+        ]);
+
+        $addressKh = \App\Models\Address::create([
+            'user_id' => $userKh->id,
+            'receiver_name' => 'Trần Thị Khách Hàng',
+            'phone' => '0912345678',
+            'province' => 'TP.HCM', 'district' => 'Quận 1', 'ward' => 'Bến Nghé',
+            'address' => '123 Lê Lợi',
+            'is_default' => true
+        ]);
+
+        $statuses = ['completed', 'completed', 'completed', 'completed', 'completed', 'pending', 'processing', 'cancelled'];
+        
+        $allBooks = Book::all();
+
+        for ($i = 0; $i < 15; $i++) {
+            $user = rand(0, 1) ? $userSv : $userKh;
+            $address = $user->id == $userSv->id ? $addressSv : $addressKh;
+            
+            // Random past 7 days
+            $daysAgo = rand(0, 6);
+            $createdAt = \Carbon\Carbon::now()->subDays($daysAgo)->setTime(rand(8, 22), rand(0, 59));
+
+            // Random items
+            $numItems = rand(1, 4);
+            $totalPrice = 0;
+            $itemsData = [];
+
+            for ($j = 0; $j < $numItems; $j++) {
+                $book = $allBooks->random();
+                $qty = rand(1, 3);
+                $price = $book->price;
+                $totalPrice += $price * $qty;
+                
+                $itemsData[] = [
+                    'book_id' => $book->id,
+                    'quantity' => $qty,
+                    'price' => $price
+                ];
+            }
+
+            $order = \App\Models\Order::create([
+                'user_id' => $user->id,
+                'address_id' => $address->id,
+                'order_code' => 'MDH' . date('Ymd', $createdAt->timestamp) . rand(1000, 9999),
+                'total_price' => $totalPrice,
+                'payment_method' => rand(0, 1) ? 'COD' : 'VNPAY',
+                'payment_status' => rand(0, 1) ? 'Paid' : 'Unpaid',
+                'status' => $statuses[array_rand($statuses)],
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
+            ]);
+
+            foreach ($itemsData as $item) {
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
+                    'book_id' => $item['book_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price']
+                ]);
+            }
+        }
     }
 }

@@ -81,7 +81,7 @@
                                             </button>
                                         </figure>
                                         <figcaption>
-                                            <h3><a href="#">{{ $book->title }}</a></h3>
+                                            <h3><a href="{{ route('book.detail', $book->id) }}">{{ $book->title }}</a></h3>
                                             <span>{{ $book->author->name ?? 'Đang cập nhật' }}</span>
                                             <div class="item-price">{{ number_format($book->price, 0, ',', '.') }} VNĐ</div>
                                         </figcaption>
