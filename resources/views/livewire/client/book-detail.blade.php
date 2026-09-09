@@ -38,6 +38,22 @@
                             @endif
                         </div>
 
+                        <div class="product-rating mb-4">
+                            <div class="d-flex align-items-center">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $averageRating)
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    @elseif($i - 0.5 <= $averageRating)
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    @else
+                                        <i class="bi bi-star text-warning"></i>
+                                    @endif
+                                @endfor
+                                <span class="ms-2 fw-bold">{{ $averageRating }}/5</span>
+                                <span class="ms-2 text-muted">({{ $totalReviews }} đánh giá)</span>
+                            </div>
+                        </div>
+
                         <div class="product-price fs-2 text-primary fw-bold mb-4">
                             {{ number_format($book->price, 0, ',', '.') }}đ
                         </div>
@@ -84,17 +100,24 @@
                                 <span wire:loading.remove wire:target="addToCart">Thêm vào giỏ hàng</span>
                                 <span wire:loading wire:target="addToCart">Đang thêm...</span>
                             </button>
+                            
+                            <button type="button" wire:click="toggleWishlist" class="btn btn-outline-danger btn-lg ms-2" title="{{ $isWishlisted ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                <i class="bi bi-heart{{ $isWishlisted ? '-fill' : '' }}"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab mô tả -->
+            <!-- Tab mô tả và đánh giá -->
             <div class="row mt-5">
                 <div class="col-md-12">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active fs-5 text-dark fw-bold" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Mô tả nội dung</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fs-5 text-dark fw-bold" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Đánh giá ({{ $totalReviews }})</button>
                         </li>
                     </ul>
                     <div class="tab-content py-4" id="myTabContent">
@@ -102,6 +125,84 @@
                             <p class="fs-6 lh-lg text-muted">
                                 {{ $book->description ?? 'Chưa có mô tả cho sách này.' }}
                             </p>
+                        </div>
+                        <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                            <!-- Form đánh giá -->
+                            @if(auth()->check() && !$hasReviewed)
+                                <div class="review-form bg-light p-4 rounded mb-4">
+                                    <h5 class="mb-3">Viết đánh giá của bạn</h5>
+                                    <form wire:submit="submitReview">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Đánh giá</label>
+                                            <div class="star-rating">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <input type="radio" id="star{{ $i }}" name="rating" value="{{ $i }}" wire:model="rating" class="d-none">
+                                                    <label for="star{{ $i }}" class="star-label {{ $i <= $rating ? 'text-warning' : 'text-muted' }}">
+                                                        <i class="bi bi-star{{ $i <= $rating ? '-fill' : '' }}"></i>
+                                                    </label>
+                                                @endfor
+                                            </div>
+                                            @error('rating')
+                                                <div class="text-danger small">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Nhận xét</label>
+                                            <textarea wire:model="comment" class="form-control" rows="4" placeholder="Chia sẻ trải nghiệm của bạn về cuốn sách này..."></textarea>
+                                            @error('comment')
+                                                <div class="text-danger small">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <span wire:loading.remove wire:target="submitReview">Gửi đánh giá</span>
+                                            <span wire:loading wire:target="submitReview">Đang gửi...</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            @elseif(auth()->check() && $hasReviewed)
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Bạn đã đánh giá cuốn sách này. Cảm ơn bạn!
+                                </div>
+                            @else
+                                <div class="alert alert-warning">
+                                    <a href="{{ route('login') }}" class="alert-link">Đăng nhập</a> để đánh giá sách.
+                                </div>
+                            @endif
+
+                            <!-- Danh sách đánh giá -->
+                            @if($reviews->count() > 0)
+                                <div class="reviews-list">
+                                    <h5 class="mb-4">Đánh giá từ khách hàng</h5>
+                                    @foreach($reviews as $review)
+                                        <div class="review-item border-bottom pb-3 mb-3">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h6 class="fw-bold mb-1">{{ $review->user->name ?? 'Người dùng' }}</h6>
+                                                    <div class="star-rating small mb-2">
+                                                        @for($i = 1; $i <= 5; $i++)
+                                                            @if($i <= $review->rating)
+                                                                <i class="bi bi-star-fill text-warning"></i>
+                                                            @else
+                                                                <i class="bi bi-star text-warning"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">{{ $review->created_at->format('d/m/Y') }}</small>
+                                            </div>
+                                            <p class="mb-0 text-muted">{{ $review->comment }}</p>
+                                        </div>
+                                    @endforeach
+                                    
+                                    <div class="pagination-wrapper mt-4">
+                                        {{ $reviews->links() }}
+                                    </div>
+                                </div>
+                            @else
+                                <div class="text-center py-4 text-muted">
+                                    <p>Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</p>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

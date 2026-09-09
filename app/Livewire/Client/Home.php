@@ -8,6 +8,8 @@ use Livewire\WithPagination;
 use App\Models\Book;
 use App\Models\Major;
 use App\Models\Course;
+use App\Services\WishlistService;
+use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.client')]
 class Home extends Component
@@ -45,7 +47,23 @@ class Home extends Component
         session()->flash('message', 'Đã thêm sách vào giỏ hàng!');
     }
 
-    public function render()
+    public function toggleWishlist($bookId, WishlistService $wishlistService)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('message', 'Vui lòng đăng nhập để thêm vào danh sách yêu thích.');
+        }
+
+        $wishlistService->toggle($bookId);
+        $this->dispatch('wishlist-updated');
+        
+        if ($wishlistService->isWishlisted($bookId)) {
+            session()->flash('message', 'Đã thêm vào danh sách yêu thích!');
+        } else {
+            session()->flash('message', 'Đã xóa khỏi danh sách yêu thích!');
+        }
+    }
+
+    public function render(WishlistService $wishlistService)
     {
         $majors = Major::all();
         $courses = collect();
@@ -70,10 +88,22 @@ class Home extends Component
             ->latest()
             ->paginate(8);
 
+        // Get wishlist status for all books
+        $wishlistStatus = [];
+        if (Auth::check()) {
+            $wishlistItems = \App\Models\Wishlist::where('user_id', Auth::id())
+                ->pluck('book_id')
+                ->toArray();
+            foreach ($books as $book) {
+                $wishlistStatus[$book->id] = in_array($book->id, $wishlistItems);
+            }
+        }
+
         return view('livewire.client.home', [
             'books' => $books,
             'majors' => $majors,
             'courses' => $courses,
+            'wishlistStatus' => $wishlistStatus,
         ]);
     }
 }

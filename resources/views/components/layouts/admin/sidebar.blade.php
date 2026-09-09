@@ -59,7 +59,7 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}" href="{{ route('admin.users') }}">
             <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
             <span class="nav-text">Người dùng</span>
         </a>

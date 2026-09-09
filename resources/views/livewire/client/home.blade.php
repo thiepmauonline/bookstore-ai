@@ -79,6 +79,9 @@
                                                 <span wire:loading.remove wire:target="addToCart({{ $book->id }})">Thêm vào giỏ</span>
                                                 <span wire:loading wire:target="addToCart({{ $book->id }})">Đang thêm...</span>
                                             </button>
+                                            <button type="button" wire:click="toggleWishlist({{ $book->id }})" class="wishlist-btn" title="{{ $wishlistStatus[$book->id] ?? false ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                <i class="bi bi-heart{{ $wishlistStatus[$book->id] ?? false ? '-fill' : '' }}"></i>
+                                            </button>
                                         </figure>
                                         <figcaption>
                                             <h3><a href="{{ route('book.detail', $book->id) }}">{{ $book->title }}</a></h3>
