@@ -2,15 +2,21 @@
 
 namespace App\Livewire\Auth;
 
-use Livewire\Component;
-use Livewire\Attributes\Layout;
+use App\Livewire\Concerns\ThrottlesLogin;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('components.layouts.client')]
 class Login extends Component
 {
+    use ThrottlesLogin;
+
     public $email;
+
     public $password;
+
     public $remember = false;
 
     public function login()
@@ -20,15 +26,18 @@ class Login extends Component
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials, $this->remember)) {
-            session()->regenerate();
-            
-            if (Auth::user()->role === 'admin') {
-                return redirect()->intended(route('admin.dashboard'));
-            }
+        if ($this->loginIsThrottled('web')) {
+            return;
+        }
+
+        if (Auth::guard('web')->attempt([...$credentials, 'role' => 'user', 'status' => 'active'], $this->remember)) {
+            RateLimiter::clear($this->loginRateKey('web'));
+            // SessionGuard rotates the session ID and CSRF token on login.
+
             return redirect()->intended(route('home'));
         }
 
+        RateLimiter::hit($this->loginRateKey('web'), 60);
         $this->addError('email', 'Thông tin đăng nhập không chính xác.');
     }
 

@@ -130,7 +130,7 @@ class UserManager extends Component
         $user = User::findOrFail($id);
         
         // Prevent deleting yourself
-        if ($user->id === auth()->id()) {
+        if ($user->id === auth('admin')->id()) {
             session()->flash('error', 'Không thể xóa tài khoản của chính bạn!');
             return;
         }

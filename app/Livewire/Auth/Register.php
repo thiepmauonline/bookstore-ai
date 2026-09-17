@@ -2,18 +2,21 @@
 
 namespace App\Livewire\Auth;
 
-use Livewire\Component;
-use Livewire\Attributes\Layout;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('components.layouts.client')]
 class Register extends Component
 {
     public $name = '';
+
     public $email = '';
+
     public $password = '';
+
     public $password_confirmation = '';
 
     public function register()
@@ -29,9 +32,11 @@ class Register extends Component
             'email' => $this->email,
             'password' => Hash::make($this->password),
             'role' => 'user',
+            'status' => 'active',
         ]);
 
-        Auth::login($user);
+        Auth::guard('web')->login($user);
+        // SessionGuard rotates the session without clearing the admin login.
 
         return redirect()->route('home');
     }

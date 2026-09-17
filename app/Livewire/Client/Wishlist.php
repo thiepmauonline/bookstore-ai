@@ -35,7 +35,12 @@ class Wishlist extends Component
 
     public function addToCart($bookId, \App\Services\CartService $cartService)
     {
+        $previousCount = $cartService->getCount();
         $cartService->add($bookId, 1);
+        $this->dispatch('cart-feedback', bookId: (int) $bookId, added: $cartService->getCount() > $previousCount);
+        if ($cartService->getCount() <= $previousCount) {
+            return;
+        }
         $this->dispatch('cart-updated');
         session()->flash('message', 'Đã thêm sách vào giỏ hàng!');
     }

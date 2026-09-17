@@ -89,7 +89,7 @@
 
     <div class="sidebar-user">
         <img class="avatar-img avatar-md sidebar-user-avatar" src="{{ asset('assets/admin/images/avatar/avatar.jpg') }}" alt="Admin">
-        <strong>{{ auth()->user()->name ?? 'Administrator' }}</strong>
+        <strong>{{ auth('admin')->user()->name ?? 'Administrator' }}</strong>
         <small>Active Workspace</small>
     </div>
 

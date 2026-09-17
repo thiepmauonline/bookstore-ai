@@ -31,13 +31,13 @@
             <div class="dropdown">
                 <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img class="avatar-img avatar-sm" src="{{ asset('assets/admin/images/avatar/avatar.jpg') }}" alt="Admin">
-                    <span class="profile-name d-none d-sm-inline">{{ auth()->user()->name ?? 'Administrator' }}</span>
+                    <span class="profile-name d-none d-sm-inline">{{ auth('admin')->user()->name ?? 'Administrator' }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="{{ route('admin.profile') }}">Hồ sơ</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <a href="{{ route('logout') }}" class="dropdown-item">Đăng xuất</a>
+                        <form method="POST" action="{{ route('admin.logout') }}">@csrf<button type="submit" class="dropdown-item">Đăng xuất</button></form>
                     </li>
                 </ul>
             </div>

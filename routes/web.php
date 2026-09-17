@@ -27,7 +27,7 @@ Route::get('/about', About::class)->name('about');
 Route::get('/contact', Contact::class)->name('contact');
 Route::get('/cart', Cart::class)->name('cart');
 Route::get('/checkout', Checkout::class)->name('checkout');
-Route::middleware('auth')->group(function () {
+Route::middleware('auth:web')->group(function () {
     Route::get('/my-orders', \App\Livewire\Client\MyOrders::class)->name('my.orders');
     Route::get('/wishlist', \App\Livewire\Client\Wishlist::class)->name('wishlist');
 });
@@ -35,7 +35,9 @@ Route::middleware('auth')->group(function () {
 Route::prefix('admin')->group(function () {
     Route::get('/login', AdminLogin::class)->name('admin.login');
     
-    Route::middleware(['web', AdminMiddleware::class])->group(function () {
+    Route::post('/logout', [\App\Http\Controllers\LogoutController::class, 'admin'])->name('admin.logout');
+
+    Route::middleware([AdminMiddleware::class])->group(function () {
         Route::get('/', Dashboard::class)->name('admin.dashboard');
         Route::get('/books', BookManager::class)->name('admin.books');
         Route::get('/categories', CategoryManager::class)->name('admin.categories');
@@ -51,9 +53,4 @@ Route::prefix('admin')->group(function () {
 
 Route::get('/login', Login::class)->name('login');
 Route::get('/register', Register::class)->name('register');
-Route::get('/logout', function () {
-    auth()->logout();
-    session()->invalidate();
-    session()->regenerateToken();
-    return redirect('/');
-})->name('logout');
+Route::post('/logout', [\App\Http\Controllers\LogoutController::class, 'client'])->name('logout');

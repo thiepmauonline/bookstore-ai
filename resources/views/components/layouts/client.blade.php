@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="vi">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,13 +16,16 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/client/css/vendor.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/client/style.css') }}">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/bookstore.css') }}?v=4">
     @livewireStyles
 </head>
-<body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
+<body class="bookstore">
+    <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
 
     <x-layouts.client.header />
 
-    <main>
+    <main id="main-content">
         {{ $slot }}
 
         @if (session()->has('message'))
@@ -47,12 +50,14 @@
         @endif
     </main>
 
+    <x-cart-feedback />
+
     <x-layouts.client.footer />
 
     <script src="{{ asset('assets/client/js/jquery-1.11.0.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('assets/client/js/plugins.js') }}"></script>
-    <script src="{{ asset('assets/client/js/script.js') }}"></script>
+
+
 
     @livewireScripts
 </body>

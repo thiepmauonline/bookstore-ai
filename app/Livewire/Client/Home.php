@@ -7,6 +7,8 @@ use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
 use App\Models\Book;
 use App\Models\Major;
+use App\Models\Category;
+use Livewire\Attributes\Url;
 use App\Models\Course;
 use App\Services\WishlistService;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +20,21 @@ class Home extends Component
     
     protected $paginationTheme = 'bootstrap';
 
+    #[Url]
     public $search = '';
+    #[Url]
+    public $selectedCategory = '';
+    #[Url]
+    public $sort = 'newest';
+
+    public function updatedSelectedCategory() { $this->resetPage(); }
+    public function updatedSort() { $this->resetPage(); }
+    public function resetFilters()
+    {
+        $this->reset('search', 'selectedCategory', 'selectedMajor', 'selectedCourse', 'sort');
+        $this->resetPage();
+    }
+
     public $selectedMajor = '';
     public $selectedCourse = '';
 
@@ -40,7 +56,12 @@ class Home extends Component
 
     public function addToCart($bookId, \App\Services\CartService $cartService)
     {
+        $previousCount = $cartService->getCount();
         $cartService->add($bookId, 1);
+        $this->dispatch('cart-feedback', bookId: (int) $bookId, added: $cartService->getCount() > $previousCount);
+        if ($cartService->getCount() <= $previousCount) {
+            return;
+        }
         
         // Cập nhật sự kiện để navbar update số lượng
         $this->dispatch('cart-updated');
@@ -73,6 +94,7 @@ class Home extends Component
         }
 
         $books = Book::with(['author', 'category'])
+            ->when($this->selectedCategory, fn ($q) => $q->where('category_id', $this->selectedCategory))
             ->when($this->search, function ($query) {
                 $query->where('title', 'like', '%' . $this->search . '%');
             })
@@ -85,7 +107,9 @@ class Home extends Component
                     $q->where('major_id', $this->selectedMajor);
                 });
             })
-            ->latest()
+            ->when($this->sort === 'price_asc', fn ($q) => $q->orderBy('price'))
+            ->when($this->sort === 'price_desc', fn ($q) => $q->orderByDesc('price'))
+            ->orderByDesc('id')
             ->paginate(8);
 
         // Get wishlist status for all books
@@ -101,6 +125,8 @@ class Home extends Component
 
         return view('livewire.client.home', [
             'books' => $books,
+            'categories' => Category::withCount('books')->get(),
+            'heroBooks' => Book::whereIn('title', ['Mắt Biếc', 'Tôi Thấy Hoa Vàng Trên Cỏ Xanh', 'Cho Tôi Xin Một Vé Đi Tuổi Thơ'])->get(),
             'majors' => $majors,
             'courses' => $courses,
             'wishlistStatus' => $wishlistStatus,

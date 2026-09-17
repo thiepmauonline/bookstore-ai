@@ -7,7 +7,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item"><a href="{{ route('home') }}">Trang chủ</a></li>
-                            <li class="breadcrumb-item"><a href="#">{{ $book->category->name ?? 'Sách' }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('home', ['selectedCategory' => $book->category_id]) }}#featured-books">{{ $book->category->name ?? 'Sách' }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $book->title }}</li>
                         </ol>
                     </nav>
@@ -96,8 +96,8 @@
                                 <button type="button" wire:click="increaseQuantity" class="btn btn-light border-0 px-3 py-2">+</button>
                             </div>
                             
-                            <button type="button" wire:click="addToCart" class="btn btn-primary btn-lg px-5" {{ $book->quantity <= 0 ? 'disabled' : '' }}>
-                                <span wire:loading.remove wire:target="addToCart">Thêm vào giỏ hàng</span>
+                            <button type="button" wire:click="addToCart" wire:loading.attr="disabled" wire:target="addToCart" x-data="{ added: false, timer: null }" x-on:cart-feedback.window="if ($event.detail.added) { added = true; clearTimeout(timer); timer = setTimeout(() => added = false, 2400) }" class="btn btn-primary btn-lg px-5" {{ $book->quantity <= 0 ? 'disabled' : '' }}>
+                                <span wire:loading.remove wire:target="addToCart" x-text="added ? 'Đã thêm ✓' : 'Thêm vào giỏ hàng'">Thêm vào giỏ hàng</span>
                                 <span wire:loading wire:target="addToCart">Đang thêm...</span>
                             </button>
                             

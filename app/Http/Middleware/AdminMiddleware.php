@@ -15,14 +15,13 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->role === 'admin') {
-            return $next($request);
+        $admin = auth('admin')->user();
+        if (! $admin) {
+            return redirect()->route('admin.login');
         }
-        
-        if (auth()->check()) {
-            return redirect('/');
-        }
-        
-        return redirect()->route('admin.login');
+
+        abort_unless($admin->role === 'admin' && $admin->status === 'active', 403);
+
+        return $next($request);
     }
 }

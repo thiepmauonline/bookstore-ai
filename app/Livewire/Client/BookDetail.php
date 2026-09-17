@@ -55,8 +55,13 @@ class BookDetail extends Component
             return;
         }
 
-        $cartService->add($this->book, $this->quantity);
-        $this->dispatch('cart-updated')->to(Header::class);
+        $previousCount = $cartService->getCount();
+        $cartService->add($this->book->id, $this->quantity);
+        $this->dispatch('cart-feedback', bookId: $this->book->id, added: $cartService->getCount() > $previousCount);
+        if ($cartService->getCount() <= $previousCount) {
+            return;
+        }
+        $this->dispatch('cart-updated');
         session()->flash('success', 'Đã thêm vào giỏ hàng thành công!');
     }
 

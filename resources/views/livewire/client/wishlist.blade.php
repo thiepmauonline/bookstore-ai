@@ -20,7 +20,7 @@
                                 <div class="product-card h-100">
                                     <div class="product-img">
                                         @if($item->book->cover_image)
-                                            <img src="{{ asset('storage/' . $item->book->cover_image) }}" alt="{{ $item->book->title }}">
+                                            <img src="{{ asset(str_starts_with($item->book->cover_image, 'assets') ? $item->book->cover_image : 'storage/' . $item->book->cover_image) }}" alt="{{ $item->book->title }}">
                                         @else
                                             <img src="{{ asset('assets/client/images/placeholder.jpg') }}" alt="{{ $item->book->title }}">
                                         @endif

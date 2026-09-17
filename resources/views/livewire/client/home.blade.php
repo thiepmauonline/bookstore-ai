@@ -1,110 +1,12 @@
 <div>
-    <section id="billboard">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <button class="prev slick-arrow">
-                        <i class="icon icon-arrow-left"></i>
-                    </button>
-
-                    <div class="main-slider pattern-overlay">
-                        <div class="slider-item">
-                            <div class="banner-content">
-                                <h2 class="banner-title">Khám phá tri thức</h2>
-                                <p>Bookstore-AI mang đến hàng ngàn tựa sách và giáo trình phục vụ cho mọi ngành học, với sự tư vấn thông minh từ AI.</p>
-                                <div class="btn-wrap">
-                                    <a href="#featured-books" class="btn btn-outline-accent btn-accent-arrow">Đọc thêm<i class="icon icon-ns-arrow-right"></i></a>
-                                </div>
-                            </div>
-                            <img src="{{ asset('assets/client/images/main-banner1.jpg') }}" alt="banner" class="banner-image">
-                        </div>
-                    </div>
-
-                    <button class="next slick-arrow">
-                        <i class="icon icon-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+    <section class="reading-hero"><div class="container hero-grid"><div class="hero-copy"><span class="eyebrow"><span></span> CHO NHỮNG TÂM HỒN HAM KHÁM PHÁ</span><h1>Cuốn sách hay,<br><em>khởi đầu mới.</em></h1><p>Từ bài học trên giảng đường đến những câu chuyện chạm đến trái tim. Tìm cuốn sách dành riêng cho bạn.</p><div class="hero-buttons"><a class="store-button" href="#featured-books">Khám phá sách <i class="bi bi-arrow-right"></i></a><a class="text-link" href="#reading-guide">Tìm sách theo nhu cầu ↗</a></div><div class="hero-footnote"><i class="bi bi-book-half"></i><span>Tri thức cho việc học. Cảm hứng cho cuộc sống.</span></div></div><div class="hero-display"><div class="hero-orbit"></div><span class="hero-caption">MỘT CHÚT BÌNH YÊN, GIỮA NHỮNG TRANG SÁCH</span><div class="hero-books">@foreach($heroBooks as $heroBook)<a class="hero-book hero-book-{{ $loop->index }}" href="{{ route('book.detail', $heroBook->id) }}"><img src="{{ asset($heroBook->cover_image) }}" alt="{{ $heroBook->title }}" fetchpriority="high"></a>@endforeach</div><div class="reading-note"><i class="bi bi-flower1"></i><span>Dành một khoảng lặng.<br><strong>Mở một trang sách.</strong></span></div><span class="hero-edition">THE READING EDIT · 01</span></div></div></section>
+    <div class="store-values container"><span><i class="bi bi-journals"></i> Sách cho mọi hành trình</span><span><i class="bi bi-mortarboard"></i> Giáo trình theo ngành học</span><span><i class="bi bi-heart"></i> Lưu lại những cuốn bạn yêu</span></div>
+    <section id="categories" class="category-section container"><div class="section-heading"><div><span class="eyebrow">BẮT ĐẦU TỪ ĐIỀU BẠN YÊU</span><h2>Thế giới sách của bạn</h2></div><a href="#featured-books" class="text-link">Khám phá tất cả ↗</a></div><div class="category-grid">@foreach($categories as $category)<a href="{{ route('home', ['selectedCategory' => $category->id]) }}#featured-books" class="category-tile tone-{{ $loop->index % 6 }} {{ (string)$selectedCategory === (string)$category->id ? 'selected' : '' }}"><i class="bi bi-{{ ['code-slash','graph-up-arrow','heart-pulse','gear','translate','feather'][$loop->index % 6] }}"></i><strong>{{ $category->name }}</strong><span>{{ $category->books_count }} đầu sách <b>↗</b></span></a>@endforeach</div></section>
+    <section id="featured-books" class="catalog-section container"><div class="section-heading"><div><span class="eyebrow">THÊM MỘT CUỐN SÁCH, THÊM MỘT GÓC NHÌN</span><h2>Sách & giáo trình</h2></div><span class="catalog-count">{{ $books->total() }} cuốn sách đang chờ bạn</span></div>
+        <div class="catalog-filters"><div class="filter-search"><label for="catalog-search">Tìm kiếm</label><input id="catalog-search" wire:model.live.debounce.300ms="search" type="search" placeholder="Tên cuốn sách bạn đang tìm…"></div><div><label for="category-filter">Lĩnh vực</label><select id="category-filter" wire:model.live="selectedCategory"><option value="">Tất cả lĩnh vực</option>@foreach($categories as $category)<option value="{{ $category->id }}">{{ $category->name }}</option>@endforeach</select></div><div><label for="major-filter">Ngành học</label><select id="major-filter" wire:model.live="selectedMajor"><option value="">Tất cả ngành học</option>@foreach($majors as $major)<option value="{{ $major->id }}">{{ $major->name }}</option>@endforeach</select></div><div><label for="course-filter">Học phần</label><select id="course-filter" wire:model.live="selectedCourse" @disabled(!$selectedMajor)><option value="">Chọn học phần</option>@foreach($courses as $course)<option value="{{ $course->id }}">{{ $course->name }}</option>@endforeach</select></div></div>
+        <div class="catalog-toolbar"><button class="text-link" wire:click="resetFilters" type="button">Đặt lại bộ lọc <i class="bi bi-arrow-counterclockwise"></i></button><div><label for="sort-books">Sắp xếp:</label><select id="sort-books" wire:model.live="sort"><option value="newest">Mới nhất</option><option value="price_asc">Giá tăng dần</option><option value="price_desc">Giá giảm dần</option></select></div></div>
+        @if(session()->has('message'))<div class="alert alert-success" role="status">{{ session('message') }} <a href="{{ route('cart') }}">Xem giỏ hàng →</a></div>@endif
+        <div class="book-grid" wire:loading.class="catalog-loading" wire:target="search,selectedCategory,selectedMajor,selectedCourse,sort,resetFilters">@forelse($books as $book)<article class="book-card" wire:key="book-{{ $book->id }}"><div class="book-art"><a href="{{ route('book.detail', $book->id) }}"><img loading="lazy" src="{{ asset(str_starts_with($book->cover_image ?? '', 'assets') ? $book->cover_image : ($book->cover_image ? 'storage/'.$book->cover_image : 'assets/client/images/product-item1.jpg')) }}" alt="{{ $book->title }}" width="1024" height="1536"></a><button class="book-wishlist {{ ($wishlistStatus[$book->id] ?? false) ? 'saved' : '' }}" wire:click="toggleWishlist({{ $book->id }})" aria-label="{{ ($wishlistStatus[$book->id] ?? false) ? 'Bỏ yêu thích' : 'Thêm vào yêu thích' }}" aria-pressed="{{ ($wishlistStatus[$book->id] ?? false) ? 'true' : 'false' }}"><i class="bi bi-heart{{ ($wishlistStatus[$book->id] ?? false) ? '-fill' : '' }}"></i></button></div><div class="book-info"><span class="book-category">{{ $book->category->name }}</span><h3><a href="{{ route('book.detail', $book->id) }}">{{ $book->title }}</a></h3><p>{{ $book->author->name ?? 'Đang cập nhật tác giả' }}</p><div class="book-purchase"><strong>{{ number_format($book->price, 0, ',', '.') }}<small>₫</small></strong><button x-data="{ added: false, timer: null }" x-on:cart-feedback.window="if ($event.detail.bookId == {{ $book->id }} &amp;&amp; $event.detail.added) { added = true; clearTimeout(timer); timer = setTimeout(() => added = false, 2400) }" :class="{ 'just-added': added }" wire:click="addToCart({{ $book->id }})" wire:loading.attr="disabled" wire:target="addToCart({{ $book->id }})" @disabled($book->quantity <= 0) aria-label="Thêm {{ $book->title }} vào giỏ"><span class="cart-button-content" wire:loading.remove wire:target="addToCart({{ $book->id }})"><i class="bi" :class="added ? 'bi-check2' : 'bi-bag-plus'"></i><span x-text="added ? 'Đã thêm' : '{{ $book->quantity > 0 ? 'Thêm vào giỏ' : 'Hết hàng' }}'">{{ $book->quantity > 0 ? 'Thêm vào giỏ' : 'Hết hàng' }}</span></span><span class="cart-button-content" wire:loading.inline-flex wire:target="addToCart({{ $book->id }})"><i class="cart-spinner"></i><span>Đang thêm…</span></span></button></div></div></article>@empty<div class="catalog-empty"><i class="bi bi-search"></i><h3>Chưa tìm thấy cuốn sách phù hợp</h3><p>Thử tên sách khác hoặc mở rộng bộ lọc của bạn.</p><button class="store-button" wire:click="resetFilters">Xem tất cả sách</button></div>@endforelse</div><div class="catalog-pagination">{{ $books->links('components.catalog-pagination') }}</div>
     </section>
-
-    <section id="featured-books" class="py-5 my-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="section-header align-center">
-                        <div class="title">
-                            <span>Sản phẩm chất lượng</span>
-                        </div>
-                        <h2 class="section-title">Sách & Giáo Trình</h2>
-                    </div>
-
-                    <!-- Lọc sách -->
-                    <div class="filter-section bg-light p-4 rounded mb-5">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Tìm kiếm sách</label>
-                                <input wire:model.live.debounce.300ms="search" type="text" class="form-control" placeholder="Nhập tên sách...">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Ngành học</label>
-                                <select wire:model.live="selectedMajor" class="form-select">
-                                    <option value="">-- Tất cả ngành học --</option>
-                                    @foreach($majors as $major)
-                                        <option value="{{ $major->id }}">{{ $major->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Học phần</label>
-                                <select wire:model.live="selectedCourse" class="form-select" @if(!$selectedMajor) disabled @endif>
-                                    <option value="">-- Chọn học phần --</option>
-                                    @foreach($courses as $course)
-                                        <option value="{{ $course->id }}">{{ $course->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Kết thúc Lọc sách -->
-
-                    <div class="product-list" data-aos="fade-up">
-                        <div class="row">
-                            @forelse($books as $book)
-                                <div class="col-md-3 mb-4">
-                                    <div class="product-item">
-                                        <figure class="product-style">
-                                            <img src="{{ asset($book->cover_image ?? 'assets/client/images/product-item1.jpg') }}" alt="{{ $book->title }}" class="product-item" style="object-fit: cover; height: 350px;">
-                                            <button type="button" wire:click="addToCart({{ $book->id }})" class="add-to-cart" data-product-tile="add-to-cart">
-                                                <span wire:loading.remove wire:target="addToCart({{ $book->id }})">Thêm vào giỏ</span>
-                                                <span wire:loading wire:target="addToCart({{ $book->id }})">Đang thêm...</span>
-                                            </button>
-                                            <button type="button" wire:click="toggleWishlist({{ $book->id }})" class="wishlist-btn" title="{{ $wishlistStatus[$book->id] ?? false ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                <i class="bi bi-heart{{ $wishlistStatus[$book->id] ?? false ? '-fill' : '' }}"></i>
-                                            </button>
-                                        </figure>
-                                        <figcaption>
-                                            <h3><a href="{{ route('book.detail', $book->id) }}">{{ $book->title }}</a></h3>
-                                            <span>{{ $book->author->name ?? 'Đang cập nhật' }}</span>
-                                            <div class="item-price">{{ number_format($book->price, 0, ',', '.') }} VNĐ</div>
-                                        </figcaption>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="col-12 text-center py-5">
-                                    <p class="text-muted">Không tìm thấy sách nào phù hợp với bộ lọc.</p>
-                                </div>
-                            @endforelse
-                        </div>
-
-                        <!-- Phân trang -->
-                        <div class="mt-4 d-flex justify-content-center">
-                            {{ $books->links() }}
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </section>
+    <section id="reading-guide" class="container"><div class="reading-guide"><div><span class="eyebrow">MỖI NGÀY, MỘT CHÚT TRI THỨC</span><h2>Hôm nay, bạn muốn<br>khám phá điều gì?</h2><p>Bắt đầu từ một chủ đề nhỏ. Biết đâu bạn sẽ tìm thấy<br>cuốn sách làm thay đổi góc nhìn của mình.</p></div><div class="reading-topics"><a href="{{ route('home', ['search' => 'Laravel']) }}#featured-books"><span>01</span> Bắt đầu học Laravel <i class="bi bi-arrow-up-right"></i></a><a href="{{ route('home', ['search' => 'TOEIC']) }}#featured-books"><span>02</span> Chinh phục kỳ thi TOEIC <i class="bi bi-arrow-up-right"></i></a><a href="{{ route('home', ['search' => 'Tuổi Thơ']) }}#featured-books"><span>03</span> Tìm về những ngày tuổi thơ <i class="bi bi-arrow-up-right"></i></a></div></div></section>
 </div>

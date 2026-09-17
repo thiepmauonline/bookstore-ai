@@ -20,7 +20,7 @@ class Profile extends Component
 
     public function mount()
     {
-        $user = auth()->user();
+        $user = auth('admin')->user();
         $this->name = $user->name;
         $this->email = $user->email;
         $this->phone = $user->phone;
@@ -33,7 +33,7 @@ class Profile extends Component
             'phone' => 'nullable|string|max:20',
         ]);
 
-        $user = auth()->user();
+        $user = auth('admin')->user();
         $user->update([
             'name' => $this->name,
             'phone' => $this->phone,
@@ -49,7 +49,7 @@ class Profile extends Component
             'new_password' => 'required|min:6|confirmed',
         ]);
 
-        $user = auth()->user();
+        $user = auth('admin')->user();
 
         if (!Hash::check($this->current_password, $user->password)) {
             throw ValidationException::withMessages([
