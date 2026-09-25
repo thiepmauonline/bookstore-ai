@@ -19,6 +19,13 @@
     <section class="padding-large">
         <div class="container">
             <h2 class="mb-4">Lịch sử đơn hàng</h2>
+
+            @if (session()->has('order_message'))
+                <div class="alert alert-success">{{ session('order_message') }}</div>
+            @endif
+            @if (session()->has('order_error'))
+                <div class="alert alert-danger">{{ session('order_error') }}</div>
+            @endif
             
             <div class="card shadow-sm border-0">
                 <div class="card-body p-0">
@@ -37,31 +44,14 @@
                             <tbody>
                                 @forelse($orders as $order)
                                     <tr>
-                                        <td class="fw-bold px-4">#MĐH-{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</td>
+                                        <td class="fw-bold px-4">{{ $order->order_code }}</td>
                                         <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="text-primary fw-bold">{{ number_format($order->total_price, 0, ',', '.') }}đ</td>
                                         <td>
-                                            @if($order->payment_method == 'cod')
-                                                <span class="badge bg-secondary">Thanh toán khi nhận hàng</span>
-                                            @else
-                                                <span class="badge bg-info">Chuyển khoản / Online</span>
-                                            @endif
+                                            <span class="badge {{ $order->payment_status->badgeClass() }}">{{ $order->payment_status->label() }}</span>
                                         </td>
                                         <td>
-                                            @switch($order->status)
-                                                @case('pending')
-                                                    <span class="badge bg-warning text-dark">Đang chờ duyệt</span>
-                                                    @break
-                                                @case('processing')
-                                                    <span class="badge bg-primary">Đang giao hàng</span>
-                                                    @break
-                                                @case('completed')
-                                                    <span class="badge bg-success">Đã hoàn thành</span>
-                                                    @break
-                                                @case('cancelled')
-                                                    <span class="badge bg-danger">Đã hủy</span>
-                                                    @break
-                                            @endswitch
+                                            <span class="badge {{ $order->status->badgeClass() }}">{{ $order->status->label() }}</span>
                                         </td>
                                         <td class="text-end px-4">
                                             <button wire:click="viewOrder({{ $order->id }})" class="btn btn-sm btn-outline-primary">Xem chi tiết</button>
@@ -93,21 +83,45 @@
             <div class="modal-content">
                 @if($selectedOrder)
                 <div class="modal-header bg-light">
-                    <h5 class="modal-title fw-bold">Chi tiết đơn hàng #MĐH-{{ str_pad($selectedOrder->id, 5, '0', STR_PAD_LEFT) }}</h5>
+                    <h5 class="modal-title fw-bold">Chi tiết đơn hàng {{ $selectedOrder->order_code }}
+                        <span class="badge {{ $selectedOrder->status->badgeClass() }} ms-2 fs-6 align-middle">{{ $selectedOrder->status->label() }}</span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
+                    @if (session()->has('order_message'))
+                        <div class="alert alert-success py-2">{{ session('order_message') }}</div>
+                    @endif
+                    @if (session()->has('order_error'))
+                        <div class="alert alert-danger py-2">{{ session('order_error') }}</div>
+                    @endif
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <h6 class="text-muted mb-2">Thông tin giao hàng</h6>
                             <p class="mb-1"><strong>Người nhận:</strong> {{ $selectedOrder->address->receiver_name ?? $selectedOrder->user->name ?? 'Khách hàng' }}</p>
                             <p class="mb-1"><strong>Điện thoại:</strong> {{ $selectedOrder->address->phone ?? $selectedOrder->user->phone ?? 'Không có' }}</p>
-                            <p class="mb-0"><strong>Địa chỉ:</strong> {{ $selectedOrder->address->address ?? 'Không có' }}</p>
+                            <p class="mb-0"><strong>Địa chỉ:</strong>
+                                @if ($selectedOrder->address)
+                                    {{ $selectedOrder->address->address }}, {{ $selectedOrder->address->ward }}, {{ $selectedOrder->address->district }}, {{ $selectedOrder->address->province }}
+                                @else
+                                    Không có
+                                @endif
+                            </p>
+                            @if ($selectedOrder->note)
+                                <p class="mb-0 mt-1"><strong>Ghi chú:</strong> {{ $selectedOrder->note }}</p>
+                            @endif
+                            @if ($selectedOrder->cancel_reason)
+                                <p class="mb-0 mt-1 text-danger"><strong>Lý do hủy:</strong> {{ $selectedOrder->cancel_reason }}</p>
+                            @endif
                         </div>
                         <div class="col-md-6 text-md-end">
                             <h6 class="text-muted mb-2">Thông tin thanh toán</h6>
-                            <p class="mb-1"><strong>Tổng tiền hàng:</strong> {{ number_format($selectedOrder->total_price, 0, ',', '.') }}đ</p>
-                            <p class="mb-1"><strong>Phí vận chuyển:</strong> 0đ</p>
+                            <p class="mb-1"><strong>Phương thức:</strong> {{ $selectedOrder->payment_method->label() }}</p>
+                            <p class="mb-1"><strong>Tổng tiền hàng:</strong> {{ number_format($selectedOrder->subtotal, 0, ',', '.') }}đ</p>
+                            @if ($selectedOrder->discount_amount > 0)
+                                <p class="mb-1"><strong>Giảm giá{{ $selectedOrder->coupon ? ' ('.$selectedOrder->coupon->code.')' : '' }}:</strong> -{{ number_format($selectedOrder->discount_amount, 0, ',', '.') }}đ</p>
+                            @endif
+                            <p class="mb-1"><strong>Phí vận chuyển:</strong> Miễn phí</p>
                             <h5 class="text-primary mt-2"><strong>Tổng thanh toán: {{ number_format($selectedOrder->total_price, 0, ',', '.') }}đ</strong></h5>
                         </div>
                     </div>
@@ -142,6 +156,12 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    @if ($selectedOrder->status->isCancellableByCustomer())
+                        <div class="me-auto d-flex gap-2 flex-grow-1">
+                            <input wire:model="cancelReason" type="text" class="form-control" placeholder="Lý do hủy (không bắt buộc)">
+                            <button wire:click="cancelOrder({{ $selectedOrder->id }})" wire:confirm="Bạn chắc chắn muốn hủy đơn hàng này?" wire:loading.attr="disabled" class="btn btn-outline-danger text-nowrap">Hủy đơn hàng</button>
+                        </div>
+                    @endif
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
                 @endif
@@ -151,10 +171,8 @@
 
     <script>
         document.addEventListener('livewire:initialized', () => {
-            Livewire.on('show-order-modal', () => {
-                let modal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
-                modal.show();
-            });
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('orderDetailModal'));
+            Livewire.on('show-order-modal', () => modal.show());
         });
     </script>
 </div>

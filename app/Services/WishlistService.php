@@ -30,19 +30,10 @@ class WishlistService
             return false;
         }
 
-        $exists = Wishlist::where('user_id', Auth::id())
-            ->where('book_id', $bookId)
-            ->exists();
-
-        if (!$exists) {
-            Wishlist::create([
-                'user_id' => Auth::id(),
-                'book_id' => $bookId,
-            ]);
-            return true;
-        }
-
-        return false;
+        return Wishlist::firstOrCreate([
+            'user_id' => Auth::id(),
+            'book_id' => $bookId,
+        ])->wasRecentlyCreated;
     }
 
     /**

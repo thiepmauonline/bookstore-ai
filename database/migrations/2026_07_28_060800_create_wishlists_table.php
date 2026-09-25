@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->comment('ID Người dùng');
             $table->foreignId('book_id')->comment('ID Sách');
             $table->timestamps();
+
+            $table->unique(['user_id', 'book_id']);
         });
     }
 

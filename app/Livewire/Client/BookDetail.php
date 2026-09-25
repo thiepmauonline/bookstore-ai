@@ -8,7 +8,6 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Services\CartService;
 use App\Services\WishlistService;
-use App\Livewire\Client\Header;
 use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.client')]
@@ -90,14 +89,22 @@ class BookDetail extends Component
         $this->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string|min:10|max:1000',
+        ], [
+            'comment.required' => 'Vui lòng nhập nội dung đánh giá.',
+            'comment.min' => 'Nội dung đánh giá cần ít nhất 10 ký tự.',
         ]);
 
-        Review::create([
-            'user_id' => Auth::id(),
-            'book_id' => $this->book->id,
-            'rating' => $this->rating,
-            'comment' => $this->comment,
-        ]);
+        // Mỗi khách chỉ đánh giá một lần cho mỗi cuốn sách (bảng reviews có unique user_id + book_id).
+        $review = Review::firstOrCreate(
+            ['user_id' => Auth::id(), 'book_id' => $this->book->id],
+            ['rating' => $this->rating, 'comment' => $this->comment]
+        );
+
+        if (! $review->wasRecentlyCreated) {
+            $this->hasReviewed = true;
+            session()->flash('error', 'Bạn đã đánh giá cuốn sách này rồi.');
+            return;
+        }
 
         $this->hasReviewed = true;
         $this->reset(['rating', 'comment']);
@@ -106,22 +113,28 @@ class BookDetail extends Component
 
     public function render(WishlistService $wishlistService)
     {
-        $relatedBooks = Book::where('category_id', $this->book->category_id)
-            ->where('id', '!=', $this->book->id)
+        // Gợi ý sách liên quan: ưu tiên cùng học phần, sau đó cùng danh mục.
+        $relatedBooks = Book::where('id', '!=', $this->book->id)
+            ->where(function ($query) {
+                $query->where('category_id', $this->book->category_id)
+                    ->when($this->book->course_id, fn ($q) => $q->orWhere('course_id', $this->book->course_id));
+            })
+            ->when($this->book->course_id, fn ($q) => $q->orderByRaw('course_id = ? DESC', [$this->book->course_id]))
             ->limit(4)
             ->get();
 
         $isWishlisted = Auth::check() ? $wishlistService->isWishlisted($this->book->id) : false;
 
         // Get reviews for this book
-        $reviews = Review::where('book_id', $this->book->id)
+        $reviews = Review::visible()
+            ->where('book_id', $this->book->id)
             ->with('user')
             ->latest()
             ->paginate(5);
 
         // Calculate average rating
-        $averageRating = Review::where('book_id', $this->book->id)->avg('rating') ?? 0;
-        $totalReviews = Review::where('book_id', $this->book->id)->count();
+        $averageRating = Review::visible()->where('book_id', $this->book->id)->avg('rating') ?? 0;
+        $totalReviews = Review::visible()->where('book_id', $this->book->id)->count();
 
         return view('livewire.client.book-detail', [
             'relatedBooks' => $relatedBooks,

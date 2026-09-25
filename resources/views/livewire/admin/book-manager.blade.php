@@ -21,6 +21,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+        @if (session()->has('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white py-3">
@@ -65,7 +71,7 @@
                                     <div class="small text-muted">{{ $book->author->name ?? '' }}</div>
                                 </td>
                                 <td><span class="badge bg-secondary-subtle text-secondary">{{ $book->category->name ?? '' }}</span></td>
-                                <td>{{ $book->course->name ?? '' }}</td>
+                                <td>{{ $book->course->name ?? 'Tham khảo chung' }}</td>
                                 <td><span class="fw-semibold text-primary">{{ number_format($book->price, 0, ',', '.') }}đ</span></td>
                                 <td>
                                     @if($book->quantity > 0)
@@ -133,9 +139,9 @@
                                 @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Môn học (Học phần) <span class="text-danger">*</span></label>
-                                <select wire:model="course_id" class="form-select @error('course_id') is-invalid @enderror" required>
-                                    <option value="">-- Chọn môn học --</option>
+                                <label class="form-label">Môn học (Học phần)</label>
+                                <select wire:model="course_id" class="form-select @error('course_id') is-invalid @enderror">
+                                    <option value="">-- Sách tham khảo chung (không thuộc học phần) --</option>
                                     @foreach($courses as $course)
                                         <option value="{{ $course->id }}">{{ $course->name }}</option>
                                     @endforeach

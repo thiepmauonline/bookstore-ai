@@ -105,7 +105,13 @@ class UserManager extends Component
         ]);
 
         $user = User::findOrFail($this->user_id);
-        
+
+        // Tránh admin tự hạ quyền của mình rồi bị khóa khỏi trang quản trị.
+        if ($user->id === auth('admin')->id() && $this->role !== 'admin') {
+            $this->addError('role', 'Không thể tự bỏ quyền quản trị của chính bạn.');
+            return;
+        }
+
         $updateData = [
             'name' => $this->name,
             'email' => $this->email,
@@ -125,6 +131,23 @@ class UserManager extends Component
         session()->flash('message', 'Cập nhật người dùng thành công!');
     }
 
+    /** Khóa hoặc mở khóa tài khoản; tài khoản bị khóa không đăng nhập được. */
+    public function toggleStatus($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->id === auth('admin')->id()) {
+            session()->flash('error', 'Không thể tự khóa tài khoản của chính bạn!');
+            return;
+        }
+
+        $user->update(['status' => $user->status === 'active' ? 'banned' : 'active']);
+
+        session()->flash('message', $user->status === 'active'
+            ? "Đã mở khóa tài khoản {$user->email}."
+            : "Đã khóa tài khoản {$user->email}.");
+    }
+
     public function delete($id)
     {
         $user = User::findOrFail($id);
@@ -135,13 +158,19 @@ class UserManager extends Component
             return;
         }
 
+        // Giữ lại lịch sử đơn hàng: khách đã mua hàng thì chỉ được khóa, không được xóa.
+        if ($user->orders()->exists()) {
+            session()->flash('error', 'Khách hàng này đã có đơn hàng nên không thể xóa. Hãy khóa tài khoản thay vì xóa.');
+            return;
+        }
+
         $user->delete();
         session()->flash('message', 'Đã xóa người dùng thành công!');
     }
 
     public function render()
     {
-        $query = User::where('role', 'user'); // Only show regular users, not admins
+        $query = User::query();
 
         if ($this->search) {
             $query->where(function($q) {

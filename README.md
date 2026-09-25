@@ -1,59 +1,121 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Bookstore AI
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Website bán giáo trình đại học có tích hợp **Chatbot AI tư vấn tài liệu theo ngành và học phần**.
 
-## About Laravel
+Sinh viên tìm sách theo mô hình **Ngành → Học phần → Sách**, đặt hàng và thanh toán khi nhận hàng (COD), hoặc hỏi chatbot để được gợi ý giáo trình phù hợp. Quản trị viên quản lý sách, đơn hàng, mã giảm giá và theo dõi dữ liệu hội thoại của chatbot.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Chức năng
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Khách hàng**
+- Đăng ký, đăng nhập (giới hạn số lần đăng nhập sai)
+- Tìm kiếm, lọc sách theo danh mục, ngành, học phần; sắp xếp theo giá
+- Xem chi tiết sách, sách liên quan (ưu tiên cùng học phần), đánh giá 1–5 sao
+- Giỏ hàng, thanh toán COD, áp mã giảm giá
+- Theo dõi đơn hàng, tự hủy đơn khi đơn còn "Chờ xác nhận"
+- Danh sách yêu thích
+- **Chatbot tư vấn giáo trình**, đánh giá câu trả lời hữu ích / không hữu ích
+- Gửi liên hệ cho cửa hàng
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Quản trị viên**
+- Dashboard: doanh thu 30 ngày, đơn hàng theo trạng thái, top sách bán chạy, sách sắp hết hàng
+- Quản lý sách, danh mục, tác giả, nhà xuất bản, ngành & học phần
+- Quản lý đơn hàng theo đúng luồng trạng thái, hủy đơn có lý do
+- Quản lý mã giảm giá, người dùng (khóa/mở tài khoản), đánh giá (ẩn/xóa)
+- Dữ liệu AI Chatbot: lịch sử hỏi đáp, tỉ lệ hữu ích, sách được gợi ý nhiều nhất
+- Liên hệ từ khách hàng, cài đặt thông tin cửa hàng
 
-## Learning Laravel
+## Công nghệ
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+| Thành phần | Công nghệ |
+|---|---|
+| Backend | PHP 8.2, Laravel 12, Livewire 3 |
+| Frontend | Blade, Bootstrap 5.3, Bootstrap Icons, Alpine.js (đi kèm Livewire), Chart.js |
+| CSDL | MySQL |
+| AI | Google Gemini API (gói miễn phí) |
+| Kiểm thử | PHPUnit |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Cài đặt
 
-## Laravel Sponsors
+Yêu cầu: PHP ≥ 8.2, Composer, MySQL, Node.js (tùy chọn, chỉ cần khi build asset bằng Vite).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-### Premium Partners
+Tạo database `bookstore-ai` trong MySQL, sửa các biến `DB_*` trong `.env`, rồi chạy:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+php artisan migrate:fresh --seed
+php artisan storage:link   # để hiển thị ảnh bìa sách tải lên từ trang quản trị
+php artisan serve
+```
 
-## Contributing
+Truy cập http://127.0.0.1:8000 (khách hàng) và http://127.0.0.1:8000/admin (quản trị).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Tài khoản demo
 
-## Code of Conduct
+Tất cả tài khoản dùng mật khẩu `password`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Vai trò | Email |
+|---|---|
+| Quản trị viên | `admin@bookstore.test` |
+| Khách hàng | `sv@bookstore.test`, `kh@bookstore.test`, `minhanh@bookstore.test`... |
+| Tài khoản bị khóa | `locked@bookstore.test` |
 
-## Security Vulnerabilities
+Mã giảm giá mẫu: `CHAOTANSINHVIEN`, `GIAOTRINH50K` (còn hiệu lực), `HE2026` (hết hạn), `FLASHSALE` (hết lượt), `KHAIGIANG` (chưa tới ngày).
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Cấu hình Chatbot AI
 
-## License
+1. Lấy API key miễn phí tại https://aistudio.google.com/apikey
+2. Thêm vào `.env`:
+   ```
+   GEMINI_API_KEY=your-key
+   GEMINI_MODEL=gemini-flash-latest
+   ```
+3. Chạy `php artisan config:clear`
+4. Kiểm tra kết nối: `php artisan chatbot:check`. Lệnh báo thành công và in ra một câu trả lời thử.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Khi chưa có key, hoặc khi API lỗi hay hết hạn mức, chatbot tự chuyển sang **chế độ dự phòng**: trả lời bằng kết quả tìm kiếm sách trong CSDL, nên chức năng không bị gián đoạn. Trang *Admin → Dữ liệu AI Chatbot* cho biết trạng thái cấu hình và nguồn của từng câu trả lời.
+
+## Kiến trúc
+
+```
+app/
+├── Enums/              OrderStatus, PaymentStatus, PaymentMethod (trạng thái + nhãn tiếng Việt)
+├── Services/
+│   ├── OrderService    Đặt hàng, chuyển trạng thái, hủy đơn (transaction + khóa dòng)
+│   ├── CartService     Giỏ hàng lưu trong session
+│   └── Chatbot/        BookRetriever (tìm sách), GeminiClient (gọi API), ChatbotService (điều phối)
+├── Livewire/
+│   ├── Client/         Các trang phía khách hàng + khung chat
+│   └── Admin/          Các trang quản trị
+└── Models/             Eloquent models
+```
+
+**Luồng trạng thái đơn hàng**
+
+```
+pending ──► confirmed ──► shipping ──► completed (tự chuyển "Đã thanh toán")
+   │            │            │
+   └────────────┴────────────┴──► cancelled (hoàn tồn kho + hoàn lượt mã giảm giá)
+```
+
+Khách chỉ tự hủy được khi đơn ở trạng thái `pending`. Quản trị viên hủy đơn phải nhập lý do.
+
+**Chatbot (RAG đơn giản)**
+
+1. `BookRetriever` tìm sách liên quan theo từ khóa, không phân biệt dấu, có trọng số (học phần > tên sách > ngành > danh mục > mô tả).
+2. `ChatbotService` đưa danh sách sách, danh mục ngành/học phần và thông tin cửa hàng vào ngữ cảnh gửi cho Gemini. AI chỉ được gợi ý sách có trong danh sách và đánh dấu bằng `[#id]`.
+3. Hệ thống tách các mã `[#id]` (chỉ giữ những id có trong ngữ cảnh), hiển thị thẻ sách bên dưới câu trả lời và lưu lịch sử vào `chatbot_histories`.
+
+Chi tiết về đăng nhập hai khu vực: [docs/authentication.md](docs/authentication.md).
+
+## Kiểm thử
+
+```bash
+php artisan test
+```
+
+Bộ test gồm 43 test, bao phủ: đặt hàng, giỏ hàng, tồn kho, mã giảm giá, luồng trạng thái, hủy đơn, chatbot (có giả lập API Gemini), đánh giá, liên hệ, cài đặt, khóa tài khoản, toàn vẹn dữ liệu khi xóa và tách phiên đăng nhập admin/khách hàng.

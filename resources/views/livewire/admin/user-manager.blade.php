@@ -51,6 +51,7 @@
                             <th>Email</th>
                             <th>Số điện thoại</th>
                             <th>Vai trò</th>
+                            <th>Trạng thái</th>
                             <th>Ngày tạo</th>
                             <th>Hành động</th>
                         </tr>
@@ -69,10 +70,23 @@
                                         <span class="badge bg-primary">Khách hàng</span>
                                     @endif
                                 </td>
-                                <td>{{ $user->created_at->format('d/m/Y') }}</td>
                                 <td>
+                                    @if($user->status === 'active')
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    @else
+                                        <span class="badge bg-secondary">Đã khóa</span>
+                                    @endif
+                                </td>
+                                <td>{{ $user->created_at->format('d/m/Y') }}</td>
+                                <td class="text-nowrap">
                                     <button wire:click="edit({{ $user->id }})" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button wire:click="toggleStatus({{ $user->id }})"
+                                            wire:confirm="{{ $user->status === 'active' ? 'Khóa tài khoản này? Khách sẽ không đăng nhập được.' : 'Mở khóa tài khoản này?' }}"
+                                            class="btn btn-sm {{ $user->status === 'active' ? 'btn-outline-warning' : 'btn-outline-success' }}"
+                                            title="{{ $user->status === 'active' ? 'Khóa tài khoản' : 'Mở khóa' }}">
+                                        <i class="bi {{ $user->status === 'active' ? 'bi-lock' : 'bi-unlock' }}"></i>
                                     </button>
                                     <button wire:click="delete({{ $user->id }})" 
                                             class="btn btn-sm btn-outline-danger"
@@ -83,7 +97,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4">
+                                <td colspan="8" class="text-center py-4">
                                     Không tìm thấy người dùng nào.
                                 </td>
                             </tr>

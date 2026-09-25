@@ -6,24 +6,32 @@
             <span></span>
         </button>
 
-        <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
-            <input class="form-control search-input" type="search" placeholder="Tìm kiếm người dùng, đơn hàng..." aria-label="Search">
+        <form class="d-none d-md-flex ms-3 flex-grow-1" role="search" method="GET" action="{{ route('admin.orders') }}">
+            <input class="form-control search-input" type="search" name="search" value="{{ request()->routeIs('admin.orders') ? request('search') : '' }}" placeholder="Tìm đơn hàng theo mã, tên hoặc SĐT khách..." aria-label="Tìm đơn hàng">
         </form>
 
         <div class="navbar-actions ms-auto">
             <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
                 <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
             </button>
+            @php
+                $pendingOrders = \App\Models\Order::where('status', \App\Enums\OrderStatus::Pending)->count();
+                $unhandledContacts = \App\Models\Contact::where('is_handled', false)->count();
+            @endphp
             <div class="dropdown">
-                <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
-                    <span class="notification-dot"></span>
+                <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thông báo">
+                    @if ($pendingOrders + $unhandledContacts > 0)
+                        <span class="notification-dot"></span>
+                    @endif
                     <i class="bi bi-bell" aria-hidden="true"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end notification-menu">
-                    <div class="dropdown-header fw-bold text-body">Thông báo mới</div>
-                    <a class="dropdown-item" href="#">
-                        <span class="notification-title">Có đơn hàng mới</span>
-                        <span class="notification-time">Vài phút trước</span>
+                    <div class="dropdown-header fw-bold text-body">Việc cần xử lý</div>
+                    <a class="dropdown-item" href="{{ route('admin.orders', ['statusFilter' => 'pending']) }}">
+                        <span class="notification-title">{{ $pendingOrders }} đơn hàng chờ xác nhận</span>
+                    </a>
+                    <a class="dropdown-item" href="{{ route('admin.contacts') }}">
+                        <span class="notification-title">{{ $unhandledContacts }} liên hệ chưa xử lý</span>
                     </a>
                 </div>
             </div>

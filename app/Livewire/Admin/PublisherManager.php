@@ -92,13 +92,16 @@ class PublisherManager extends Component
 
     public function delete($id)
     {
-        // For restrict relationships, this might fail if books exist. Catch it?
-        try {
-            \App\Models\Publisher::findOrFail($id)->delete();
-            session()->flash('message', 'Đã xóa thành công!');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Không thể xóa vì đang có Sách tham chiếu đến dữ liệu này!');
+        $item = \App\Models\Publisher::withCount('books')->findOrFail($id);
+
+        // CSDL không dùng khóa ngoại nên phải tự kiểm tra dữ liệu đang tham chiếu trước khi xóa.
+        if ($item->books_count > 0) {
+            session()->flash('error', "Không thể xóa vì đang có {$item->books_count} sách thuộc mục này. Hãy chuyển các sách sang mục khác trước.");
+            return;
         }
+
+        $item->delete();
+        session()->flash('message', 'Đã xóa thành công!');
     }
 
     public function render()

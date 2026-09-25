@@ -112,18 +112,15 @@
                             <hr class="my-4">
 
                             <h5 class="mb-3">Phương thức thanh toán</h5>
-                            <div class="my-3">
-                                <div class="form-check mb-2">
-                                    <input wire:model="payment_method" id="cod" name="paymentMethod" type="radio" class="form-check-input" value="cod" required>
-                                    <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD)</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input wire:model="payment_method" id="vnpay" name="paymentMethod" type="radio" class="form-check-input" value="vnpay">
-                                    <label class="form-check-label text-muted" for="vnpay">Thanh toán VNPay (Sắp ra mắt)</label>
+                            <div class="d-flex align-items-start gap-2 my-3 p-3 bg-light rounded">
+                                <i class="bi bi-cash-coin fs-4 text-success"></i>
+                                <div>
+                                    <div class="fw-semibold">Thanh toán khi nhận hàng (COD)</div>
+                                    <div class="small text-muted">Bạn thanh toán bằng tiền mặt cho nhân viên giao hàng khi nhận sách.</div>
                                 </div>
                             </div>
 
-                            <button wire:click="placeOrder" class="btn btn-primary btn-lg w-100 rounded-pill mt-3" type="button">
+                            <button wire:click="placeOrder" wire:loading.attr="disabled" class="btn btn-primary btn-lg w-100 rounded-pill mt-3" type="button">
                                 <span wire:loading.remove wire:target="placeOrder">Xác nhận Đặt hàng</span>
                                 <span wire:loading wire:target="placeOrder" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             </button>

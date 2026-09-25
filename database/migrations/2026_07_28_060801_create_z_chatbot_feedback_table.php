@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('chatbot_feedback', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('chatbot_history_id')->comment('ID đoạn chat');
+            $table->foreignId('chatbot_history_id')->unique()->comment('ID đoạn chat (mỗi câu trả lời một phản hồi)');
             $table->boolean('is_helpful')->comment('Có hữu ích không?');
             $table->timestamps();
         });

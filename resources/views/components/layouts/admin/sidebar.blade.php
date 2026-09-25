@@ -51,7 +51,7 @@
             </a>
         </li>
 
-        <li class="nav-heading">Bán Hàng (Phase 5)</li>
+        <li class="nav-heading">Bán hàng</li>
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('admin.coupons') ? 'active' : '' }}" href="{{ route('admin.coupons') }}">
             <span class="nav-icon"><i class="bi bi-ticket-perforated" aria-hidden="true"></i></span>
@@ -73,14 +73,29 @@
     </li>
     
     <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link {{ request()->routeIs('admin.reviews') ? 'active' : '' }}" href="{{ route('admin.reviews') }}">
+            <span class="nav-icon"><i class="bi bi-star" aria-hidden="true"></i></span>
+            <span class="nav-text">Đánh giá</span>
+        </a>
+    </li>
+
+    <li class="nav-heading">Chăm sóc khách hàng</li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('admin.chatbot') ? 'active' : '' }}" href="{{ route('admin.chatbot') }}">
             <span class="nav-icon"><i class="bi bi-robot" aria-hidden="true"></i></span>
             <span class="nav-text">Dữ liệu AI Chatbot</span>
         </a>
     </li>
-    
+
     <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link {{ request()->routeIs('admin.contacts') ? 'active' : '' }}" href="{{ route('admin.contacts') }}">
+            <span class="nav-icon"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+            <span class="nav-text">Liên hệ</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}" href="{{ route('admin.settings') }}">
             <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
             <span class="nav-text">Cài đặt</span>
         </a>
@@ -90,7 +105,7 @@
     <div class="sidebar-user">
         <img class="avatar-img avatar-md sidebar-user-avatar" src="{{ asset('assets/admin/images/avatar/avatar.jpg') }}" alt="Admin">
         <strong>{{ auth('admin')->user()->name ?? 'Administrator' }}</strong>
-        <small>Active Workspace</small>
+        <small>Quản trị viên</small>
     </div>
 
     <div class="sidebar-footer">

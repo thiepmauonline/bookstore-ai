@@ -47,6 +47,10 @@ Route::prefix('admin')->group(function () {
         Route::get('/coupons', CouponManager::class)->name('admin.coupons');
         Route::get('/orders', OrderManager::class)->name('admin.orders');
         Route::get('/users', UserManager::class)->name('admin.users');
+        Route::get('/reviews', \App\Livewire\Admin\ReviewManager::class)->name('admin.reviews');
+        Route::get('/contacts', \App\Livewire\Admin\ContactManager::class)->name('admin.contacts');
+        Route::get('/chatbot', \App\Livewire\Admin\ChatbotManager::class)->name('admin.chatbot');
+        Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('admin.settings');
         Route::get('/profile', \App\Livewire\Admin\Profile::class)->name('admin.profile');
     });
 });

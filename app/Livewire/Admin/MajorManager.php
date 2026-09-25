@@ -79,12 +79,16 @@ class MajorManager extends Component
 
     public function delete($id)
     {
-        try {
-            Major::findOrFail($id)->delete();
-            session()->flash('message', 'Đã xóa ngành học thành công!');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Không thể xóa vì đang có Học phần liên kết!');
+        $major = Major::withCount('courses')->findOrFail($id);
+
+        // CSDL không dùng khóa ngoại nên phải tự kiểm tra dữ liệu đang tham chiếu trước khi xóa.
+        if ($major->courses_count > 0) {
+            session()->flash('error', "Không thể xóa vì ngành đang có {$major->courses_count} học phần. Hãy xóa các học phần trước.");
+            return;
         }
+
+        $major->delete();
+        session()->flash('message', 'Đã xóa ngành học thành công!');
     }
 
     // --- Course Management ---
@@ -133,13 +137,16 @@ class MajorManager extends Component
 
     public function deleteCourse($courseId)
     {
-        try {
-            Course::findOrFail($courseId)->delete();
-            $this->managingCoursesFor->load('courses');
-            session()->flash('course_message', 'Đã xóa học phần!');
-        } catch (\Exception $e) {
-            session()->flash('course_error', 'Không thể xóa vì đang có sách tham chiếu!');
+        $course = Course::withCount('books')->findOrFail($courseId);
+
+        if ($course->books_count > 0) {
+            session()->flash('course_error', "Không thể xóa vì đang có {$course->books_count} sách thuộc học phần này!");
+            return;
         }
+
+        $course->delete();
+        $this->managingCoursesFor->load('courses');
+        session()->flash('course_message', 'Đã xóa học phần!');
     }
 
     public function render()

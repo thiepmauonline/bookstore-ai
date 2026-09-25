@@ -15,6 +15,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+        @if (session()->has('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white py-3">
@@ -28,10 +34,9 @@
                     <div class="col-md-3">
                         <select wire:model.live="statusFilter" class="form-select bg-light">
                             <option value="">-- Tất cả trạng thái --</option>
-                            <option value="pending">Chờ xác nhận</option>
-                            <option value="shipping">Đang giao hàng</option>
-                            <option value="completed">Đã hoàn thành</option>
-                            <option value="canceled">Đã hủy</option>
+                            @foreach ($statuses as $status)
+                                <option value="{{ $status->value }}">{{ $status->label() }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -59,15 +64,7 @@
                                 <td class="fw-semibold text-danger">{{ number_format($order->total_price, 0, ',', '.') }}đ</td>
                                 <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
-                                    @if($order->status === 'pending')
-                                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                                    @elseif($order->status === 'shipping')
-                                        <span class="badge bg-info">Đang giao hàng</span>
-                                    @elseif($order->status === 'completed')
-                                        <span class="badge bg-success">Hoàn thành</span>
-                                    @else
-                                        <span class="badge bg-secondary">Đã hủy</span>
-                                    @endif
+                                    <span class="badge {{ $order->status->badgeClass() }}">{{ $order->status->label() }}</span>
                                 </td>
                                 <td class="text-end pe-4">
                                     <button wire:click="viewDetails({{ $order->id }})" class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
@@ -95,6 +92,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body bg-light">
+                    @if (session()->has('message'))
+                        <div class="alert alert-success py-2">{{ session('message') }}</div>
+                    @endif
+                    @if (session()->has('error'))
+                        <div class="alert alert-danger py-2">{{ session('error') }}</div>
+                    @endif
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="card border-0 shadow-sm h-100">
@@ -113,12 +116,16 @@
                             <div class="card border-0 shadow-sm h-100">
                                 <div class="card-header bg-white fw-bold">Thông tin Thanh toán</div>
                                 <div class="card-body small">
-                                    <p class="mb-1"><strong>Phương thức:</strong> {{ strtoupper($viewingOrder->payment_method) }}</p>
-                                    <p class="mb-1"><strong>Trạng thái TT:</strong> 
-                                        {!! $viewingOrder->payment_status === 'paid' ? '<span class="text-success">Đã thanh toán</span>' : '<span class="text-warning">Chưa thanh toán</span>' !!}
+                                    <p class="mb-1"><strong>Phương thức:</strong> {{ $viewingOrder->payment_method->label() }}</p>
+                                    <p class="mb-1"><strong>Trạng thái TT:</strong>
+                                        <span class="badge {{ $viewingOrder->payment_status->badgeClass() }}">{{ $viewingOrder->payment_status->label() }}</span>
                                     </p>
-                                    @if($viewingOrder->coupon)
-                                        <p class="mb-1"><strong>Mã giảm giá:</strong> {{ $viewingOrder->coupon->code }} (-{{ number_format($viewingOrder->coupon->discount) }}đ)</p>
+                                    <p class="mb-1"><strong>Tiền hàng:</strong> {{ number_format($viewingOrder->subtotal, 0, ',', '.') }}đ</p>
+                                    @if($viewingOrder->discount_amount > 0)
+                                        <p class="mb-1"><strong>Giảm giá{{ $viewingOrder->coupon ? ' ('.$viewingOrder->coupon->code.')' : '' }}:</strong> -{{ number_format($viewingOrder->discount_amount, 0, ',', '.') }}đ</p>
+                                    @endif
+                                    @if($viewingOrder->cancel_reason)
+                                        <p class="mb-1 text-danger"><strong>Lý do hủy:</strong> {{ $viewingOrder->cancel_reason }}</p>
                                     @endif
                                     <p class="mb-0 fs-5 mt-2"><strong>Tổng cộng: <span class="text-danger">{{ number_format($viewingOrder->total_price, 0, ',', '.') }}đ</span></strong></p>
                                 </div>
@@ -143,12 +150,12 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    @if($item->book->cover_image && !str_starts_with($item->book->cover_image, 'assets'))
-                                                        <img src="{{ asset('storage/' . $item->book->cover_image) }}" width="40" class="me-2 rounded">
-                                                    @elseif($item->book->cover_image)
-                                                        <img src="{{ asset($item->book->cover_image) }}" width="40" class="me-2 rounded">
+                                                    @if($item->book)
+                                                        <img src="{{ $item->book->cover_url }}" width="40" class="me-2 rounded">
+                                                        <span>{{ $item->book->title }}</span>
+                                                    @else
+                                                        <span class="text-muted">Sách đã bị xóa (#{{ $item->book_id }})</span>
                                                     @endif
-                                                    <span>{{ $item->book->title }}</span>
                                                 </div>
                                             </td>
                                             <td>{{ number_format($item->price, 0, ',', '.') }}đ</td>
@@ -161,28 +168,28 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer flex-wrap">
                     <div class="me-auto">
                         <strong>Trạng thái hiện tại: </strong>
-                        @if($viewingOrder->status === 'pending')
-                            <span class="badge bg-warning text-dark fs-6">Chờ xác nhận</span>
-                        @elseif($viewingOrder->status === 'shipping')
-                            <span class="badge bg-info fs-6">Đang giao hàng</span>
-                        @elseif($viewingOrder->status === 'completed')
-                            <span class="badge bg-success fs-6">Hoàn thành</span>
-                        @else
-                            <span class="badge bg-secondary fs-6">Đã hủy</span>
-                        @endif
+                        <span class="badge {{ $viewingOrder->status->badgeClass() }} fs-6">{{ $viewingOrder->status->label() }}</span>
                     </div>
-                    
-                    @if($viewingOrder->status === 'pending')
-                        <button wire:click="updateStatus({{ $viewingOrder->id }}, 'shipping')" class="btn btn-primary">Xác nhận & Giao hàng</button>
-                        <button wire:click="updateStatus({{ $viewingOrder->id }}, 'canceled')" class="btn btn-outline-danger">Hủy đơn</button>
-                    @elseif($viewingOrder->status === 'shipping')
-                        <button wire:click="updateStatus({{ $viewingOrder->id }}, 'completed')" class="btn btn-success">Đã giao thành công</button>
-                        <button wire:click="updateStatus({{ $viewingOrder->id }}, 'canceled')" class="btn btn-outline-danger">Hủy đơn (Hoàn hàng)</button>
+
+                    @php($nextStatuses = $viewingOrder->status->nextStatuses())
+                    @foreach ($nextStatuses as $next)
+                        @continue($next === \App\Enums\OrderStatus::Cancelled)
+                        <button wire:click="updateStatus({{ $viewingOrder->id }}, '{{ $next->value }}')" wire:loading.attr="disabled" class="btn btn-primary">
+                            Chuyển sang: {{ $next->label() }}
+                        </button>
+                    @endforeach
+
+                    @if (in_array(\App\Enums\OrderStatus::Cancelled, $nextStatuses, true))
+                        <div class="w-100 d-flex gap-2 mt-2">
+                            <input wire:model="cancelReason" type="text" class="form-control @error('cancelReason') is-invalid @enderror" placeholder="Lý do hủy đơn (bắt buộc khi hủy)">
+                            <button wire:click="updateStatus({{ $viewingOrder->id }}, 'cancelled')" wire:confirm="Hủy đơn này? Tồn kho và lượt mã giảm giá sẽ được hoàn lại." class="btn btn-outline-danger text-nowrap">Hủy đơn</button>
+                        </div>
+                        @error('cancelReason') <div class="text-danger small w-100">{{ $message }}</div> @enderror
                     @endif
-                    
+
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
                 @endif

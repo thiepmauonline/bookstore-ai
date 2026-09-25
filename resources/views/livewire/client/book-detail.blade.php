@@ -31,10 +31,10 @@
                         
                         <div class="product-meta text-muted mb-4 fs-5">
                             @if($book->author)
-                            <span class="me-3"><i class="bi bi-person-fill"></i> Tác giả: <strong class="text-dark">{{ $book->author->name }}</strong></span>
+                            <span class="me-3"><i class="bi bi-person-fill"></i> Tác giả: <strong class="text-dark">{{ $book->author->name ?? 'Đang cập nhật' }}</strong></span>
                             @endif
                             @if($book->publisher)
-                            <span><i class="bi bi-building"></i> NXB: <strong class="text-dark">{{ $book->publisher->name }}</strong></span>
+                            <span><i class="bi bi-building"></i> NXB: <strong class="text-dark">{{ $book->publisher->name ?? 'Đang cập nhật' }}</strong></span>
                             @endif
                         </div>
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
@@ -21,4 +22,18 @@ class Book extends Model
     public function reviews() { return $this->hasMany(Review::class); }
     public function wishlistedBy() { return $this->hasMany(Wishlist::class); }
     public function orderItems() { return $this->hasMany(OrderItem::class); }
+
+    /** URL ảnh bìa: ảnh demo nằm trong public/assets, ảnh tải lên nằm trong storage. */
+    protected function coverUrl(): Attribute
+    {
+        return Attribute::get(function () {
+            if (! $this->cover_image) {
+                return asset('assets/client/images/product-item1.jpg');
+            }
+
+            return str_starts_with($this->cover_image, 'assets/')
+                ? asset($this->cover_image)
+                : asset('storage/'.$this->cover_image);
+        });
+    }
 }

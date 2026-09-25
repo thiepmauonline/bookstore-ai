@@ -17,7 +17,10 @@ return new class extends Migration
             $table->foreignId('book_id')->comment('ID Sách');
             $table->tinyInteger('rating')->comment('Số sao (1-5)');
             $table->text('comment')->nullable()->comment('Nội dung đánh giá');
+            $table->boolean('is_visible')->default(true)->comment('Hiển thị công khai (admin có thể ẩn)');
             $table->timestamps();
+
+            $table->unique(['user_id', 'book_id']);
         });
     }
 

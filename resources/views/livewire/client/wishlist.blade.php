@@ -19,11 +19,7 @@
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                                 <div class="product-card h-100">
                                     <div class="product-img">
-                                        @if($item->book->cover_image)
-                                            <img src="{{ asset(str_starts_with($item->book->cover_image, 'assets') ? $item->book->cover_image : 'storage/' . $item->book->cover_image) }}" alt="{{ $item->book->title }}">
-                                        @else
-                                            <img src="{{ asset('assets/client/images/placeholder.jpg') }}" alt="{{ $item->book->title }}">
-                                        @endif
+                                        <img src="{{ $item->book->cover_url }}" alt="{{ $item->book->title }}">
                                         <div class="product-action">
                                             <button wire:click="addToCart({{ $item->book->id }})" class="btn btn-primary btn-sm" title="Thêm vào giỏ hàng">
                                                 <i class="bi bi-cart-plus"></i>
@@ -41,7 +37,7 @@
                                         </h3>
                                         <div class="product-meta">
                                             @if($item->book->author)
-                                                <span>{{ $item->book->author->name }}</span>
+                                                <span>{{ $item->book->author->name ?? 'Đang cập nhật' }}</span>
                                             @endif
                                         </div>
                                         <div class="product-price">

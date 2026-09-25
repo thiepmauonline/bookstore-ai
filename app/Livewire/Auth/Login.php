@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth;
 
 use App\Livewire\Concerns\ThrottlesLogin;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
@@ -38,7 +39,14 @@ class Login extends Component
         }
 
         RateLimiter::hit($this->loginRateKey('web'), 60);
-        $this->addError('email', 'Thông tin đăng nhập không chính xác.');
+
+        // Chỉ báo "bị khóa" khi mật khẩu đúng, để không lộ email nào đã đăng ký.
+        $isLocked = Auth::guard('web')->validate([...$credentials, 'role' => 'user'])
+            && User::where('email', $credentials['email'])->value('status') !== 'active';
+
+        $this->addError('email', $isLocked
+            ? 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ cửa hàng để được hỗ trợ.'
+            : 'Thông tin đăng nhập không chính xác.');
     }
 
     public function render()

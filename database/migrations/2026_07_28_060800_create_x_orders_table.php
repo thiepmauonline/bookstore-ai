@@ -18,11 +18,14 @@ return new class extends Migration
             $table->foreignId('coupon_id')->nullable()->comment('ID Mã giảm giá (nếu có)');
             
             $table->string('order_code')->unique()->comment('Mã đơn hàng');
-            $table->decimal('total_price', 12, 2)->comment('Tổng tiền đơn hàng');
-            $table->string('payment_method')->default('COD')->comment('Phương thức thanh toán');
-            $table->string('payment_status')->default('Unpaid')->comment('Trạng thái thanh toán (Unpaid, Paid)');
-            $table->string('status')->default('Pending')->comment('Trạng thái giao hàng (Pending, Confirmed, Shipping, Completed, Cancelled)');
+            $table->decimal('subtotal', 12, 2)->default(0)->comment('Tổng tiền hàng trước giảm giá');
+            $table->decimal('discount_amount', 12, 2)->default(0)->comment('Số tiền được giảm');
+            $table->decimal('total_price', 12, 2)->comment('Tổng tiền phải thanh toán');
+            $table->string('payment_method', 20)->default('cod')->comment('Phương thức thanh toán (cod)');
+            $table->string('payment_status', 20)->default('unpaid')->comment('Trạng thái thanh toán (unpaid, paid)');
+            $table->string('status', 20)->default('pending')->index()->comment('Trạng thái đơn (pending, confirmed, shipping, completed, cancelled)');
             $table->text('note')->nullable()->comment('Ghi chú của khách hàng');
+            $table->string('cancel_reason')->nullable()->comment('Lý do hủy đơn');
             $table->timestamps();
         });
     }

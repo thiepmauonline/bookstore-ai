@@ -8,12 +8,12 @@
                     <p class="mb-4">Chúng tôi hiểu rằng việc tìm kiếm đúng cuốn giáo trình phù hợp với học phần của mình luôn là một khó khăn lớn. Với việc tích hợp Chatbot AI tiên tiến, Bookstore-AI không chỉ bán sách mà còn hoạt động như một người cố vấn học tập thực thụ, giúp bạn định hướng và lựa chọn tài liệu phù hợp nhất.</p>
                     <div class="d-flex mb-4">
                         <div class="me-4 text-center">
-                            <h3 class="text-primary mb-1">10k+</h3>
+                            <h3 class="text-primary mb-1">{{ $bookCount }}</h3>
                             <span class="text-muted small">Đầu sách</span>
                         </div>
                         <div class="me-4 text-center">
-                            <h3 class="text-primary mb-1">50+</h3>
-                            <span class="text-muted small">Ngành học</span>
+                            <h3 class="text-primary mb-1">{{ $majorCount }}</h3>
+                            <span class="text-muted small">Ngành · {{ $courseCount }} học phần</span>
                         </div>
                         <div class="text-center">
                             <h3 class="text-primary mb-1">24/7</h3>

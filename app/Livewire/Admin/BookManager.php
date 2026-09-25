@@ -46,7 +46,7 @@ class BookManager extends Component
         'category_id' => 'required|exists:categories,id',
         'author_id' => 'required|exists:authors,id',
         'publisher_id' => 'required|exists:publishers,id',
-        'course_id' => 'required|exists:courses,id',
+        'course_id' => 'nullable|exists:courses,id', // sách tham khảo chung có thể không thuộc học phần nào
         'description' => 'nullable|string',
         'price' => 'required|numeric|min:0',
         'quantity' => 'required|integer|min:0',
@@ -79,6 +79,7 @@ class BookManager extends Component
 
     public function store()
     {
+        $this->course_id = $this->course_id ?: null;
         $this->validate();
 
         $imagePath = null;
@@ -130,6 +131,7 @@ class BookManager extends Component
 
     public function update()
     {
+        $this->course_id = $this->course_id ?: null;
         $this->validate();
 
         $book = Book::findOrFail($this->book_id);
@@ -165,9 +167,19 @@ class BookManager extends Component
     public function delete($id)
     {
         $book = Book::findOrFail($id);
+
+        // Sách đã nằm trong đơn hàng thì giữ lại để không mất lịch sử bán hàng.
+        if ($book->orderItems()->exists()) {
+            session()->flash('error', 'Sách này đã có trong đơn hàng nên không thể xóa. Hãy đặt số lượng tồn kho về 0 để ngừng bán.');
+            return;
+        }
+
         if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
             Storage::disk('public')->delete($book->cover_image);
         }
+        $book->reviews()->delete();
+        $book->wishlistedBy()->delete();
+        $book->images()->delete();
         $book->delete();
         session()->flash('message', 'Đã xóa sách thành công!');
     }

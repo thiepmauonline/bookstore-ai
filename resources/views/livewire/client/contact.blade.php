@@ -9,21 +9,28 @@
                     <ul class="list-unstyled mb-5">
                         <li class="d-flex mb-3">
                             <i class="icon icon-map-marker fs-4 text-primary me-3"></i>
-                            <span>123 Đường Đại Học, Quận Học Tập, Thành phố Trí Thức</span>
+                            <span>{{ $settings['address'] }}</span>
                         </li>
                         <li class="d-flex mb-3">
                             <i class="icon icon-phone fs-4 text-primary me-3"></i>
-                            <span>+84 123 456 789</span>
+                            <span>{{ $settings['hotline'] }}</span>
                         </li>
                         <li class="d-flex">
                             <i class="icon icon-envelope fs-4 text-primary me-3"></i>
-                            <span>support@bookstore-ai.edu.vn</span>
+                            <span>{{ $settings['email'] }}</span>
+                        </li>
+                        <li class="d-flex mt-3">
+                            <i class="bi bi-clock fs-4 text-primary me-3"></i>
+                            <span>{{ $settings['working_hours'] }}</span>
                         </li>
                     </ul>
                 </div>
                 <div class="col-md-6">
                     <div class="card border-0 bg-light p-4 p-lg-5">
                         <h4 class="mb-4">Gửi tin nhắn</h4>
+                        @if (session()->has('contact_message'))
+                            <div class="alert alert-success">{{ session('contact_message') }}</div>
+                        @endif
                         <form wire:submit="submit">
                             <div class="mb-3">
                                 <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
@@ -40,7 +47,7 @@
                                 <textarea wire:model="message" class="form-control bg-white @error('message') is-invalid @enderror" rows="5" placeholder="Bạn cần hỗ trợ gì?"></textarea>
                                 @error('message') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-                            <button type="submit" class="btn btn-primary rounded-pill px-5 py-2">
+                            <button type="submit" wire:loading.attr="disabled" class="btn btn-primary rounded-pill px-5 py-2">
                                 <span wire:loading.remove wire:target="submit">Gửi tin nhắn</span>
                                 <span wire:loading wire:target="submit">Đang gửi...</span>
                             </button>
