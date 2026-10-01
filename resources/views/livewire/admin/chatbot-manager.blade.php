@@ -143,7 +143,7 @@
         </div>
     </div>
 
-    <div wire:ignore.self class="modal fade" id="chatbotModal" tabindex="-1" aria-hidden="true">
+    <div wire:ignore.self x-data="adminModal('show-modal', 'hide-modal')" class="modal" id="chatbotModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 @if ($viewing)
@@ -174,11 +174,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('livewire:initialized', () => {
-            const modal = new bootstrap.Modal(document.getElementById('chatbotModal'));
-            Livewire.on('show-modal', () => modal.show());
-        });
-    </script>
 </div>

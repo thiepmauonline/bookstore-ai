@@ -51,16 +51,16 @@ class DemoDataSeeder extends Seeder
     private function seedCustomers()
     {
         $people = [
-            ['Lê Minh Anh', 'minhanh@bookstore.test', 'Hà Nội', 'Cầu Giấy', 'Dịch Vọng Hậu', '144 Xuân Thủy'],
-            ['Phạm Quốc Bảo', 'quocbao@bookstore.test', 'Hà Nội', 'Hai Bà Trưng', 'Bách Khoa', '1 Đại Cồ Việt'],
-            ['Hoàng Thu Hà', 'thuha@bookstore.test', 'Đà Nẵng', 'Hải Châu', 'Hòa Thuận Tây', '71 Ngũ Hành Sơn'],
-            ['Vũ Đức Huy', 'duchuy@bookstore.test', 'TP.HCM', 'Quận 10', 'Phường 14', '268 Lý Thường Kiệt'],
-            ['Đặng Ngọc Lan', 'ngoclan@bookstore.test', 'Hà Nội', 'Đống Đa', 'Trung Liệt', '1 Tôn Thất Tùng'],
-            ['Bùi Thanh Tùng', 'thanhtung@bookstore.test', 'Cần Thơ', 'Ninh Kiều', 'Xuân Khánh', '3/2 Đường 30/4'],
-            ['Ngô Phương Thảo', 'phuongthao@bookstore.test', 'Huế', 'Thuận Hóa', 'Phú Nhuận', '77 Nguyễn Huệ'],
+            ['Lê Minh Anh', 'minhanh@bookstore.test', 'Hà Nội', 'Dịch Vọng Hậu', '144 Xuân Thủy'],
+            ['Phạm Quốc Bảo', 'quocbao@bookstore.test', 'Hà Nội', 'Bách Khoa', '1 Đại Cồ Việt'],
+            ['Hoàng Thu Hà', 'thuha@bookstore.test', 'Đà Nẵng', 'Hòa Thuận Tây', '71 Ngũ Hành Sơn'],
+            ['Vũ Đức Huy', 'duchuy@bookstore.test', 'TP.HCM', 'Phường 14', '268 Lý Thường Kiệt'],
+            ['Đặng Ngọc Lan', 'ngoclan@bookstore.test', 'Hà Nội', 'Trung Liệt', '1 Tôn Thất Tùng'],
+            ['Bùi Thanh Tùng', 'thanhtung@bookstore.test', 'Cần Thơ', 'Xuân Khánh', '3/2 Đường 30/4'],
+            ['Ngô Phương Thảo', 'phuongthao@bookstore.test', 'Huế', 'Phú Nhuận', '77 Nguyễn Huệ'],
         ];
 
-        foreach ($people as $i => [$name, $email, $province, $district, $ward, $street]) {
+        foreach ($people as $i => [$name, $email, $province, $ward, $street]) {
             $user = User::create([
                 'name' => $name,
                 'email' => $email,
@@ -70,7 +70,7 @@ class DemoDataSeeder extends Seeder
                 'phone' => '09'.str_pad((string) (10000000 + $i * 1234567), 8, '0', STR_PAD_LEFT),
                 'created_at' => now()->subDays(self::DAYS + 10 - $i),
             ]);
-            $this->addressFor($user, $province, $district, $ward, $street);
+            $this->addressFor($user, $province, $ward, $street);
         }
 
         // Tài khoản bị khóa để minh họa chức năng quản lý người dùng và đăng nhập bị từ chối.
@@ -81,20 +81,19 @@ class DemoDataSeeder extends Seeder
 
         $sv = User::where('email', 'sv@bookstore.test')->first();
         $kh = User::where('email', 'kh@bookstore.test')->first();
-        $this->addressFor($sv, 'Hà Nội', 'Cầu Giấy', 'Dịch Vọng', 'Ký túc xá ĐH Quốc Gia');
-        $this->addressFor($kh, 'TP.HCM', 'Quận 1', 'Bến Nghé', '123 Lê Lợi');
+        $this->addressFor($sv, 'Hà Nội', 'Dịch Vọng', 'Ký túc xá ĐH Quốc Gia');
+        $this->addressFor($kh, 'TP.HCM', 'Bến Nghé', '123 Lê Lợi');
 
         return User::where('role', 'user')->where('status', 'active')->with('addresses')->get();
     }
 
-    private function addressFor(User $user, string $province, string $district, string $ward, string $street): void
+    private function addressFor(User $user, string $province, string $ward, string $street): void
     {
         Address::create([
             'user_id' => $user->id,
             'receiver_name' => $user->name,
             'phone' => $user->phone,
             'province' => $province,
-            'district' => $district,
             'ward' => $ward,
             'address' => $street,
             'is_default' => true,

@@ -27,17 +27,12 @@
                                     @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                     <label class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
                                     <input wire:model="province" type="text" class="form-control @error('province') is-invalid @enderror" placeholder="VD: Hà Nội">
                                     @error('province') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
-                                <div class="col-sm-4">
-                                    <label class="form-label">Quận / Huyện <span class="text-danger">*</span></label>
-                                    <input wire:model="district" type="text" class="form-control @error('district') is-invalid @enderror">
-                                    @error('district') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                     <label class="form-label">Phường / Xã <span class="text-danger">*</span></label>
                                     <input wire:model="ward" type="text" class="form-control @error('ward') is-invalid @enderror">
                                     @error('ward') <div class="invalid-feedback">{{ $message }}</div> @enderror

@@ -26,7 +26,6 @@ class Checkout extends Component
     public $receiver_name = '';
     public $phone = '';
     public $province = '';
-    public $district = '';
     public $ward = '';
     public $address = '';
     public $note = '';
@@ -34,9 +33,8 @@ class Checkout extends Component
     protected $rules = [
         'receiver_name' => 'required|string|max:255',
         'phone' => ['required', 'regex:/^0\d{9,10}$/'],
-        'province' => 'required|string',
-        'district' => 'required|string',
-        'ward' => 'required|string',
+        'province' => 'required|string|max:255',
+        'ward' => 'required|string|max:255',
         'address' => 'required|string|max:500',
         'note' => 'nullable|string|max:1000',
     ];
@@ -70,7 +68,6 @@ class Checkout extends Component
             $this->receiver_name = $defaultAddress->receiver_name;
             $this->phone = $defaultAddress->phone;
             $this->province = $defaultAddress->province;
-            $this->district = $defaultAddress->district;
             $this->ward = $defaultAddress->ward;
             $this->address = $defaultAddress->address;
         } else {
@@ -141,7 +138,7 @@ class Checkout extends Component
             $order = $orderService->place(
                 auth()->user(),
                 $cartService->getCart(),
-                $this->only(['receiver_name', 'phone', 'province', 'district', 'ward', 'address']),
+                $this->only(['receiver_name', 'phone', 'province', 'ward', 'address']),
                 $this->appliedCoupon?->code,
                 $this->note,
             );

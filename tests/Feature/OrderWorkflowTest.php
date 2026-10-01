@@ -27,7 +27,6 @@ class OrderWorkflowTest extends TestCase
         'receiver_name' => 'Nguyễn Văn A',
         'phone' => '0987654321',
         'province' => 'Hà Nội',
-        'district' => 'Cầu Giấy',
         'ward' => 'Dịch Vọng',
         'address' => '144 Xuân Thủy',
     ];
@@ -201,6 +200,10 @@ class OrderWorkflowTest extends TestCase
         $order = Order::sole();
         $this->assertSame($user->id, $order->user_id);
         $this->assertSame('cod', $order->payment_method->value);
+        $this->assertSame(self::SHIPPING['province'], $order->address->province);
+        $this->assertSame(self::SHIPPING['ward'], $order->address->ward);
+        $this->assertNull($order->address->getRawOriginal('district'));
+        $this->assertFalse(property_exists(Checkout::class, 'district'));
         $this->assertSame(2, $book->fresh()->quantity);
         $this->assertSame(0, app(CartService::class)->getCount());
     }

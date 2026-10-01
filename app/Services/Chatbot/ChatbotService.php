@@ -9,6 +9,7 @@ use App\Models\Major;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 /**
  * Chatbot tư vấn giáo trình theo mô hình RAG đơn giản:
@@ -171,6 +172,22 @@ class ChatbotService
      */
     private function fallbackAnswer(string $question, Collection $books, bool $matched): array
     {
+        $text = trim(preg_replace('/[^a-z0-9 ]/', ' ', Str::lower(Str::ascii($question))));
+        $text = preg_replace('/\s+/', ' ', $text);
+
+        if (preg_match('/\b(ban la ai|ban ten (la )?gi|gioi thieu (ban than|ve ban)|who are you)\b/', $text)) {
+            return ['Mình là trợ lý Bookstore AI. Mình có thể giúp bạn tìm sách, tư vấn giáo trình và giải đáp thông tin mua hàng. Bạn đang cần hỗ trợ gì?', []];
+        }
+        if (preg_match('/\b(chao|hello|hi)\b/', $text) && ! preg_match('/\b(sach|giao trinh|mua|tim)\b/', $text)) {
+            return ['Chào bạn! Mình là trợ lý Bookstore AI. Hôm nay mình có thể giúp gì cho bạn?', []];
+        }
+        if (preg_match('/^(cam on|thank you|thanks)( ban| nhe| nhieu| a)*$/', $text)) {
+            return ['Rất vui được giúp bạn! Khi cần tìm sách hoặc hỗ trợ mua hàng, bạn cứ hỏi mình nhé.', []];
+        }
+        if (! $matched && ! preg_match('/\b(sach|giao trinh|tai lieu|mua|tim|goi y)\b/', $text)) {
+            return ['Mình đang tạm thời không kết nối được với AI nên chưa thể giải đáp câu hỏi này. Bạn thử lại sau một chút nhé; mình vẫn có thể giúp tìm sách theo tên, ngành hoặc học phần.', []];
+        }
+
         $top = $books->take(3);
 
         if ($matched && $top->isNotEmpty()) {
@@ -187,7 +204,7 @@ class ChatbotService
         $majors = Major::orderBy('name')->pluck('name')->implode(', ');
 
         return [
-            "Mình chưa tìm thấy giáo trình khớp với câu hỏi của bạn. Bạn thử hỏi theo ngành hoặc học phần nhé, ví dụ: \"Sách cho môn Lập trình Web\".\n\nCác ngành hiện có: {$majors}.\n\nMột vài cuốn đang được nhiều bạn mua:",
+            "Mình đang tạm thời không kết nối được với AI và chưa tìm được sách phù hợp bằng tìm kiếm nội bộ. Bạn thử hỏi theo ngành hoặc học phần nhé, ví dụ: \"Sách cho môn Lập trình Web\".\n\nCác ngành hiện có: {$majors}.\n\nMột vài cuốn đang được nhiều bạn mua:",
             $top->pluck('id')->all(),
         ];
     }

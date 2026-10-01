@@ -72,7 +72,7 @@
     </div>
 
     <!-- Modal Major -->
-    <div wire:ignore.self class="modal fade" id="majorModal" tabindex="-1" aria-hidden="true">
+    <div wire:ignore.self x-data="adminModal('show-major-modal', 'hide-major-modal')" class="modal" id="majorModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}">
@@ -97,7 +97,7 @@
     </div>
 
     <!-- Modal Courses -->
-    <div wire:ignore.self class="modal fade" id="coursesModal" tabindex="-1" aria-hidden="true">
+    <div wire:ignore.self x-data="adminModal('show-courses-modal', 'hide-courses-modal')" class="modal" id="coursesModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-light">
@@ -148,22 +148,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('livewire:initialized', () => {
-            let majorModal = new bootstrap.Modal(document.getElementById('majorModal'));
-            let coursesModal = new bootstrap.Modal(document.getElementById('coursesModal'));
-            
-            Livewire.on('show-major-modal', () => majorModal.show());
-            Livewire.on('hide-major-modal', () => { 
-                majorModal.hide(); 
-                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-            });
-
-            Livewire.on('show-courses-modal', () => coursesModal.show());
-        });
-    </script>
 </div>

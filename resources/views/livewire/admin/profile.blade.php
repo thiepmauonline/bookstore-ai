@@ -55,7 +55,7 @@
     </div>
 
     <!-- Change Password Modal -->
-    <div wire:ignore.self class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+    <div wire:ignore.self x-data="adminModal('', 'close-modal')" class="modal" id="changePasswordModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form wire:submit="updatePassword">
@@ -96,16 +96,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('livewire:initialized', () => {
-            Livewire.on('close-modal', (data) => {
-                let modalEl = document.getElementById(data.modalId);
-                let modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) {
-                    modal.hide();
-                }
-            });
-        });
-    </script>
 </div>

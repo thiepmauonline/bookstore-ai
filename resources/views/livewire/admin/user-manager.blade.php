@@ -113,12 +113,7 @@
     </div>
 
     <!-- Modal -->
-    <div x-data="{ show: $wire.dispatch('show-modal') }" 
-         x-show="show" 
-         x-transition 
-         class="modal fade" 
-         style="display: none;"
-         @keydown.escape.window="$wire.dispatch('hide-modal')">
+    <div wire:ignore.self x-data="adminModal('show-modal', 'hide-modal')" class="modal" id="userModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -191,24 +186,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('show-modal', () => {
-                const modal = document.querySelector('.modal');
-                if (modal) {
-                    modal.style.display = 'block';
-                    modal.classList.add('show');
-                }
-            });
-
-            Livewire.on('hide-modal', () => {
-                const modal = document.querySelector('.modal');
-                if (modal) {
-                    modal.style.display = 'none';
-                    modal.classList.remove('show');
-                }
-            });
-        });
-    </script>
 </div>

@@ -1,6 +1,39 @@
 "use strict";
 
 (function () {
+  document.addEventListener("alpine:init", function () {
+    Alpine.data("adminModal", function (showEvent, hideEvent) {
+      return {
+        modal: null,
+        events: null,
+        onNavigate: null,
+        init() {
+          this.modal = bootstrap.Modal.getOrCreateInstance(this.$el);
+          this.events = new AbortController();
+          const options = { signal: this.events.signal };
+          const root = this.$wire.$el;
+          if (showEvent) root.addEventListener(showEvent, () => {
+            this.$nextTick(() => this.modal && this.modal.show());
+          }, options);
+          if (hideEvent) root.addEventListener(hideEvent, (event) => {
+            const data = event.detail;
+            if (!data?.modalId || data.modalId === this.$el.id) this.modal.hide();
+          }, options);
+          this.onNavigate = () => this.modal && this.modal.hide();
+          document.addEventListener("livewire:navigating", this.onNavigate);
+        },
+        destroy() {
+          document.removeEventListener("livewire:navigating", this.onNavigate);
+          if (this.events) this.events.abort();
+          if (this.modal) {
+            this.modal.hide();
+            this.modal.dispose();
+            this.modal = null;
+          }
+        }
+      };
+    });
+  });
   var sidebarStorageKey = "adminHMD.sidebarMini";
   var themeStorageKey = "adminHMD.colorTheme";
   var desktopMedia = "(min-width: 992px)";

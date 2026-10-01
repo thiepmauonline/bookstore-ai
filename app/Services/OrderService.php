@@ -25,7 +25,7 @@ class OrderService
      * Tạo đơn hàng từ giỏ hàng.
      *
      * @param  array<int|string, array{quantity:int}>  $cart  Giỏ hàng dạng [book_id => ['quantity' => n, ...]]
-     * @param  array{receiver_name:string, phone:string, province:string, district:string, ward:string, address:string}  $shipping
+     * @param  array{receiver_name:string, phone:string, province:string, ward:string, address:string}  $shipping
      *
      * @throws OrderException
      */

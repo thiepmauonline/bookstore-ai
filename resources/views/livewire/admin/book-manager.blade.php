@@ -107,7 +107,7 @@
     </div>
 
     <!-- Modal Form -->
-    <div wire:ignore.self class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+    <div wire:ignore.self x-data="adminModal('show-modal', 'hide-modal')" class="modal" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}">
@@ -228,23 +228,4 @@
     </div>
 
     <!-- Scripts for Modal -->
-    <script>
-        document.addEventListener('livewire:initialized', () => {
-            let myModal = new bootstrap.Modal(document.getElementById('bookModal'));
-
-            Livewire.on('show-modal', () => {
-                myModal.show();
-            });
-
-            Livewire.on('hide-modal', () => {
-                myModal.hide();
-                // fix backdrop issue if any
-                const backdrops = document.querySelectorAll('.modal-backdrop');
-                backdrops.forEach(backdrop => backdrop.remove());
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-            });
-        });
-    </script>
 </div>

@@ -83,7 +83,7 @@
     </div>
 
     <!-- Modal Order Details -->
-    <div wire:ignore.self class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
+    <div wire:ignore.self x-data="adminModal('show-modal', 'hide-modal')" class="modal" id="orderModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 @if($viewingOrder)
@@ -105,7 +105,7 @@
                                 <div class="card-body small">
                                     <p class="mb-1"><strong>Họ tên:</strong> {{ $viewingOrder->address->receiver_name ?? $viewingOrder->user->name }}</p>
                                     <p class="mb-1"><strong>SĐT:</strong> {{ $viewingOrder->address->phone ?? $viewingOrder->user->phone }}</p>
-                                    <p class="mb-1"><strong>Địa chỉ:</strong> {{ $viewingOrder->address->address ?? '' }}, {{ $viewingOrder->address->ward ?? '' }}, {{ $viewingOrder->address->district ?? '' }}, {{ $viewingOrder->address->province ?? '' }}</p>
+                                    <p class="mb-1"><strong>Địa chỉ:</strong> {{ $viewingOrder->address->address ?? '' }}, {{ $viewingOrder->address->ward ?? '' }}, {{ $viewingOrder->address->province ?? '' }}</p>
                                     @if($viewingOrder->note)
                                         <p class="mb-0 text-danger"><strong>Ghi chú:</strong> {{ $viewingOrder->note }}</p>
                                     @endif
@@ -196,26 +196,4 @@
             </div>
         </div>
     </div>
-
-    @script
-    <script>
-        $wire.on('show-modal', () => {
-            Alpine.nextTick(() => {
-                const element = document.getElementById('orderModal');
-                if (element) bootstrap.Modal.getOrCreateInstance(element).show();
-            });
-        });
-
-        document.addEventListener('livewire:navigating', () => {
-            const element = document.getElementById('orderModal');
-            const modal = element && bootstrap.Modal.getInstance(element);
-            if (modal) {
-                // Close synchronously before Livewire replaces this page.
-                element.classList.remove('fade');
-                modal.hide();
-                modal.dispose();
-            }
-        }, { once: true });
-    </script>
-    @endscript
 </div>

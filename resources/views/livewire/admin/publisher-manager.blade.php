@@ -71,7 +71,7 @@
     </div>
 
     <!-- Modal Form -->
-    <div wire:ignore.self class="modal fade" id="crudModal" tabindex="-1" aria-hidden="true">
+    <div wire:ignore.self x-data="adminModal('show-modal', 'hide-modal')" class="modal" id="crudModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}">
@@ -103,18 +103,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('livewire:initialized', () => {
-            let myModal = new bootstrap.Modal(document.getElementById('crudModal'));
-            Livewire.on('show-modal', () => { myModal.show(); });
-            Livewire.on('hide-modal', () => { 
-                myModal.hide(); 
-                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-            });
-        });
-    </script>
 </div>

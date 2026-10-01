@@ -102,7 +102,7 @@
                             <p class="mb-1"><strong>Điện thoại:</strong> {{ $selectedOrder->address->phone ?? $selectedOrder->user->phone ?? 'Không có' }}</p>
                             <p class="mb-0"><strong>Địa chỉ:</strong>
                                 @if ($selectedOrder->address)
-                                    {{ $selectedOrder->address->address }}, {{ $selectedOrder->address->ward }}, {{ $selectedOrder->address->district }}, {{ $selectedOrder->address->province }}
+                                    {{ $selectedOrder->address->address }}, {{ $selectedOrder->address->ward }}, {{ $selectedOrder->address->province }}
                                 @else
                                     Không có
                                 @endif

@@ -3,6 +3,7 @@
 namespace App\Services\Chatbot;
 
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -33,6 +34,9 @@ class GeminiClient
         try {
             $response = Http::withHeaders(['x-goog-api-key' => config('services.gemini.key')])
                 ->timeout(config('services.gemini.timeout'))
+                ->connectTimeout(5)
+                ->retry(2, 300, fn ($exception) => $exception instanceof ConnectionException
+                    || ($exception instanceof RequestException && in_array($exception->response->status(), [500, 502, 503, 504], true)), throw: false)
                 ->acceptJson()
                 ->post($url, [
                     'system_instruction' => ['parts' => [['text' => $systemInstruction]]],

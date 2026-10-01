@@ -188,12 +188,13 @@
     </div>
 
     <!-- Tải Chart.js từ CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script data-navigate-once src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    @script
     <script>
-        document.addEventListener('livewire:initialized', () => {
+        {
             const ctx = document.getElementById('myAreaChart');
             if(ctx) {
-                new Chart(ctx, {
+                const chart = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: {!! json_encode($chartData['labels']) !!},
@@ -240,7 +241,9 @@
                         }
                     }
                 });
+                document.addEventListener('livewire:navigating', () => chart.destroy(), { once: true });
             }
-        });
+        }
     </script>
+    @endscript
 </div>

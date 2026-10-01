@@ -103,6 +103,7 @@ class ChatbotTest extends TestCase
             ->assertSee('Lập Trình Web Căn Bản');
 
         $this->assertSame(ChatbotHistory::SOURCE_FALLBACK, ChatbotHistory::sole()->source);
+        Http::assertSentCount(1);
     }
 
     public function test_feedback_is_recorded_once_and_only_for_own_session(): void
@@ -118,6 +119,42 @@ class ChatbotTest extends TestCase
         $foreign = ChatbotHistory::create(['session_id' => 'someone-else', 'question' => 'q', 'answer' => 'a']);
         $this->expectException(ModelNotFoundException::class);
         $component->call('feedback', $foreign->id, true);
+    }
+
+    public function test_fallback_handles_small_talk_without_recommending_books(): void
+    {
+        config(['services.gemini.key' => null]);
+        Http::fake();
+
+        foreach (['bạn là ai' => 'Mình là trợ lý Bookstore AI', 'bạn chào lại tôi đi' => 'Chào bạn!', 'cảm ơn bạn' => 'Rất vui được giúp bạn!', 'giải thích thuật toán đệ quy' => 'tạm thời không kết nối được'] as $question => $expected) {
+            Livewire::test(Chatbot::class)->set('question', $question)->call('send')->assertSee($expected);
+            $history = ChatbotHistory::latest('id')->first();
+            $this->assertSame([], $history->book_ids);
+            $this->assertSame(ChatbotHistory::SOURCE_FALLBACK, $history->source);
+        }
+        Http::assertNothingSent();
+    }
+
+    public function test_transient_ai_failure_is_retried_once_and_recovers(): void
+    {
+        config(['services.gemini.key' => 'test-key']);
+        Http::fake(['*' => Http::sequence()
+            ->push(['error' => ['message' => 'overloaded']], 503)
+            ->push(['candidates' => [['content' => ['parts' => [['text' => 'Chào bạn!']]]]]])]);
+
+        Livewire::test(Chatbot::class)->set('question', 'xin chào')->call('send')->assertSee('Chào bạn!');
+        Http::assertSentCount(2);
+        $this->assertSame(ChatbotHistory::SOURCE_AI, ChatbotHistory::sole()->source);
+    }
+
+    public function test_repeated_transient_failure_stops_after_two_attempts(): void
+    {
+        config(['services.gemini.key' => 'test-key']);
+        Http::fake(['*' => Http::response(['error' => ['message' => 'overloaded']], 503)]);
+
+        Livewire::test(Chatbot::class)->set('question', 'bạn là ai')->call('send')->assertSee('Mình là trợ lý Bookstore AI');
+        Http::assertSentCount(2);
+        $this->assertSame(ChatbotHistory::SOURCE_FALLBACK, ChatbotHistory::sole()->source);
     }
 
     public function test_empty_question_is_rejected(): void
