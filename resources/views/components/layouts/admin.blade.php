@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="{{ asset('assets/admin/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/admin/vendors/bootstrap-icons/bootstrap-icons.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/admin/css/style.css') }}?v={{ filemtime(public_path('assets/admin/css/style.css')) }}">
 
     @livewireStyles
 </head>
@@ -18,7 +18,9 @@
     <div class="admin-shell">
         <div class="sidebar-backdrop" data-sidebar-close></div>
 
-        <x-layouts.admin.sidebar />
+        @persist('admin-sidebar')
+            <x-layouts.admin.sidebar />
+        @endpersist
 
         <div class="admin-main">
             <x-layouts.admin.topbar />
@@ -36,8 +38,8 @@
         </div>
     </div>
 
-    <script src="{{ asset('assets/admin/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/js/main.js') }}"></script>
+    <script data-navigate-once src="{{ asset('assets/admin/js/bootstrap.bundle.min.js') }}"></script>
+    <script data-navigate-once src="{{ asset('assets/admin/js/main.js') }}?v={{ filemtime(public_path('assets/admin/js/main.js')) }}"></script>
     
     @livewireScripts
 </body>

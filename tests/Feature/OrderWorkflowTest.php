@@ -219,6 +219,34 @@ class OrderWorkflowTest extends TestCase
         $this->assertSame(0, Order::count());
     }
 
+    public function test_admin_can_open_details_and_complete_order_from_modal(): void
+    {
+        $book = $this->book(quantity: 10);
+        $order = $this->placeOrder($this->customer(), $book);
+        $this->actingAs(User::factory()->create(['role' => 'admin', 'status' => 'active']), 'admin');
+
+        $component = Livewire::test(OrderManager::class)
+            ->call('viewDetails', $order->id)
+            ->assertDispatched('show-modal')
+            ->assertSee($order->order_code)
+            ->assertSee($book->title)
+            ->assertSee(self::SHIPPING['address'])
+            ->assertSee('Chuyển sang: Đã xác nhận');
+
+        $component->call('updateStatus', $order->id, 'completed');
+        $this->assertSame(OrderStatus::Pending, $order->fresh()->status);
+
+        foreach (['confirmed', 'shipping', 'completed'] as $status) {
+            $component->call('updateStatus', $order->id, $status)->assertHasNoErrors();
+            $this->assertSame($status, $order->fresh()->status->value);
+            $this->assertSame($status, $component->get('viewingOrder')->status->value);
+        }
+
+        $this->assertSame(PaymentStatus::Paid, $order->fresh()->payment_status);
+        $this->assertSame(8, $book->fresh()->quantity);
+        $component->assertDontSee('Chuyển sang:')->assertDontSee('Lý do hủy đơn (bắt buộc khi hủy)');
+    }
+
     public function test_admin_must_give_reason_when_cancelling(): void
     {
         $order = $this->placeOrder($this->customer(), $this->book());

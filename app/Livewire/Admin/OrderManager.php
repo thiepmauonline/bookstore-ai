@@ -38,6 +38,7 @@ class OrderManager extends Component
 
     public function viewDetails($orderId)
     {
+        $this->resetValidation();
         $this->loadOrder($orderId);
         $this->cancelReason = '';
         $this->dispatch('show-modal');

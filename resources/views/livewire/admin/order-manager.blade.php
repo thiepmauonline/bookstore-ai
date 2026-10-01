@@ -67,7 +67,7 @@
                                     <span class="badge {{ $order->status->badgeClass() }}">{{ $order->status->label() }}</span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <button wire:click="viewDetails({{ $order->id }})" class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                    <button type="button" wire:loading.attr="disabled" wire:target="viewDetails" wire:click="viewDetails({{ $order->id }})" class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
                                         <i class="bi bi-eye"></i> Chi tiết
                                     </button>
                                 </td>
@@ -197,10 +197,25 @@
         </div>
     </div>
 
+    @script
     <script>
-        document.addEventListener('livewire:initialized', () => {
-            let myModal = new bootstrap.Modal(document.getElementById('orderModal'));
-            Livewire.on('show-modal', () => { myModal.show(); });
+        $wire.on('show-modal', () => {
+            Alpine.nextTick(() => {
+                const element = document.getElementById('orderModal');
+                if (element) bootstrap.Modal.getOrCreateInstance(element).show();
+            });
         });
+
+        document.addEventListener('livewire:navigating', () => {
+            const element = document.getElementById('orderModal');
+            const modal = element && bootstrap.Modal.getInstance(element);
+            if (modal) {
+                // Close synchronously before Livewire replaces this page.
+                element.classList.remove('fade');
+                modal.hide();
+                modal.dispose();
+            }
+        }, { once: true });
     </script>
+    @endscript
 </div>

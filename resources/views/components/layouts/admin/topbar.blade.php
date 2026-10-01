@@ -27,10 +27,10 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end notification-menu">
                     <div class="dropdown-header fw-bold text-body">Việc cần xử lý</div>
-                    <a class="dropdown-item" href="{{ route('admin.orders', ['statusFilter' => 'pending']) }}">
+                    <a wire:navigate class="dropdown-item" href="{{ route('admin.orders', ['statusFilter' => 'pending']) }}">
                         <span class="notification-title">{{ $pendingOrders }} đơn hàng chờ xác nhận</span>
                     </a>
-                    <a class="dropdown-item" href="{{ route('admin.contacts') }}">
+                    <a wire:navigate class="dropdown-item" href="{{ route('admin.contacts') }}">
                         <span class="notification-title">{{ $unhandledContacts }} liên hệ chưa xử lý</span>
                     </a>
                 </div>
@@ -42,7 +42,7 @@
                     <span class="profile-name d-none d-sm-inline">{{ auth('admin')->user()->name ?? 'Administrator' }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="{{ route('admin.profile') }}">Hồ sơ</a></li>
+                    <li><a wire:navigate class="dropdown-item" href="{{ route('admin.profile') }}">Hồ sơ</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="POST" action="{{ route('admin.logout') }}">@csrf<button type="submit" class="dropdown-item">Đăng xuất</button></form>

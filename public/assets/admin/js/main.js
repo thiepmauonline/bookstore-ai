@@ -57,7 +57,14 @@
     return "light";
   }
 
-  onReady(function () {
+  var controller;
+  var removeBreakpointListener;
+
+  function initAdmin() {
+    if (controller) controller.abort();
+    if (removeBreakpointListener) removeBreakpointListener();
+    controller = new AbortController();
+    var listenerOptions = { signal: controller.signal };
     var body = document.body;
     var sidebarToggle = document.querySelector("[data-sidebar-toggle]");
     var themeToggles = document.querySelectorAll("[data-theme-toggle]");
@@ -78,7 +85,7 @@
           }
 
           form.classList.add("was-validated");
-        });
+        }, listenerOptions);
       });
     }
 
@@ -100,7 +107,7 @@
           Array.prototype.forEach.call(rows, function (row) {
             row.hidden = query !== "" && row.textContent.toLowerCase().indexOf(query) === -1;
           });
-        });
+        }, listenerOptions);
       });
     }
 
@@ -137,7 +144,7 @@
         button.addEventListener("click", function () {
           var currentTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
           applyTheme(currentTheme === "dark" ? "light" : "dark");
-        });
+        }, listenerOptions);
       });
     }
 
@@ -147,7 +154,8 @@
 
     // Initialize user profile values in UI. Provide a window.adminHMDUser object to override defaults.
     function initUserProfile() {
-      var user = window.adminHMDUser || { name: "Admin Hasan", workspace: "Active Workspace", avatar: "../assets/images/avatar/avatar.jpg" };
+      var user = window.adminHMDUser;
+      if (!user) return;
 
       var sidebarNameEl = document.querySelector(".sidebar-user strong");
       var sidebarWorkspaceEl = document.querySelector(".sidebar-user small");
@@ -207,7 +215,7 @@
           if (!isDesktop()) {
             closeMobileSidebar();
           }
-        });
+        }, listenerOptions);
       });
     }
 
@@ -215,7 +223,7 @@
       body.classList.add("sidebar-mini");
     }
 
-    sidebarToggle.addEventListener("click", toggleSidebar);
+    sidebarToggle.addEventListener("click", toggleSidebar, listenerOptions);
     addCloseHandlers(closeButtons);
     addCloseHandlers(sidebarLinks);
     setToggleExpanded();
@@ -232,9 +240,29 @@
     }
 
     if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleBreakpointChange);
+      mediaQuery.addEventListener("change", handleBreakpointChange, listenerOptions);
     } else if (mediaQuery.addListener) {
       mediaQuery.addListener(handleBreakpointChange);
+      removeBreakpointListener = function () { mediaQuery.removeListener(handleBreakpointChange); };
     }
+  }
+
+  var sidebarScrollTop = null;
+  document.addEventListener("livewire:navigating", function () {
+    var sidebar = document.getElementById("adminSidebar");
+    sidebarScrollTop = sidebar ? sidebar.scrollTop : null;
+  });
+
+  onReady(initAdmin);
+  document.addEventListener("livewire:navigated", function () {
+    initAdmin();
+    if (sidebarScrollTop === null) return;
+    var savedTop = sidebarScrollTop;
+    sidebarScrollTop = null;
+    // Run after Livewire restores the document and its own scroll positions.
+    requestAnimationFrame(function () {
+      var sidebar = document.getElementById("adminSidebar");
+      if (sidebar) sidebar.scrollTo({ top: savedTop, behavior: "instant" });
+    });
   });
 })();

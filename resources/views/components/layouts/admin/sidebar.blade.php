@@ -1,6 +1,6 @@
-<aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
+<aside wire:navigate:scroll x-data="{ path: window.location.pathname }" x-on:livewire:navigated.window="path = window.location.pathname" class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
     <div class="sidebar-header">
-        <a class="brand-mark" href="{{ route('admin.dashboard') }}" aria-label="Bookstore AI admin">
+        <a wire:navigate class="brand-mark" href="{{ route('admin.dashboard') }}" aria-label="Bookstore AI admin">
             <span class="brand-icon"><i class="bi bi-book-fill" aria-hidden="true"></i></span>
             <span class="brand-copy">
                 <span class="brand-title">Bookstore AI</span>
@@ -9,13 +9,16 @@
         </a>
     </div>
 
-    <nav class="sidebar-nav">
-        <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}" aria-current="page">
+    <nav aria-label="Các mục quản trị">
+    <ul class="sidebar-nav">
+        <li class="nav-item">
+        <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.dashboard') }}">
             <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
             <span class="nav-text">Dashboard</span>
         </a>
+        </li>
         <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('admin.books') ? 'active' : '' }}" href="{{ route('admin.books') }}">
+        <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.books') }}">
             <span class="nav-icon"><i class="bi bi-book" aria-hidden="true"></i></span>
             <span class="nav-text">Quản lý Sách</span>
         </a>
@@ -24,28 +27,28 @@
         <li class="nav-heading">Thuộc tính Sách</li>
         
         <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('admin.categories') ? 'active' : '' }}" href="{{ route('admin.categories') }}">
+            <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.categories') }}">
                 <span class="nav-icon"><i class="bi bi-tags" aria-hidden="true"></i></span>
                 <span class="nav-text">Danh mục Sách</span>
             </a>
         </li>
         
         <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('admin.authors') ? 'active' : '' }}" href="{{ route('admin.authors') }}">
+            <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.authors') }}">
                 <span class="nav-icon"><i class="bi bi-person-lines-fill" aria-hidden="true"></i></span>
                 <span class="nav-text">Tác giả</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('admin.publishers') ? 'active' : '' }}" href="{{ route('admin.publishers') }}">
+            <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.publishers') }}">
                 <span class="nav-icon"><i class="bi bi-building" aria-hidden="true"></i></span>
                 <span class="nav-text">Nhà xuất bản</span>
             </a>
         </li>
         
         <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('admin.majors') ? 'active' : '' }}" href="{{ route('admin.majors') }}">
+            <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.majors') }}">
                 <span class="nav-icon"><i class="bi bi-journal-album" aria-hidden="true"></i></span>
                 <span class="nav-text">Ngành học & Môn học</span>
             </a>
@@ -53,27 +56,27 @@
 
         <li class="nav-heading">Bán hàng</li>
     <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('admin.coupons') ? 'active' : '' }}" href="{{ route('admin.coupons') }}">
+        <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.coupons') }}">
             <span class="nav-icon"><i class="bi bi-ticket-perforated" aria-hidden="true"></i></span>
             <span class="nav-text">Mã giảm giá</span>
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}" href="{{ route('admin.users') }}">
+        <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.users') }}">
             <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
             <span class="nav-text">Người dùng</span>
         </a>
     </li>
     
     <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('admin.orders') ? 'active' : '' }}" href="{{ route('admin.orders') }}">
+        <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.orders') }}">
             <span class="nav-icon"><i class="bi bi-cart" aria-hidden="true"></i></span>
             <span class="nav-text">Đơn hàng</span>
         </a>
     </li>
     
     <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('admin.reviews') ? 'active' : '' }}" href="{{ route('admin.reviews') }}">
+        <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.reviews') }}">
             <span class="nav-icon"><i class="bi bi-star" aria-hidden="true"></i></span>
             <span class="nav-text">Đánh giá</span>
         </a>
@@ -81,25 +84,26 @@
 
     <li class="nav-heading">Chăm sóc khách hàng</li>
     <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('admin.chatbot') ? 'active' : '' }}" href="{{ route('admin.chatbot') }}">
+        <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.chatbot') }}">
             <span class="nav-icon"><i class="bi bi-robot" aria-hidden="true"></i></span>
             <span class="nav-text">Dữ liệu AI Chatbot</span>
         </a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('admin.contacts') ? 'active' : '' }}" href="{{ route('admin.contacts') }}">
+        <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.contacts') }}">
             <span class="nav-icon"><i class="bi bi-envelope" aria-hidden="true"></i></span>
             <span class="nav-text">Liên hệ</span>
         </a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}" href="{{ route('admin.settings') }}">
+        <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.settings') }}">
             <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
             <span class="nav-text">Cài đặt</span>
         </a>
     </li>
+    </ul>
     </nav>
 
     <div class="sidebar-user">
