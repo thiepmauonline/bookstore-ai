@@ -1,10 +1,20 @@
 <div class="chatbot" x-data="{
         open: false,
         pending: '',
-        scrollDown() { this.$nextTick(() => { const box = this.$refs.messages; if (box) box.scrollTop = box.scrollHeight; }) },
+        scrollLatest(pending = false) {
+            this.$nextTick(() => requestAnimationFrame(() => {
+                const box = this.$refs.messages;
+                if (!box) return;
+                const questions = box.querySelectorAll('[data-chatbot-question]');
+                const target = pending ? this.$refs.pendingQuestion : questions[questions.length - 1];
+                if (!target) { box.scrollTop = 0; return; }
+                const top = box.scrollTop + target.getBoundingClientRect().top - box.getBoundingClientRect().top - 16;
+                box.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+            }));
+        },
     }"
-    x-init="$watch('open', value => value && scrollDown())"
-    x-on:chatbot-answered.window="scrollDown()"
+    x-init="$watch('open', value => value && scrollLatest())"
+    x-on:chatbot-answered.window="pending = ''; scrollLatest()"
     x-on:keydown.escape.window="open = false">
 
     <button type="button" class="chatbot-launcher" x-on:click="open = !open" :aria-expanded="open" aria-controls="chatbot-panel" aria-label="Mở trợ lý tư vấn giáo trình">
@@ -33,13 +43,13 @@
             @if ($messages->isEmpty())
                 <div class="chatbot-suggestions">
                     @foreach ($suggestions as $i => $suggestion)
-                        <button type="button" wire:click="askSuggestion({{ $i }})" x-on:click="pending = @js($suggestion)" wire:loading.attr="disabled">{{ $suggestion }}</button>
+                        <button type="button" wire:click="askSuggestion({{ $i }})" x-on:click="pending = @js($suggestion); scrollLatest(true)" wire:loading.attr="disabled">{{ $suggestion }}</button>
                     @endforeach
                 </div>
             @endif
 
             @foreach ($messages as $message)
-                <div class="chatbot-msg user" wire:key="q-{{ $message->id }}">
+                <div class="chatbot-msg user" data-chatbot-question wire:key="q-{{ $message->id }}">
                     <div class="chatbot-bubble">{{ $message->question }}</div>
                 </div>
                 <div class="chatbot-msg bot" wire:key="a-{{ $message->id }}">
@@ -71,12 +81,12 @@
 
             {{-- Hiển thị ngay câu hỏi vừa gửi và hiệu ứng "đang trả lời" trong lúc chờ máy chủ. --}}
             <div wire:loading.block wire:target="send, askSuggestion">
-                <div class="chatbot-msg user" x-show="pending"><div class="chatbot-bubble" x-text="pending"></div></div>
+                <div class="chatbot-msg user" x-ref="pendingQuestion" x-show="pending"><div class="chatbot-bubble" x-text="pending"></div></div>
                 <div class="chatbot-msg bot"><div class="chatbot-bubble chatbot-typing"><span></span><span></span><span></span></div></div>
             </div>
         </div>
 
-        <form class="chatbot-form" wire:submit="send" x-on:submit="pending = $wire.question; scrollDown()">
+        <form class="chatbot-form" wire:submit="send" x-on:submit="pending = $wire.question; scrollLatest(true)">
             <input type="text" wire:model="question" maxlength="{{ \App\Services\Chatbot\ChatbotService::MAX_QUESTION_LENGTH }}" placeholder="Nhập câu hỏi, ví dụ: sách môn Kinh tế vi mô" aria-label="Câu hỏi" autocomplete="off">
             <button type="submit" wire:loading.attr="disabled" wire:target="send, askSuggestion" aria-label="Gửi"><i class="bi bi-send-fill"></i></button>
         </form>
