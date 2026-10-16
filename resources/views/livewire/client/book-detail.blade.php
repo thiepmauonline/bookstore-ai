@@ -114,19 +114,19 @@
                 <div class="col-md-12">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active fs-5 text-dark fw-bold" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Mô tả nội dung</button>
+                            <button wire:ignore.self class="nav-link active fs-5 text-dark fw-bold" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Mô tả nội dung</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link fs-5 text-dark fw-bold" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Đánh giá ({{ $totalReviews }})</button>
+                            <button wire:ignore.self class="nav-link fs-5 text-dark fw-bold" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Đánh giá ({{ $totalReviews }})</button>
                         </li>
                     </ul>
                     <div class="tab-content py-4" id="myTabContent">
-                        <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                        <div wire:ignore.self class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
                             <p class="fs-6 lh-lg text-muted">
                                 {{ $book->description ?? 'Chưa có mô tả cho sách này.' }}
                             </p>
                         </div>
-                        <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                        <div wire:ignore.self class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                             <!-- Form đánh giá -->
                             @if(auth()->check() && !$hasReviewed)
                                 <div class="review-form bg-light p-4 rounded mb-4">
