@@ -36,6 +36,11 @@ class OrderService
         }
 
         return DB::transaction(function () use ($user, $cart, $shipping, $couponCode, $note) {
+            $customer = User::lockForUpdate()->find($user->id);
+            if (! $customer || $customer->role !== 'user' || $customer->status !== 'active') {
+                throw new OrderException('Tài khoản của bạn đã bị khóa hoặc không còn quyền đặt hàng. Vui lòng liên hệ cửa hàng.');
+            }
+
             // Khóa các dòng sách để hai đơn đồng thời không cùng trừ một lượng tồn kho.
             $books = Book::whereIn('id', array_keys($cart))->lockForUpdate()->get()->keyBy('id');
 

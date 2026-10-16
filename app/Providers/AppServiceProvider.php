@@ -21,7 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Livewire\Livewire::addPersistentMiddleware([\App\Http\Middleware\AdminMiddleware::class]);
+        \Livewire\Livewire::addPersistentMiddleware([
+            \App\Http\Middleware\AdminMiddleware::class,
+            \App\Http\Middleware\EnsureActiveCustomer::class,
+        ]);
 
         // Thông tin cửa hàng (tên, hotline, email...) do admin cấu hình, dùng chung cho các layout.
         View::composer(

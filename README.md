@@ -112,10 +112,20 @@ Khách chỉ tự hủy được khi đơn ở trạng thái `pending`. Quản t
 
 Chi tiết về đăng nhập hai khu vực: [docs/authentication.md](docs/authentication.md).
 
+Đánh giá chatbot với 30 tình huống, có báo cáo câu trả lời và thời gian phản hồi:
+
+```bash
+php artisan chatbot:evaluate       # tìm kiếm nội bộ, không gọi API
+php artisan chatbot:evaluate --ai  # gọi Gemini thật
+```
+
+Xem [hướng dẫn và kết quả đánh giá](docs/chatbot-evaluation.md). Chatbot hỗ trợ câu hỏi
+tiếp nối theo học phần của sách vừa gợi ý và ngân sách như “200k”, “0,3 triệu”.
+
 ## Kiểm thử
 
 ```bash
 php artisan test
 ```
 
-Bộ test gồm 43 test, bao phủ: đặt hàng, giỏ hàng, tồn kho, mã giảm giá, luồng trạng thái, hủy đơn, chatbot (có giả lập API Gemini), đánh giá, liên hệ, cài đặt, khóa tài khoản, toàn vẹn dữ liệu khi xóa và tách phiên đăng nhập admin/khách hàng.
+Bộ test gồm 62 test (337 assertions), bao phủ: đặt hàng, giỏ hàng, tồn kho, mã giảm giá, luồng trạng thái, hủy đơn, chatbot (có giả lập API Gemini), bộ đánh giá 30 câu hỏi, phân trang đánh giá, liên hệ, cài đặt, khóa tài khoản khi phiên vẫn đang hoạt động, toàn vẹn dữ liệu khi xóa và tách phiên đăng nhập admin/khách hàng.

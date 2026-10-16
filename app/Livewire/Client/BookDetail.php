@@ -5,6 +5,7 @@ namespace App\Livewire\Client;
 use App\Models\Book;
 use App\Models\Review;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 use App\Services\CartService;
 use App\Services\WishlistService;
@@ -13,6 +14,10 @@ use Illuminate\Support\Facades\Auth;
 #[Layout('components.layouts.client')]
 class BookDetail extends Component
 {
+    use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
+
     public $book;
     public $quantity = 1;
     
@@ -108,6 +113,7 @@ class BookDetail extends Component
 
         $this->hasReviewed = true;
         $this->reset(['rating', 'comment']);
+        $this->resetPage();
         session()->flash('success', 'Cảm ơn bạn đã đánh giá sách!');
     }
 
@@ -129,7 +135,7 @@ class BookDetail extends Component
         $reviews = Review::visible()
             ->where('book_id', $this->book->id)
             ->with('user')
-            ->latest()
+            ->latest('id')
             ->paginate(5);
 
         // Calculate average rating

@@ -45,7 +45,7 @@ Quyết định phạm vi (25/09/2026): **không** thêm ràng buộc khóa ngo�
 
 ## 5. Dọn dẹp
 
-- [x] Sửa `ExampleTest`; thêm test mới, tổng 37 test đều đạt
+- [x] Bộ kiểm thử hiện tại: 62 test, 337 assertions đều đạt (16/10/2026)
 - [x] Thông báo validation tiếng Việt (`lang/vi/validation.php`, `APP_LOCALE=vi`)
 - [x] Viết lại `README.md`
 - [x] Xóa script tạm ở gốc và thư mục `theme/adminhmd-1.0.0/.vs/`
@@ -53,7 +53,8 @@ Quyết định phạm vi (25/09/2026): **không** thêm ràng buộc khóa ngo�
 
 ## 6. Chuẩn bị cho báo cáo
 
-- [ ] Lấy Gemini API key, thử chatbot thật, ghi lại 10 câu hỏi mẫu + câu trả lời
+- [x] Chuẩn bị 30 tình huống chatbot và lệnh `chatbot:evaluate`, có báo cáo câu trả lời, nguồn, thời gian; chế độ nội bộ đạt 30/30 kiểm tra sách tham chiếu
+- [ ] Kiểm chứng chất lượng Gemini thật bằng API key hợp lệ (16/10/2026: API trả HTTP 401, cả 30 câu dùng dự phòng; xem `docs/chatbot-evaluation.md`)
 - [ ] Khảo sát Google Form 20–30 sinh viên (Chương 1)
 - [ ] Bảng so sánh với Fahasa / Tiki / nhà sách trường (Chương 1)
 - [ ] Sơ đồ: Use Case, Activity, Sequence, State (đơn hàng), Class, ERD, Deployment

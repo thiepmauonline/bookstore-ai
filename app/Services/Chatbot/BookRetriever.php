@@ -47,7 +47,7 @@ class BookRetriever
      * @return array{books: Collection<int, Book>, matched: bool}
      *                                                            matched = false nghĩa là không khớp từ khóa nào, trả về sách bán chạy làm gợi ý chung.
      */
-    public function search(string $question, int $limit = 6): array
+    public function search(string $question, int $limit = 6, ?float $maxPrice = null, bool $onlyAvailable = false): array
     {
         $tokens = $this->tokenize($question);
         $accentedBigrams = $this->accentedBigrams($question);
@@ -62,6 +62,8 @@ class BookRetriever
                 // Bỏ các kết quả khớp quá yếu so với kết quả tốt nhất.
                 $threshold = $scored->first()['score'] * self::MIN_RELATIVE_SCORE;
                 $books = $scored->filter(fn ($row) => $row['score'] >= $threshold)
+                    ->filter(fn ($row) => ($maxPrice === null || $row['book']->price <= $maxPrice)
+                        && (! $onlyAvailable || $row['book']->quantity > 0))
                     ->take($limit)
                     ->pluck('book')
                     ->values();
@@ -70,7 +72,7 @@ class BookRetriever
             }
         }
 
-        return ['books' => $this->bestSellers($limit), 'matched' => false];
+        return ['books' => $this->bestSellers($limit, $maxPrice), 'matched' => false];
     }
 
     /** @return list<string> */
@@ -176,7 +178,7 @@ class BookRetriever
     }
 
     /** @return Collection<int, Book> */
-    private function bestSellers(int $limit): Collection
+    private function bestSellers(int $limit, ?float $maxPrice): Collection
     {
         $soldByBook = DB::table('order_items')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
@@ -187,6 +189,7 @@ class BookRetriever
         return Book::with(['course.major', 'category', 'author'])
             ->leftJoinSub($soldByBook, 'sales', 'sales.book_id', '=', 'books.id')
             ->where('books.quantity', '>', 0)
+            ->when($maxPrice !== null, fn ($query) => $query->where('books.price', '<=', $maxPrice))
             ->orderByDesc(DB::raw('COALESCE(sales.sold, 0)'))
             ->select('books.*')
             ->limit($limit)

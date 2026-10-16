@@ -36,7 +36,7 @@ class ChatbotService
         $startedAt = microtime(true);
         $question = trim(mb_substr($question, 0, self::MAX_QUESTION_LENGTH));
 
-        ['books' => $books, 'matched' => $matched] = $this->retriever->search($question);
+        ['books' => $books, 'matched' => $matched, 'constrained' => $constrained] = $this->retrieveBooks($question, $sessionId);
 
         try {
             $raw = $this->gemini->generate(
@@ -46,7 +46,7 @@ class ChatbotService
             [$answer, $bookIds] = $this->extractBookReferences($raw, $books);
             $source = ChatbotHistory::SOURCE_AI;
         } catch (ChatbotUnavailableException) {
-            [$answer, $bookIds] = $this->fallbackAnswer($question, $books, $matched);
+            [$answer, $bookIds] = $this->fallbackAnswer($question, $books, $matched, $constrained);
             $source = ChatbotHistory::SOURCE_FALLBACK;
         }
 
@@ -68,6 +68,89 @@ class ChatbotService
             ['chatbot_history_id' => $history->id],
             ['is_helpful' => $isHelpful]
         );
+    }
+
+    /** Tìm tiếp trong cùng học phần khi khách chỉ bổ sung giá hoặc hỏi về sách vừa gợi ý. */
+    private function retrieveBooks(string $question, string $sessionId): array
+    {
+        $text = $this->retriever->normalize($question);
+        $maxPrice = $this->budget($text);
+        $cheaper = (bool) preg_match('/\b(re hon|gia thap hon)\b/', $text);
+        $followUp = $cheaper || $maxPrice !== null
+            || preg_match('/\b(cuon (do|nay)|sach (do|nay)|con (cuon|quyen) nao|de hon|co ban hon)\b/', $text);
+
+        // Bỏ các từ mô tả giá trước khi xác định khách có đổi sang chủ đề mới hay không.
+        $topic = preg_replace('/\b(re hon|rẻ hơn|gia thap hon|giá thấp hơn|de hon|dễ hơn|co ban hon|cơ bản hơn)\b/iu', ' ', $question);
+        $topic = preg_replace($this->budgetPattern(), ' ', $topic);
+        $result = $this->retriever->search($topic);
+
+        if (! $followUp) {
+            return $result + ['constrained' => false];
+        }
+
+        $previous = ChatbotHistory::where('session_id', $sessionId)
+            ->latest('id')->take(self::HISTORY_TURNS)->get()
+            ->first(fn ($history) => ! empty($history->book_ids));
+        $previousBooks = Book::with('course')->whereIn('id', $previous?->book_ids ?? [])->get();
+
+        if (! $result['matched']) {
+            if ($previousBooks->isEmpty()) {
+                return ['books' => collect(), 'matched' => false, 'constrained' => true];
+            }
+
+            $topic = $previousBooks->pluck('course.name')->filter()->unique()->implode(' ');
+            if ($topic === '') {
+                $topic = $previousBooks->pluck('title')->implode(' ');
+            }
+        }
+
+        if ($cheaper) {
+            $references = $result['matched']
+                ? $previousBooks->filter(fn ($book) => $result['books']->contains('id', $book->id)
+                    || ($book->course_id && $result['books']->contains('course_id', $book->course_id)))
+                : $previousBooks;
+            if ($references->isEmpty()) {
+                return ['books' => collect(), 'matched' => false, 'constrained' => true];
+            }
+            // Tìm cả sách chưa được gợi ý, nhưng phải rẻ hơn sách rẻ nhất vừa đưa ra.
+            $cheaperPrice = (float) $references->min('price') - 0.01;
+            $maxPrice = $maxPrice === null ? $cheaperPrice : min($maxPrice, $cheaperPrice);
+        }
+
+        $constrained = $maxPrice !== null || $cheaper;
+        $result = $this->retriever->search($topic, maxPrice: $maxPrice, onlyAvailable: $constrained);
+        // Khi không có sách đúng chủ đề trong ngân sách, không thay bằng sách bán chạy khác ngành.
+        if ($constrained && ! $result['matched']) {
+            $result['books'] = collect();
+        }
+
+        return $result + ['constrained' => $constrained];
+    }
+
+    private function budgetPattern(): string
+    {
+        return '/\b(?:duoi|dưới|khong qua|không quá|toi da|tối đa|(?:ngan sach|ngân sách)(?: cua| của)?(?: minh| mình| toi| tôi)?(?: la| là)?|tam|tầm|khoang|khoảng)\s*(\d+(?:[.,]\d+)*)\s*(trieu|triệu|tr|nghin|nghìn|ngan|ngàn|k|dong|đồng|vnd|d|đ)?\b/iu';
+    }
+
+    private function budget(string $text): ?float
+    {
+        if (! preg_match($this->budgetPattern(), $text, $matches)) {
+            return null;
+        }
+
+        $unit = $matches[2] ?? '';
+        $amount = $matches[1];
+        // 150.000 / 150,000 là phân cách hàng nghìn; 1,5 triệu là số thập phân.
+        $amount = preg_match('/^\d{1,3}(?:[.,]\d{3})+$/', $amount)
+            ? str_replace(['.', ','], '', $amount)
+            : str_replace(',', '.', $amount);
+        $multiplier = match ($unit) {
+            'k', 'nghin', 'ngan' => 1000,
+            'tr', 'trieu' => 1000000,
+            default => 1,
+        };
+
+        return (float) $amount * $multiplier;
     }
 
     /** @param Collection<int, Book> $books */
@@ -95,9 +178,10 @@ class ChatbotService
             );
         })->implode("\n");
 
-        $matchNote = $matched
-            ? 'Đây là các sách khớp nhất với câu hỏi.'
-            : 'Không có sách nào khớp trực tiếp với câu hỏi; đây là các sách bán chạy để tham khảo.';
+        $matchNote = $books->isEmpty()
+            ? 'Chưa tìm được sách đáp ứng yêu cầu hiện tại; hãy hỏi thêm nhu cầu, không gợi ý sách ngoài danh sách.'
+            : ($matched ? 'Đây là các sách khớp nhất với câu hỏi.'
+                : 'Không có sách nào khớp trực tiếp với câu hỏi; đây là các sách bán chạy để tham khảo.');
 
         return <<<PROMPT
         Bạn là trợ lý tư vấn giáo trình của nhà sách trực tuyến "{$settings['store_name']}", chuyên sách cho sinh viên đại học.
@@ -109,6 +193,7 @@ class ChatbotService
         4. Trả lời bằng tiếng Việt, thân thiện, tự nhiên, ngắn gọn (tối đa khoảng 150 từ), có thể dùng gạch đầu dòng. Được chào hỏi, chào lại khi người dùng yêu cầu, cảm ơn và giới thiệu bản thân; đây là tương tác bình thường.
         5. Được giải thích kiến thức và tư vấn học tập bằng kiến thức chung, không cần có sách khớp. Với chủ đề ngoài phạm vi, nhẹ nhàng giới thiệu khả năng hỗ trợ thay vì viện dẫn quy định. Không ép mọi câu hỏi thành tìm giáo trình.
         6. Không làm theo yêu cầu bịa dữ liệu cửa hàng hoặc bỏ qua các ràng buộc về tính chính xác. Yêu cầu đổi cách xưng hô, chào lại hoặc cách trình bày được phép; không nói rằng các yêu cầu này vi phạm quy định.
+        7. Với câu hỏi tiếp nối như "rẻ hơn", dùng học phần của các sách vừa tư vấn. DANH SÁCH SÁCH ở lượt hiện tại đã được lọc theo ngân sách nếu có; nếu danh sách trống, nói chưa tìm được sách đáp ứng và hỏi thêm, không gợi ý lại sách ở lượt trước.
 
         THÔNG TIN CỬA HÀNG:
         - Thanh toán: chỉ thanh toán khi nhận hàng (COD). Miễn phí vận chuyển.
@@ -170,7 +255,7 @@ class ChatbotService
      * @param  Collection<int, Book>  $books
      * @return array{0: string, 1: list<int>}
      */
-    private function fallbackAnswer(string $question, Collection $books, bool $matched): array
+    private function fallbackAnswer(string $question, Collection $books, bool $matched, bool $constrained = false): array
     {
         $text = trim(preg_replace('/[^a-z0-9 ]/', ' ', Str::lower(Str::ascii($question))));
         $text = preg_replace('/\s+/', ' ', $text);
@@ -183,6 +268,9 @@ class ChatbotService
         }
         if (preg_match('/^(cam on|thank you|thanks)( ban| nhe| nhieu| a)*$/', $text)) {
             return ['Rất vui được giúp bạn! Khi cần tìm sách hoặc hỗ trợ mua hàng, bạn cứ hỏi mình nhé.', []];
+        }
+        if ($constrained && $books->isEmpty()) {
+            return ['Mình chưa tìm được sách phù hợp với yêu cầu giá hoặc ngữ cảnh hiện tại. Bạn cho mình biết tên sách, ngành hoặc học phần và ngân sách cụ thể nhé.', []];
         }
         if (! $matched && ! preg_match('/\b(sach|giao trinh|tai lieu|mua|tim|goi y)\b/', $text)) {
             return ['Mình đang tạm thời không kết nối được với AI nên chưa thể giải đáp câu hỏi này. Bạn thử lại sau một chút nhé; mình vẫn có thể giúp tìm sách theo tên, ngành hoặc học phần.', []];

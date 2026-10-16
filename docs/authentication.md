@@ -18,6 +18,13 @@ trong middleware, tránh ảnh hưởng các component khách hàng.
 Middleware này được đăng ký trong danh sách persistent middleware của Livewire
 để kiểm tra lại trước khi xử lý hành động trên trang admin đã mở.
 
+Các trang khách hàng dùng `EnsureActiveCustomer`: kiểm tra lại vai trò/trạng thái
+trong CSDL, đăng xuất riêng guard `web` và chuyển về trang đăng nhập khi tài khoản
+bị khóa. Middleware cũng chạy lại trên cập nhật Livewire của trang đã mở, bao gồm
+trang chi tiết sách và thanh toán. Checkout yêu cầu `auth:web`; `OrderService`
+kiểm tra và khóa dòng khách hàng trong transaction trước khi tạo đơn để chặn
+trường hợp tài khoản vừa bị khóa. Giỏ hàng và phiên admin cùng trình duyệt được giữ.
+
 Đăng xuất chỉ gọi `logout()` cho guard tương ứng và đổi session ID bằng
 `migrate(true)`. Không dùng `invalidate()` hoặc `flush()`, vì sẽ xóa cả phiên
 của guard còn lại và giỏ hàng. Không đổi CSRF token lúc đăng xuất để các form

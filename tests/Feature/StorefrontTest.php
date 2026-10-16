@@ -54,4 +54,24 @@ class StorefrontTest extends TestCase
         $this->assertSame(1, app(\App\Services\CartService::class)->getCount());
     }
 
+    public function test_book_reviews_can_change_pages_and_return_to_first_page_after_posting(): void
+    {
+        $book = Book::create(['title' => 'Giáo trình Web', 'price' => 100000, 'quantity' => 5]);
+        foreach (\App\Models\User::factory()->count(6)->create() as $index => $user) {
+            \App\Models\Review::create([
+                'user_id' => $user->id, 'book_id' => $book->id,
+                'rating' => 5, 'comment' => 'Đánh giá mẫu số '.($index + 1),
+            ]);
+        }
+        $this->actingAs(\App\Models\User::factory()->create(['role' => 'user', 'status' => 'active']));
+        Livewire::test(\App\Livewire\Client\BookDetail::class, ['id' => $book->id])
+            ->assertSee('Đánh giá mẫu số 6')->assertDontSee('Đánh giá mẫu số 1')
+            ->call('gotoPage', 2)
+            ->assertSee('Đánh giá mẫu số 1')->assertDontSee('Đánh giá mẫu số 6')
+            ->set('rating', 5)->set('comment', 'Đánh giá mới sau khi chuyển trang')
+            ->call('submitReview')->assertHasNoErrors()
+            ->assertSet('paginators.page', 1)
+            ->assertSee('Đánh giá mới sau khi chuyển trang');
+    }
+
 }
