@@ -41,7 +41,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">Mã giảm giá</th>
+                            <th scope="col" class="ps-4">STT</th>
+                            <th scope="col">Mã giảm giá</th>
                             <th scope="col">Mức giảm</th>
                             <th scope="col">Lượt còn lại</th>
                             <th scope="col">Thời gian áp dụng</th>
@@ -52,7 +53,8 @@
                     <tbody>
                         @forelse ($coupons as $item)
                             <tr>
-                                <td class="ps-4 fw-bold text-uppercase">{{ $item->code }}</td>
+                                <td class="ps-4">{{ $coupons->firstItem() + $loop->index }}</td>
+                                <td class="fw-bold text-uppercase">{{ $item->code }}</td>
                                 <td class="text-primary fw-semibold">{{ number_format($item->discount, 0, ',', '.') }} VNĐ</td>
                                 <td>{{ $item->quantity }} lượt</td>
                                 <td>
@@ -74,7 +76,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy mã giảm giá.</td></tr>
+                            <tr><td colspan="7" class="text-center py-4 text-muted">Không tìm thấy mã giảm giá.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

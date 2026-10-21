@@ -43,7 +43,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">Ảnh bìa</th>
+                            <th scope="col" class="ps-4">STT</th>
+                            <th scope="col">Ảnh bìa</th>
                             <th scope="col">Tên sách</th>
                             <th scope="col">Danh mục</th>
                             <th scope="col">Học phần</th>
@@ -55,7 +56,8 @@
                     <tbody>
                         @forelse ($books as $book)
                             <tr>
-                                <td class="ps-4">
+                                <td class="ps-4">{{ $books->firstItem() + $loop->index }}</td>
+                                <td>
                                     @if($book->cover_image && !str_starts_with($book->cover_image, 'assets'))
                                         <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Ảnh bìa" class="rounded" width="48" height="64" style="object-fit: cover;">
                                     @elseif($book->cover_image)
@@ -91,7 +93,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">
+                                <td colspan="8" class="text-center py-4 text-muted">
                                     <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                                     Không tìm thấy sách.
                                 </td>

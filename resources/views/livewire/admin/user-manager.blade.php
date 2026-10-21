@@ -46,7 +46,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th scope="col">STT</th>
                             <th>Họ và tên</th>
                             <th>Email</th>
                             <th>Số điện thoại</th>
@@ -59,7 +59,7 @@
                     <tbody>
                         @forelse($users as $user)
                             <tr>
-                                <td>{{ $user->id }}</td>
+                                <td>{{ $users->firstItem() + $loop->index }}</td>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->phone ?? '-' }}</td>

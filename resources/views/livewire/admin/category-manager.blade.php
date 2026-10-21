@@ -41,7 +41,7 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">ID</th>
+                            <th scope="col" class="ps-4">STT</th>
                             <th scope="col">Tên danh mục</th>
 <th scope="col">Đường dẫn</th>
 
@@ -51,7 +51,7 @@
                     <tbody>
                         @forelse ($items as $item)
                             <tr>
-                                <td class="ps-4">{{ $item->id }}</td>
+                                <td class="ps-4">{{ $items->firstItem() + $loop->index }}</td>
                                 <td>{{ $item->name }}</td>
 <td>{{ $item->slug }}</td>
 
@@ -61,7 +61,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="10" class="text-center py-4 text-muted">Không tìm thấy danh mục.</td></tr>
+                            <tr><td colspan="4" class="text-center py-4 text-muted">Không tìm thấy danh mục.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

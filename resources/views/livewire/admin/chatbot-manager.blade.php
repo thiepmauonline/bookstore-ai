@@ -95,7 +95,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4" style="width: 30%">Câu hỏi</th>
+                            <th scope="col" class="ps-4">STT</th>
+                            <th style="width: 30%">Câu hỏi</th>
                             <th style="width: 35%">Câu trả lời</th>
                             <th>Người hỏi</th>
                             <th>Nguồn</th>
@@ -106,7 +107,8 @@
                     <tbody>
                         @forelse ($histories as $history)
                             <tr wire:key="history-{{ $history->id }}">
-                                <td class="ps-4">
+                                <td class="ps-4">{{ $histories->firstItem() + $loop->index }}</td>
+                                <td>
                                     <div class="fw-semibold">{{ Str::limit($history->question, 90) }}</div>
                                     <div class="small text-muted">{{ $history->created_at->format('d/m/Y H:i') }}</div>
                                 </td>
@@ -134,7 +136,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy lượt hỏi đáp.</td></tr>
+                            <tr><td colspan="7" class="text-center py-4 text-muted">Không tìm thấy lượt hỏi đáp.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -148,7 +150,7 @@
             <div class="modal-content">
                 @if ($viewing)
                     <div class="modal-header">
-                        <h5 class="modal-title">Chi tiết hỏi đáp #{{ $viewing->id }}</h5>
+                        <h5 class="modal-title">Chi tiết hỏi đáp</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">

@@ -38,7 +38,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">Người gửi</th>
+                            <th scope="col" class="ps-4">STT</th>
+                            <th>Người gửi</th>
                             <th style="width: 45%">Nội dung</th>
                             <th>Ngày gửi</th>
                             <th>Trạng thái</th>
@@ -48,7 +49,8 @@
                     <tbody>
                         @forelse ($contacts as $contact)
                             <tr wire:key="contact-{{ $contact->id }}">
-                                <td class="ps-4">
+                                <td class="ps-4">{{ $contacts->firstItem() + $loop->index }}</td>
+                                <td>
                                     <div class="fw-semibold">{{ $contact->name }}</div>
                                     <a href="mailto:{{ $contact->email }}" class="small">{{ $contact->email }}</a>
                                 </td>
@@ -70,7 +72,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="text-center py-4 text-muted">Không tìm thấy liên hệ.</td></tr>
+                            <tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy liên hệ.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

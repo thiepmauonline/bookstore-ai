@@ -41,7 +41,7 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">ID</th>
+                            <th scope="col" class="ps-4">STT</th>
                             <th scope="col">Tên ngành học</th>
                             <th scope="col">Số học phần</th>
                             <th scope="col" class="text-end pe-4">Thao tác</th>
@@ -50,7 +50,7 @@
                     <tbody>
                         @forelse ($majors as $item)
                             <tr>
-                                <td class="ps-4">{{ $item->id }}</td>
+                                <td class="ps-4">{{ $majors->firstItem() + $loop->index }}</td>
                                 <td class="fw-bold">{{ $item->name }}</td>
                                 <td><span class="badge bg-info-subtle text-info">{{ $item->courses_count }} học phần</span></td>
                                 <td class="text-end text-nowrap pe-4">

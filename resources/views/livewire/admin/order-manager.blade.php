@@ -45,7 +45,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">Mã đơn</th>
+                            <th scope="col" class="ps-4">STT</th>
+                            <th scope="col">Mã đơn</th>
                             <th scope="col">Khách hàng</th>
                             <th scope="col">Tổng tiền</th>
                             <th scope="col">Ngày đặt</th>
@@ -56,7 +57,8 @@
                     <tbody>
                         @forelse ($orders as $order)
                             <tr>
-                                <td class="ps-4 fw-bold text-primary">{{ $order->order_code }}</td>
+                                <td class="ps-4">{{ $orders->firstItem() + $loop->index }}</td>
+                                <td class="fw-bold text-primary">{{ $order->order_code }}</td>
                                 <td>
                                     <div>{{ $order->user->name ?? 'Không có thông tin' }}</div>
                                     <div class="small text-muted">{{ $order->user->phone ?? '' }}</div>
@@ -73,7 +75,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy đơn hàng.</td></tr>
+                            <tr><td colspan="7" class="text-center py-4 text-muted">Không tìm thấy đơn hàng.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

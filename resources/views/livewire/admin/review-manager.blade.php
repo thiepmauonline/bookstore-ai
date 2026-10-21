@@ -49,7 +49,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">Sách</th>
+                            <th scope="col" class="ps-4">STT</th>
+                            <th>Sách</th>
                             <th>Khách hàng</th>
                             <th>Đánh giá</th>
                             <th style="width: 35%">Nội dung</th>
@@ -60,7 +61,8 @@
                     <tbody>
                         @forelse ($reviews as $review)
                             <tr class="{{ $review->is_visible ? '' : 'table-secondary' }}">
-                                <td class="ps-4">
+                                <td class="ps-4">{{ $reviews->firstItem() + $loop->index }}</td>
+                                <td>
                                     @if ($review->book)
                                         <a href="{{ route('book.detail', $review->book_id) }}" target="_blank" class="fw-semibold text-decoration-none">{{ $review->book->title }}</a>
                                     @else
@@ -85,7 +87,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy đánh giá.</td></tr>
+                            <tr><td colspan="7" class="text-center py-4 text-muted">Không tìm thấy đánh giá.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
