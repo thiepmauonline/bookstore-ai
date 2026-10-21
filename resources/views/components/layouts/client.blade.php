@@ -10,6 +10,9 @@
     
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link rel="preload" href="{{ asset('assets/client/fonts/noto-serif/noto-serif-v33-normal-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ asset('assets/client/fonts/noto-serif/noto-serif-v33-normal-vietnamese.woff2') }}" as="font" type="font/woff2" crossorigin>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/client/css/normalize.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/client/icomoon/icomoon.css') }}">
@@ -17,7 +20,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/client/style.css') }}">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/bookstore.css') }}?v=5">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/bookstore.css') }}?v={{ filemtime(public_path('assets/client/css/bookstore.css')) }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/chatbot.css') }}?v=1">
     @livewireStyles
 </head>
