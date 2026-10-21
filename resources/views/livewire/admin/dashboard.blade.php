@@ -13,7 +13,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs fw-bold text-primary text-uppercase mb-1">
-                                    Doanh thu (đơn hoàn thành)</div>
+                                    Doanh thu</div>
                                 <div class="h5 mb-0 fw-bold text-gray-800">{{ number_format($totalRevenue, 0, ',', '.') }}đ</div>
                             </div>
                             <div class="col-auto text-muted fs-2">
@@ -64,7 +64,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs fw-bold text-warning text-uppercase mb-1">
-                                    Số đầu sách</div>
+                                    Số sách</div>
                                 <div class="h5 mb-0 fw-bold text-gray-800">{{ $totalBooks }}</div>
                             </div>
                             <div class="col-auto text-muted fs-2">
