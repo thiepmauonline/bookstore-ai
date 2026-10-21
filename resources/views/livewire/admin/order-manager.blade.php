@@ -66,7 +66,7 @@
                                 <td>
                                     <span class="badge {{ $order->status->badgeClass() }}">{{ $order->status->label() }}</span>
                                 </td>
-                                <td class="text-end pe-4">
+                                <td class="text-end text-nowrap pe-4">
                                     <button type="button" wire:loading.attr="disabled" wire:target="viewDetails" wire:click="viewDetails({{ $order->id }})" class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
                                         <i class="bi bi-eye"></i> Chi tiết
                                     </button>

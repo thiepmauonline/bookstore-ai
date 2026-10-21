@@ -1622,3 +1622,94 @@ html[data-theme="dark"] {
   border-top-color: var(--admin-sidebar-border);
   color: var(--admin-sidebar-text);
 }
+
+/* ===== Laptop & short-screen adjustments ===== */
+
+/* Modals never grow taller than the viewport: header and footer stay visible, body scrolls. */
+.modal-content {
+  max-height: calc(100vh - var(--bs-modal-margin, 1.75rem) * 2);
+  overflow: hidden;
+}
+
+.modal-content > form {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.modal-body {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Forms that keep their footer inside .modal-body (e.g. user modal): pin the footer to the bottom. */
+.modal-body > form > .modal-footer {
+  position: sticky;
+  bottom: calc(var(--bs-modal-padding, 1rem) * -1);
+  z-index: 2;
+  margin: 0 calc(var(--bs-modal-padding, 1rem) * -1) calc(var(--bs-modal-padding, 1rem) * -1);
+  background: var(--admin-surface);
+}
+
+/* Section headings have no room in the collapsed sidebar. */
+@media (min-width: 992px) {
+  body.sidebar-mini .nav-heading {
+    display: none;
+  }
+}
+
+/* Laptop widths: let table columns size to their content instead of a fixed 120px minimum. */
+@media (max-width: 1399.98px) {
+  .table tbody td {
+    min-width: 0;
+  }
+
+  .table > :not(caption) > * > * {
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .table > :not(caption) > * > * {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1399.98px) {
+  .dashboard-content > .container-fluid {
+    padding-top: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+  }
+
+  .page-heading {
+    margin-bottom: 1rem;
+  }
+
+  .metric-card {
+    min-height: 140px;
+    padding: 1.1rem;
+  }
+}
+
+/* Short laptop screens: tighter sidebar so more menu items fit without scrolling. */
+@media (min-width: 992px) and (max-height: 760px) {
+  .sidebar-header {
+    padding-top: 1rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .sidebar-nav {
+    gap: 0.25rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .sidebar-nav .nav-link {
+    min-height: 42px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}

@@ -37,6 +37,8 @@
   var sidebarStorageKey = "adminHMD.sidebarMini";
   var themeStorageKey = "adminHMD.colorTheme";
   var desktopMedia = "(min-width: 992px)";
+  // Laptop widths (e.g. 1366px screens at 125% scaling) start with the compact sidebar.
+  var compactMedia = "(max-width: 1199.98px)";
 
   function onReady(callback) {
     if (document.readyState === "loading") {
@@ -63,11 +65,13 @@
   }
 
   function getSavedMiniState(storageAvailable) {
-    if (!storageAvailable) {
-      return false;
+    var saved = storageAvailable ? window.localStorage.getItem(sidebarStorageKey) : null;
+
+    if (saved === "true" || saved === "false") {
+      return saved === "true";
     }
 
-    return window.localStorage.getItem(sidebarStorageKey) === "true";
+    return window.matchMedia(compactMedia).matches;
   }
 
   function saveMiniState(storageAvailable, isMini) {
@@ -224,6 +228,22 @@
         : body.classList.contains("sidebar-open");
 
       sidebarToggle.setAttribute("aria-expanded", String(expanded));
+      updateLinkTitles();
+    }
+
+    // Collapsed sidebar shows icons only, so expose each label as a tooltip.
+    function updateLinkTitles() {
+      var mini = isDesktop() && body.classList.contains("sidebar-mini");
+
+      Array.prototype.forEach.call(sidebarLinks, function (link) {
+        var text = link.querySelector(".nav-text");
+
+        if (mini && text) {
+          link.setAttribute("title", text.textContent.trim());
+        } else {
+          link.removeAttribute("title");
+        }
+      });
     }
 
     function closeMobileSidebar() {

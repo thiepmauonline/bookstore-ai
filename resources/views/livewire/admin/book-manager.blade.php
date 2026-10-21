@@ -80,7 +80,7 @@
                                         <span class="badge bg-danger-subtle text-danger">Hết hàng</span>
                                     @endif
                                 </td>
-                                <td class="text-end pe-4">
+                                <td class="text-end text-nowrap pe-4">
                                     <button wire:click="edit({{ $book->id }})" class="btn btn-sm btn-outline-primary me-1" title="Sửa">
                                         <i class="bi bi-pencil"></i>
                                     </button>

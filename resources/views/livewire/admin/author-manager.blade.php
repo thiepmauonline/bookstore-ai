@@ -55,7 +55,7 @@
                                 <td>{{ $item->name }}</td>
 <td>{{ $item->biography }}</td>
 
-                                <td class="text-end pe-4">
+                                <td class="text-end text-nowrap pe-4">
                                     <button wire:click="edit({{ $item->id }})" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
                                     <button wire:click="delete({{ $item->id }})" wire:confirm="Bạn có chắc chắn muốn xóa?" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                                 </td>

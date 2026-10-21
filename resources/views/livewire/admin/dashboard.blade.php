@@ -94,7 +94,7 @@
 
         <div class="row">
             <!-- Biểu đồ -->
-            <div class="col-xl-8 col-lg-7">
+            <div class="col-xxl-8 col-xl-7 col-lg-6">
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header py-3 bg-white d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 fw-bold text-primary">Biểu Đồ Doanh Thu ({{ $chartDays }} ngày gần nhất)</h6>
@@ -108,7 +108,7 @@
             </div>
 
             <!-- Bảng Đơn Hàng Mới Nhất -->
-            <div class="col-xl-4 col-lg-5">
+            <div class="col-xxl-4 col-xl-5 col-lg-6">
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header py-3 bg-white d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 fw-bold text-primary">Đơn Hàng Mới Nhất</h6>

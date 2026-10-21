@@ -17,7 +17,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/client/style.css') }}">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/bookstore.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/bookstore.css') }}?v=5">
     <link rel="stylesheet" href="{{ asset('assets/client/css/chatbot.css') }}?v=1">
     @livewireStyles
 </head>

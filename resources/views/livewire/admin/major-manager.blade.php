@@ -53,7 +53,7 @@
                                 <td class="ps-4">{{ $item->id }}</td>
                                 <td class="fw-bold">{{ $item->name }}</td>
                                 <td><span class="badge bg-info-subtle text-info">{{ $item->courses_count }} môn</span></td>
-                                <td class="text-end pe-4">
+                                <td class="text-end text-nowrap pe-4">
                                     <button wire:click="manageCourses({{ $item->id }})" class="btn btn-sm btn-outline-info me-1" title="Quản lý Học Phần">
                                         <i class="bi bi-journal-bookmark-fill"></i> Học phần
                                     </button>
