@@ -3,7 +3,7 @@
         <div class="page-heading d-flex justify-content-between align-items-center mb-4">
             <div class="page-heading-copy">
                 <div>
-                    <h1 class="h3 mb-1">Quản lý Ngành Học & Học Phần</h1>
+                    <h1 class="h3 mb-1">Quản lý ngành học & học phần</h1>
                 </div>
             </div>
             <div>
@@ -16,13 +16,13 @@
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
         @if (session()->has('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 
@@ -32,7 +32,7 @@
                     <div class="col-md-4">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm kiếm ngành học...">
+                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo tên ngành học...">
                         </div>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                         <tr>
                             <th scope="col" class="ps-4">ID</th>
                             <th scope="col">Tên ngành học</th>
-                            <th scope="col">Số lượng học phần</th>
+                            <th scope="col">Số học phần</th>
                             <th scope="col" class="text-end pe-4">Thao tác</th>
                         </tr>
                     </thead>
@@ -52,17 +52,17 @@
                             <tr>
                                 <td class="ps-4">{{ $item->id }}</td>
                                 <td class="fw-bold">{{ $item->name }}</td>
-                                <td><span class="badge bg-info-subtle text-info">{{ $item->courses_count }} môn</span></td>
+                                <td><span class="badge bg-info-subtle text-info">{{ $item->courses_count }} học phần</span></td>
                                 <td class="text-end text-nowrap pe-4">
-                                    <button wire:click="manageCourses({{ $item->id }})" class="btn btn-sm btn-outline-info me-1" title="Quản lý Học Phần">
+                                    <button wire:click="manageCourses({{ $item->id }})" class="btn btn-sm btn-outline-info me-1" title="Quản lý học phần">
                                         <i class="bi bi-journal-bookmark-fill"></i> Học phần
                                     </button>
                                     <button wire:click="edit({{ $item->id }})" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                                    <button wire:click="delete({{ $item->id }})" wire:confirm="Bạn có chắc chắn muốn xóa ngành này?" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    <button wire:click="delete({{ $item->id }})" wire:confirm="Xóa ngành học này?" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="text-center py-4 text-muted">Không có dữ liệu</td></tr>
+                            <tr><td colspan="4" class="text-center py-4 text-muted">Không tìm thấy ngành học.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -77,7 +77,7 @@
             <div class="modal-content">
                 <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật Ngành học' : 'Thêm Ngành học' }}</h5>
+                        <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật ngành học' : 'Thêm ngành học' }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -101,7 +101,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-light">
-                    <h5 class="modal-title">Quản lý Học Phần - <strong>{{ $managingCoursesFor?->name }}</strong></h5>
+                    <h5 class="modal-title">Quản lý học phần - <strong>{{ $managingCoursesFor?->name }}</strong></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body bg-light">
@@ -115,9 +115,9 @@
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-body">
                             <form wire:submit="saveCourse" class="d-flex align-items-center gap-2">
-                                <input wire:model="course_name" type="text" class="form-control @error('course_name') is-invalid @enderror" placeholder="Tên học phần mới...">
+                                <input wire:model="course_name" type="text" class="form-control @error('course_name') is-invalid @enderror" placeholder="Tên học phần...">
                                 <button type="submit" class="btn btn-primary text-nowrap">
-                                    {{ $isCourseEditMode ? 'Cập nhật' : 'Thêm Môn' }}
+                                    {{ $isCourseEditMode ? 'Cập nhật' : 'Thêm học phần' }}
                                 </button>
                                 @if($isCourseEditMode)
                                     <button type="button" wire:click="resetCourseForm" class="btn btn-secondary">Hủy</button>
@@ -135,7 +135,7 @@
                                         <span>{{ $course->name }}</span>
                                         <div>
                                             <button wire:click="editCourse({{ $course->id }})" class="btn btn-sm btn-light text-primary"><i class="bi bi-pencil"></i> Sửa</button>
-                                            <button wire:click="deleteCourse({{ $course->id }})" wire:confirm="Bạn muốn xóa học phần này?" class="btn btn-sm btn-light text-danger"><i class="bi bi-trash"></i> Xóa</button>
+                                            <button wire:click="deleteCourse({{ $course->id }})" wire:confirm="Xóa học phần này?" class="btn btn-sm btn-light text-danger"><i class="bi bi-trash"></i> Xóa</button>
                                         </div>
                                     </li>
                                 @empty

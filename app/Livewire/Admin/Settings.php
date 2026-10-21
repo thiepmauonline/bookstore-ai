@@ -28,7 +28,7 @@ class Settings extends Component
         ], [
             'required' => 'Vui lòng nhập :attribute.',
             'form.email.email' => 'Email không hợp lệ.',
-            'form.hotline.regex' => 'Hotline chỉ gồm chữ số và các ký tự + . ( ) -',
+            'form.hotline.regex' => 'Hotline chỉ gồm số, khoảng trắng và + . ( ) -.',
         ], [
             'form.store_name' => 'tên cửa hàng',
             'form.hotline' => 'hotline',

@@ -32,13 +32,13 @@ class OrderService
     public function place(User $user, array $cart, array $shipping, ?string $couponCode = null, ?string $note = null): Order
     {
         if (empty($cart)) {
-            throw new OrderException('Giỏ hàng của bạn đang trống.');
+            throw new OrderException('Giỏ hàng trống.');
         }
 
         return DB::transaction(function () use ($user, $cart, $shipping, $couponCode, $note) {
             $customer = User::lockForUpdate()->find($user->id);
             if (! $customer || $customer->role !== 'user' || $customer->status !== 'active') {
-                throw new OrderException('Tài khoản của bạn đã bị khóa hoặc không còn quyền đặt hàng. Vui lòng liên hệ cửa hàng.');
+                throw new OrderException('Tài khoản bị khóa hoặc không có quyền đặt hàng. Vui lòng liên hệ cửa hàng.');
             }
 
             // Khóa các dòng sách để hai đơn đồng thời không cùng trừ một lượng tồn kho.
@@ -50,10 +50,10 @@ class OrderService
                 $quantity = (int) $item['quantity'];
 
                 if (! $book) {
-                    throw new OrderException('Một cuốn sách trong giỏ không còn được bán. Vui lòng cập nhật lại giỏ hàng.');
+                    throw new OrderException('Sách trong giỏ đã ngừng bán. Vui lòng cập nhật giỏ hàng.');
                 }
                 if ($quantity < 1 || $book->quantity < $quantity) {
-                    throw new OrderException("Sách \"{$book->title}\" không đủ số lượng tồn kho (còn {$book->quantity}). Vui lòng cập nhật lại giỏ hàng.");
+                    throw new OrderException("Sách \"{$book->title}\" chỉ còn {$book->quantity} cuốn. Vui lòng cập nhật số lượng.");
                 }
 
                 // Luôn tính theo giá hiện tại trong CSDL, không tin giá lưu trong session.
@@ -158,10 +158,10 @@ class OrderService
 
             if ($customer) {
                 if ($order->user_id !== $customer->id) {
-                    throw new OrderException('Bạn không có quyền hủy đơn hàng này.');
+                    throw new OrderException('Bạn không có quyền hủy đơn này.');
                 }
                 if (! $order->status->isCancellableByCustomer()) {
-                    throw new OrderException('Đơn hàng đã được cửa hàng xác nhận, bạn không thể tự hủy. Vui lòng liên hệ cửa hàng.');
+                    throw new OrderException('Chỉ có thể tự hủy đơn chờ xác nhận. Vui lòng liên hệ cửa hàng để được hỗ trợ.');
                 }
             }
             $this->assertCanTransition($order, OrderStatus::Cancelled);

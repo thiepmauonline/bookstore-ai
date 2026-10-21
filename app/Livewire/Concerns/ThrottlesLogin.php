@@ -19,7 +19,7 @@ trait ThrottlesLogin
             return false;
         }
 
-        $this->addError('email', 'Bạn thử đăng nhập quá nhiều lần. Vui lòng thử lại sau '.RateLimiter::availableIn($key).' giây.');
+        $this->addError('email', 'Đăng nhập quá nhiều lần. Thử lại sau '.RateLimiter::availableIn($key).' giây.');
 
         return true;
     }

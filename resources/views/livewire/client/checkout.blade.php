@@ -17,7 +17,7 @@
                             <h4 class="mb-4">Thông tin giao hàng</h4>
                             <div class="row g-3">
                                 <div class="col-sm-6">
-                                    <label class="form-label">Người nhận <span class="text-danger">*</span></label>
+                                    <label class="form-label">Họ và tên người nhận <span class="text-danger">*</span></label>
                                     <input wire:model="receiver_name" type="text" class="form-control @error('receiver_name') is-invalid @enderror">
                                     @error('receiver_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
@@ -28,25 +28,25 @@
                                 </div>
 
                                 <div class="col-sm-6">
-                                    <label class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
-                                    <input wire:model="province" type="text" class="form-control @error('province') is-invalid @enderror" placeholder="VD: Hà Nội">
+                                    <label class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                                    <input wire:model="province" type="text" class="form-control @error('province') is-invalid @enderror" placeholder="Ví dụ: Hà Nội">
                                     @error('province') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-sm-6">
-                                    <label class="form-label">Phường / Xã <span class="text-danger">*</span></label>
+                                    <label class="form-label">Phường/Xã <span class="text-danger">*</span></label>
                                     <input wire:model="ward" type="text" class="form-control @error('ward') is-invalid @enderror">
                                     @error('ward') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
                                 <div class="col-12">
                                     <label class="form-label">Địa chỉ cụ thể <span class="text-danger">*</span></label>
-                                    <input wire:model="address" type="text" class="form-control @error('address') is-invalid @enderror" placeholder="Số nhà, tên đường...">
+                                    <input wire:model="address" type="text" class="form-control @error('address') is-invalid @enderror" placeholder="Số nhà, tên đường…">
                                     @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label">Ghi chú thêm</label>
-                                    <textarea wire:model="note" class="form-control" rows="3" placeholder="Ghi chú về giao hàng, đóng gói..."></textarea>
+                                    <label class="form-label">Ghi chú giao hàng</label>
+                                    <textarea wire:model="note" class="form-control" rows="3" placeholder="Yêu cầu về giao hàng, đóng gói…"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -66,29 +66,29 @@
                                             <h6 class="my-0">{{ $item['title'] }}</h6>
                                             <small class="text-muted">Số lượng: {{ $item['quantity'] }}</small>
                                         </div>
-                                        <span class="text-muted">{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}đ</span>
+                                        <span class="text-muted">{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }} ₫</span>
                                     </li>
                                 @endforeach
                             </ul>
 
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tạm tính</span>
-                                <strong>{{ number_format($subtotal, 0, ',', '.') }} VNĐ</strong>
+                                <strong>{{ number_format($subtotal, 0, ',', '.') }} ₫</strong>
                             </div>
 
                             @if($appliedCoupon)
                                 <div class="d-flex justify-content-between text-success mb-2">
                                     <span>
-                                        Khuyến mãi ({{ $appliedCoupon->code }})
-                                        <button wire:click="removeCoupon" class="btn btn-link btn-sm text-danger p-0 ms-1 text-decoration-none">Bỏ</button>
+                                        Giảm giá ({{ $appliedCoupon->code }})
+                                        <button wire:click="removeCoupon" class="btn btn-link btn-sm text-danger p-0 ms-1 text-decoration-none">Xóa mã</button>
                                     </span>
-                                    <strong>-{{ number_format($discountAmount, 0, ',', '.') }} VNĐ</strong>
+                                    <strong>-{{ number_format($discountAmount, 0, ',', '.') }} ₫</strong>
                                 </div>
                             @endif
 
                             <div class="d-flex justify-content-between mb-4 border-top pt-3">
                                 <span class="fs-5">Tổng tiền</span>
-                                <strong class="fs-4 text-primary">{{ number_format($total, 0, ',', '.') }} VNĐ</strong>
+                                <strong class="fs-4 text-primary">{{ number_format($total, 0, ',', '.') }} ₫</strong>
                             </div>
 
                             <!-- Mã giảm giá -->
@@ -96,7 +96,7 @@
                                 <input wire:model="couponCode" type="text" class="form-control @error('couponCode') is-invalid @enderror" placeholder="Nhập mã giảm giá" @if($appliedCoupon) disabled @endif>
                                 <button wire:click="applyCoupon" type="button" class="btn btn-secondary" @if($appliedCoupon) disabled @endif>
                                     <span wire:loading.remove wire:target="applyCoupon">Áp dụng</span>
-                                    <span wire:loading wire:target="applyCoupon">Đang xử lý...</span>
+                                    <span wire:loading wire:target="applyCoupon">Đang áp dụng…</span>
                                 </button>
                                 @error('couponCode') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
@@ -111,12 +111,12 @@
                                 <i class="bi bi-cash-coin fs-4 text-success"></i>
                                 <div>
                                     <div class="fw-semibold">Thanh toán khi nhận hàng (COD)</div>
-                                    <div class="small text-muted">Bạn thanh toán bằng tiền mặt cho nhân viên giao hàng khi nhận sách.</div>
+                                    <div class="small text-muted">Thanh toán tiền mặt cho nhân viên giao hàng khi nhận sách.</div>
                                 </div>
                             </div>
 
                             <button wire:click="placeOrder" wire:loading.attr="disabled" class="btn btn-primary btn-lg w-100 rounded-pill mt-3" type="button">
-                                <span wire:loading.remove wire:target="placeOrder">Xác nhận Đặt hàng</span>
+                                <span wire:loading.remove wire:target="placeOrder">Xác nhận đặt hàng</span>
                                 <span wire:loading wire:target="placeOrder" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             </button>
                         </div>

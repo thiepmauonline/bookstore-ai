@@ -149,8 +149,7 @@
     }
 
     function updateThemeControls(theme) {
-      var nextTheme = theme === "dark" ? "light" : "dark";
-      var label = "Switch to " + nextTheme + " mode";
+      var label = theme === "dark" ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối";
       var iconClass = theme === "dark" ? "bi bi-sun" : "bi bi-moon-stars";
 
       Array.prototype.forEach.call(themeToggles, function (button) {

@@ -21,6 +21,11 @@ class AuthorManager extends Component
     
     public $isEditMode = false;
 
+    protected $validationAttributes = [
+        'name' => 'tên tác giả',
+        'biography' => 'tiểu sử / ghi chú',
+    ];
+
     protected $rules = array (
   'name' => 'required|string|max:255',
   'biography' => 'nullable|string',
@@ -61,7 +66,7 @@ class AuthorManager extends Component
             
         ]);
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Thêm mới thành công!');
+        session()->flash('message', 'Đã thêm tác giả.');
     }
 
     public function edit($id)
@@ -87,7 +92,7 @@ class AuthorManager extends Component
             
         ]);
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Cập nhật thành công!');
+        session()->flash('message', 'Đã cập nhật tác giả.');
     }
 
     public function delete($id)
@@ -96,12 +101,12 @@ class AuthorManager extends Component
 
         // CSDL không dùng khóa ngoại nên phải tự kiểm tra dữ liệu đang tham chiếu trước khi xóa.
         if ($item->books_count > 0) {
-            session()->flash('error', "Không thể xóa vì đang có {$item->books_count} sách thuộc mục này. Hãy chuyển các sách sang mục khác trước.");
+            session()->flash('error', "Không thể xóa tác giả đang có {$item->books_count} sách. Hãy đổi tác giả cho các sách trước.");
             return;
         }
 
         $item->delete();
-        session()->flash('message', 'Đã xóa thành công!');
+        session()->flash('message', 'Đã xóa tác giả.');
     }
 
     public function render()

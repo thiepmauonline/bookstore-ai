@@ -105,7 +105,7 @@ class StoreManagementTest extends TestCase
 
         Livewire::test(\App\Livewire\Admin\UserManager::class)
             ->call('delete', $customer->id)
-            ->assertSee('không thể xóa');
+            ->assertSee('Không thể xóa tài khoản đã có đơn hàng.');
         $this->assertModelExists($customer);
 
         Livewire::test(\App\Livewire\Admin\UserManager::class)->call('toggleStatus', $customer->id);

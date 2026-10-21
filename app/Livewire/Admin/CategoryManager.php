@@ -21,6 +21,11 @@ class CategoryManager extends Component
     
     public $isEditMode = false;
 
+    protected $validationAttributes = [
+        'name' => 'tên danh mục',
+        'slug' => 'đường dẫn',
+    ];
+
     protected $rules = array (
   'name' => 'required|string|max:255',
   'slug' => 'required|string|max:255',
@@ -61,7 +66,7 @@ class CategoryManager extends Component
             
         ]);
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Thêm mới thành công!');
+        session()->flash('message', 'Đã thêm danh mục.');
     }
 
     public function edit($id)
@@ -87,7 +92,7 @@ class CategoryManager extends Component
             
         ]);
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Cập nhật thành công!');
+        session()->flash('message', 'Đã cập nhật danh mục.');
     }
 
     public function delete($id)
@@ -96,12 +101,12 @@ class CategoryManager extends Component
 
         // CSDL không dùng khóa ngoại nên phải tự kiểm tra dữ liệu đang tham chiếu trước khi xóa.
         if ($item->books_count > 0) {
-            session()->flash('error', "Không thể xóa vì đang có {$item->books_count} sách thuộc mục này. Hãy chuyển các sách sang mục khác trước.");
+            session()->flash('error', "Không thể xóa danh mục đang có {$item->books_count} sách. Hãy chuyển các sách sang danh mục khác trước.");
             return;
         }
 
         $item->delete();
-        session()->flash('message', 'Đã xóa thành công!');
+        session()->flash('message', 'Đã xóa danh mục.');
     }
 
     public function render()

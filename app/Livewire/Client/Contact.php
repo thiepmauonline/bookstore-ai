@@ -53,7 +53,7 @@ class Contact extends Component
             'message' => $this->message,
         ]);
 
-        session()->flash('contact_message', 'Cảm ơn bạn đã liên hệ. Chúng tôi sẽ phản hồi sớm nhất có thể!');
+        session()->flash('contact_message', 'Đã gửi tin nhắn. Chúng tôi sẽ phản hồi sớm.');
         $this->reset('message');
     }
 

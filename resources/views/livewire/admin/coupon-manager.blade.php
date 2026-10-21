@@ -3,12 +3,12 @@
         <div class="page-heading d-flex justify-content-between align-items-center mb-4">
             <div class="page-heading-copy">
                 <div>
-                    <h1 class="h3 mb-1">Quản lý Khuyến Mãi (Coupons)</h1>
+                    <h1 class="h3 mb-1">Quản lý mã giảm giá</h1>
                 </div>
             </div>
             <div>
                 <button wire:click="create" class="btn btn-primary" type="button">
-                    <i class="bi bi-plus-lg"></i> Thêm mã mới
+                    <i class="bi bi-plus-lg"></i> Thêm mã giảm giá
                 </button>
             </div>
         </div>
@@ -16,13 +16,13 @@
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
         @if (session()->has('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 
@@ -32,7 +32,7 @@
                     <div class="col-md-4">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm kiếm mã code...">
+                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo mã giảm giá...">
                         </div>
                     </div>
                 </div>
@@ -41,10 +41,10 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">Mã Code</th>
+                            <th scope="col" class="ps-4">Mã giảm giá</th>
                             <th scope="col">Mức giảm</th>
-                            <th scope="col">Số lượng</th>
-                            <th scope="col">Thời gian</th>
+                            <th scope="col">Lượt còn lại</th>
+                            <th scope="col">Thời gian áp dụng</th>
                             <th scope="col">Trạng thái</th>
                             <th scope="col" class="text-end pe-4">Thao tác</th>
                         </tr>
@@ -61,20 +61,20 @@
                                 </td>
                                 <td>
                                     @if(now()->between($item->start_date, $item->end_date) && $item->quantity > 0)
-                                        <span class="badge bg-success">Đang hiệu lực</span>
+                                        <span class="badge bg-success">Có hiệu lực</span>
                                     @elseif(now()->lt($item->start_date))
-                                        <span class="badge bg-warning text-dark">Sắp diễn ra</span>
+                                        <span class="badge bg-warning text-dark">Chưa có hiệu lực</span>
                                     @else
-                                        <span class="badge bg-secondary">Đã hết hạn / Hết lượt</span>
+                                        <span class="badge bg-secondary">Hết hạn hoặc hết lượt</span>
                                     @endif
                                 </td>
                                 <td class="text-end text-nowrap pe-4">
                                     <button wire:click="edit({{ $item->id }})" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                                    <button wire:click="delete({{ $item->id }})" wire:confirm="Bạn có chắc chắn muốn xóa?" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    <button wire:click="delete({{ $item->id }})" wire:confirm="Xóa mã giảm giá này?" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center py-4 text-muted">Không có dữ liệu</td></tr>
+                            <tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy mã giảm giá.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -89,18 +89,18 @@
             <div class="modal-content">
                 <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật' : 'Thêm mới' }} Mã giảm giá</h5>
+                        <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật' : 'Thêm' }} mã giảm giá</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-8">
-                                <label class="form-label">Mã Code (Tự động in hoa) <span class="text-danger">*</span></label>
+                                <label class="form-label">Mã giảm giá (tự động viết hoa) <span class="text-danger">*</span></label>
                                 <input wire:model="code" type="text" class="form-control text-uppercase @error('code') is-invalid @enderror">
                                 @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                <label class="form-label">Lượt còn lại <span class="text-danger">*</span></label>
                                 <input wire:model="quantity" type="number" class="form-control @error('quantity') is-invalid @enderror">
                                 @error('quantity') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>

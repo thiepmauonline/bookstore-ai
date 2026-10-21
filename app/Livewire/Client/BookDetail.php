@@ -66,22 +66,22 @@ class BookDetail extends Component
             return;
         }
         $this->dispatch('cart-updated');
-        session()->flash('success', 'Đã thêm vào giỏ hàng thành công!');
+        session()->flash('success', 'Đã thêm vào giỏ hàng.');
     }
 
     public function toggleWishlist(WishlistService $wishlistService)
     {
         if (!Auth::check()) {
-            return redirect()->route('login')->with('message', 'Vui lòng đăng nhập để thêm vào danh sách yêu thích.');
+            return redirect()->route('login')->with('message', 'Vui lòng đăng nhập để lưu sách yêu thích.');
         }
 
         $wishlistService->toggle($this->book->id);
         $this->dispatch('wishlist-updated');
         
         if ($wishlistService->isWishlisted($this->book->id)) {
-            session()->flash('success', 'Đã thêm vào danh sách yêu thích!');
+            session()->flash('success', 'Đã thêm vào yêu thích.');
         } else {
-            session()->flash('success', 'Đã xóa khỏi danh sách yêu thích!');
+            session()->flash('success', 'Đã bỏ yêu thích.');
         }
     }
 
@@ -107,14 +107,14 @@ class BookDetail extends Component
 
         if (! $review->wasRecentlyCreated) {
             $this->hasReviewed = true;
-            session()->flash('error', 'Bạn đã đánh giá cuốn sách này rồi.');
+            session()->flash('error', 'Bạn đã đánh giá cuốn sách này.');
             return;
         }
 
         $this->hasReviewed = true;
         $this->reset(['rating', 'comment']);
         $this->resetPage();
-        session()->flash('success', 'Cảm ơn bạn đã đánh giá sách!');
+        session()->flash('success', 'Cảm ơn bạn đã đánh giá sách.');
     }
 
     public function render(WishlistService $wishlistService)

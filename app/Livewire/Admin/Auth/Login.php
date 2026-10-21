@@ -38,7 +38,7 @@ class Login extends Component
         }
 
         RateLimiter::hit($this->loginRateKey('admin'), 60);
-        $this->addError('email', 'Email hoặc mật khẩu không chính xác, hoặc tài khoản không có quyền quản trị.');
+        $this->addError('email', 'Thông tin đăng nhập không đúng hoặc tài khoản không có quyền truy cập.');
     }
 
     public function render()

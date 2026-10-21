@@ -77,7 +77,7 @@ class UserManager extends Component
         ]);
 
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Thêm người dùng thành công!');
+        session()->flash('message', 'Đã thêm người dùng.');
     }
 
     public function edit($id)
@@ -108,7 +108,7 @@ class UserManager extends Component
 
         // Tránh admin tự hạ quyền của mình rồi bị khóa khỏi trang quản trị.
         if ($user->id === auth('admin')->id() && $this->role !== 'admin') {
-            $this->addError('role', 'Không thể tự bỏ quyền quản trị của chính bạn.');
+            $this->addError('role', 'Không thể bỏ quyền quản trị của chính mình.');
             return;
         }
 
@@ -128,7 +128,7 @@ class UserManager extends Component
         $user->update($updateData);
 
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Cập nhật người dùng thành công!');
+        session()->flash('message', 'Đã cập nhật người dùng.');
     }
 
     /** Khóa hoặc mở khóa tài khoản; tài khoản bị khóa không đăng nhập được. */
@@ -137,7 +137,7 @@ class UserManager extends Component
         $user = User::findOrFail($id);
 
         if ($user->id === auth('admin')->id()) {
-            session()->flash('error', 'Không thể tự khóa tài khoản của chính bạn!');
+            session()->flash('error', 'Không thể khóa tài khoản của chính mình.');
             return;
         }
 
@@ -154,18 +154,18 @@ class UserManager extends Component
         
         // Prevent deleting yourself
         if ($user->id === auth('admin')->id()) {
-            session()->flash('error', 'Không thể xóa tài khoản của chính bạn!');
+            session()->flash('error', 'Không thể xóa tài khoản của chính mình.');
             return;
         }
 
         // Giữ lại lịch sử đơn hàng: khách đã mua hàng thì chỉ được khóa, không được xóa.
         if ($user->orders()->exists()) {
-            session()->flash('error', 'Khách hàng này đã có đơn hàng nên không thể xóa. Hãy khóa tài khoản thay vì xóa.');
+            session()->flash('error', 'Không thể xóa tài khoản đã có đơn hàng. Hãy khóa tài khoản nếu cần ngừng truy cập.');
             return;
         }
 
         $user->delete();
-        session()->flash('message', 'Đã xóa người dùng thành công!');
+        session()->flash('message', 'Đã xóa người dùng.');
     }
 
     public function render()

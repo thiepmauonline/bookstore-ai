@@ -3,7 +3,7 @@
         <div class="page-heading d-flex justify-content-between align-items-center mb-4">
             <div class="page-heading-copy">
                 <div>
-                    <h1 class="h3 mb-1">Liên hệ từ khách hàng</h1>
+                    <h1 class="h3 mb-1">Liên hệ khách hàng</h1>
                     <p class="text-muted mb-0">{{ $unhandledCount }} liên hệ chưa xử lý</p>
                 </div>
             </div>
@@ -12,7 +12,7 @@
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 
@@ -22,12 +22,12 @@
                     <div class="col-md-5">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo tên, email, nội dung...">
+                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo tên, email hoặc nội dung...">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <select wire:model.live="statusFilter" class="form-select bg-light">
-                            <option value="">-- Tất cả --</option>
+                            <option value="">Tất cả trạng thái</option>
                             <option value="0">Chưa xử lý</option>
                             <option value="1">Đã xử lý</option>
                         </select>
@@ -70,7 +70,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="text-center py-4 text-muted">Chưa có liên hệ nào</td></tr>
+                            <tr><td colspan="5" class="text-center py-4 text-muted">Không tìm thấy liên hệ.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

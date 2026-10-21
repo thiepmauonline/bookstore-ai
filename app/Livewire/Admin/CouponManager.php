@@ -63,7 +63,7 @@ class CouponManager extends Component
         ]);
 
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Thêm mã giảm giá thành công!');
+        session()->flash('message', 'Đã thêm mã giảm giá.');
     }
 
     public function edit($id)
@@ -102,16 +102,16 @@ class CouponManager extends Component
         ]);
 
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Cập nhật mã giảm giá thành công!');
+        session()->flash('message', 'Đã cập nhật mã giảm giá.');
     }
 
     public function delete($id)
     {
         try {
             Coupon::findOrFail($id)->delete();
-            session()->flash('message', 'Đã xóa mã giảm giá!');
+            session()->flash('message', 'Đã xóa mã giảm giá.');
         } catch (\Exception $e) {
-            session()->flash('error', 'Không thể xóa vì mã đang được sử dụng trong đơn hàng!');
+            session()->flash('error', 'Không thể xóa mã giảm giá đang được dùng trong đơn hàng.');
         }
     }
 

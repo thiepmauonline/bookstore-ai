@@ -32,7 +32,7 @@ class ContactManager extends Component
             'is_handled' => ! $contact->is_handled,
             'handled_at' => $contact->is_handled ? null : now(),
         ]);
-        session()->flash('message', $contact->is_handled ? 'Đã đánh dấu đã xử lý.' : 'Đã chuyển về chưa xử lý.');
+        session()->flash('message', $contact->is_handled ? 'Đã đánh dấu xử lý.' : 'Đã chuyển về chưa xử lý.');
     }
 
     public function delete($id)

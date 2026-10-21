@@ -2,7 +2,7 @@
     <div class="container-fluid px-3 px-lg-4 py-4">
         <!-- Page Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Bảng điều khiển</h1>
+            <h1 class="h3 mb-0 text-gray-800">Tổng quan</h1>
         </div>
 
         <!-- 4 Cards Thống kê -->
@@ -30,7 +30,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs fw-bold text-success text-uppercase mb-1">
-                                    Số Đơn Hàng</div>
+                                    Số đơn hàng</div>
                                 <div class="h5 mb-0 fw-bold text-gray-800">{{ $totalOrders }}</div>
                             </div>
                             <div class="col-auto text-muted fs-2">
@@ -46,7 +46,7 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs fw-bold text-info text-uppercase mb-1">Số Khách Hàng
+                                <div class="text-xs fw-bold text-info text-uppercase mb-1">Số khách hàng
                                 </div>
                                 <div class="h5 mb-0 fw-bold text-gray-800">{{ $totalUsers }}</div>
                             </div>
@@ -64,7 +64,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs fw-bold text-warning text-uppercase mb-1">
-                                    Số Đầu Sách</div>
+                                    Số đầu sách</div>
                                 <div class="h5 mb-0 fw-bold text-gray-800">{{ $totalBooks }}</div>
                             </div>
                             <div class="col-auto text-muted fs-2">
@@ -87,7 +87,7 @@
                 @endforeach
                 <span class="ms-auto d-flex gap-3 small">
                     <a href="{{ route('admin.contacts') }}" class="text-decoration-none"><i class="bi bi-envelope"></i> {{ $unhandledContacts }} liên hệ chưa xử lý</a>
-                    <a href="{{ route('admin.chatbot') }}" class="text-decoration-none"><i class="bi bi-robot"></i> Chatbot hữu ích: {{ $chatbotHelpfulRate !== null ? $chatbotHelpfulRate.'%' : 'chưa có dữ liệu' }}</a>
+                    <a href="{{ route('admin.chatbot') }}" class="text-decoration-none"><i class="bi bi-robot"></i> Chatbot: tỷ lệ hữu ích {{ $chatbotHelpfulRate !== null ? $chatbotHelpfulRate.'%' : 'chưa có dữ liệu' }}</a>
                 </span>
             </div>
         </div>
@@ -97,7 +97,7 @@
             <div class="col-xxl-8 col-xl-7 col-lg-6">
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header py-3 bg-white d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 fw-bold text-primary">Biểu Đồ Doanh Thu ({{ $chartDays }} ngày gần nhất)</h6>
+                        <h6 class="m-0 fw-bold text-primary">Doanh thu ({{ $chartDays }} ngày gần nhất)</h6>
                     </div>
                     <div class="card-body">
                         <div class="chart-area" style="height: 320px;">
@@ -111,7 +111,7 @@
             <div class="col-xxl-4 col-xl-5 col-lg-6">
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header py-3 bg-white d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 fw-bold text-primary">Đơn Hàng Mới Nhất</h6>
+                        <h6 class="m-0 fw-bold text-primary">Đơn hàng mới nhất</h6>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -127,7 +127,7 @@
                                     @foreach($recentOrders as $order)
                                     <tr>
                                         <td>
-                                            <span class="d-block fw-semibold">{{ $order->user->name ?? 'N/A' }}</span>
+                                            <span class="d-block fw-semibold">{{ $order->user->name ?? 'Không có thông tin' }}</span>
                                             <span class="text-muted small">{{ $order->order_code }}</span>
                                         </td>
                                         <td class="fw-bold">{{ number_format($order->total_price, 0, ',', '.') }}đ</td>
@@ -150,7 +150,7 @@
         <div class="row">
             <div class="col-lg-7">
                 <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header py-3 bg-white"><h6 class="m-0 fw-bold text-primary">Top 5 sách bán chạy</h6></div>
+                    <div class="card-header py-3 bg-white"><h6 class="m-0 fw-bold text-primary">5 sách bán chạy nhất</h6></div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light"><tr><th class="ps-3">Sách</th><th class="text-center">Đã bán</th><th class="text-end pe-3">Doanh thu</th></tr></thead>

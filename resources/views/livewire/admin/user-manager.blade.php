@@ -9,14 +9,14 @@
     @if(session('message'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('message') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     @endif
 
     @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     @endif
 
@@ -26,7 +26,7 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <input type="text" wire:model.live.debounce.300ms="search" 
-                           class="form-control" placeholder="Tìm kiếm theo tên, email, số điện thoại...">
+                           class="form-control" placeholder="Tìm theo tên, email hoặc số điện thoại...">
                 </div>
                 <div class="col-md-3">
                     <select wire:model.live="roleFilter" class="form-select">
@@ -47,13 +47,13 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Tên</th>
+                            <th>Họ và tên</th>
                             <th>Email</th>
                             <th>Số điện thoại</th>
                             <th>Vai trò</th>
                             <th>Trạng thái</th>
                             <th>Ngày tạo</th>
-                            <th>Hành động</th>
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,7 +65,7 @@
                                 <td>{{ $user->phone ?? '-' }}</td>
                                 <td>
                                     @if($user->role === 'admin')
-                                        <span class="badge bg-danger">Admin</span>
+                                        <span class="badge bg-danger">Quản trị viên</span>
                                     @else
                                         <span class="badge bg-primary">Khách hàng</span>
                                     @endif
@@ -83,14 +83,14 @@
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <button wire:click="toggleStatus({{ $user->id }})"
-                                            wire:confirm="{{ $user->status === 'active' ? 'Khóa tài khoản này? Khách sẽ không đăng nhập được.' : 'Mở khóa tài khoản này?' }}"
+                                            wire:confirm="{{ $user->status === 'active' ? 'Khóa tài khoản này? Người dùng sẽ không thể đăng nhập.' : 'Mở khóa tài khoản này?' }}"
                                             class="btn btn-sm {{ $user->status === 'active' ? 'btn-outline-warning' : 'btn-outline-success' }}"
                                             title="{{ $user->status === 'active' ? 'Khóa tài khoản' : 'Mở khóa' }}">
                                         <i class="bi {{ $user->status === 'active' ? 'bi-lock' : 'bi-unlock' }}"></i>
                                     </button>
                                     <button wire:click="delete({{ $user->id }})" 
                                             class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                            onclick="return confirm('Xóa tài khoản này?')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </td>
@@ -98,7 +98,7 @@
                         @empty
                             <tr>
                                 <td colspan="8" class="text-center py-4">
-                                    Không tìm thấy người dùng nào.
+                                    Không tìm thấy người dùng.
                                 </td>
                             </tr>
                         @endforelse
@@ -117,13 +117,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật người dùng' : 'Thêm người dùng mới' }}</h5>
+                    <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật người dùng' : 'Thêm người dùng' }}</h5>
                     <button type="button" wire:click="$dispatch('hide-modal')" class="btn-close"></button>
                 </div>
                 <div class="modal-body">
                     <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}">
                         <div class="mb-3">
-                            <label class="form-label">Tên <span class="text-danger">*</span></label>
+                            <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
                             <input type="text" wire:model="name" class="form-control">
                             @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
                         </div>

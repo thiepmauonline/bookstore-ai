@@ -2,13 +2,13 @@
     <div class="container-fluid px-3 px-lg-4 py-4">
         <div class="page-heading mb-4">
             <h1 class="h3 mb-1">Cài đặt cửa hàng</h1>
-            <p class="text-muted mb-0">Thông tin hiển thị ở chân trang, trang Liên hệ và được chatbot dùng khi trả lời khách.</p>
+            <p class="text-muted mb-0">Thông tin dùng ở chân trang, trang liên hệ và câu trả lời của chatbot.</p>
         </div>
 
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 

@@ -1,6 +1,6 @@
-<aside wire:navigate:scroll x-data="{ path: window.location.pathname }" x-on:livewire:navigated.window="path = window.location.pathname" class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
+<aside wire:navigate:scroll x-data="{ path: window.location.pathname }" x-on:livewire:navigated.window="path = window.location.pathname" class="admin-sidebar" id="adminSidebar" aria-label="Điều hướng chính">
     <div class="sidebar-header">
-        <a wire:navigate class="brand-mark" href="{{ route('admin.dashboard') }}" aria-label="Bookstore AI admin">
+        <a wire:navigate class="brand-mark" href="{{ route('admin.dashboard') }}" aria-label="Quản trị Bookstore AI">
             <span class="brand-icon"><i class="bi bi-book-fill" aria-hidden="true"></i></span>
             <span class="brand-copy">
                 <span class="brand-title">Bookstore AI</span>
@@ -14,22 +14,22 @@
         <li class="nav-item">
         <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.dashboard') }}">
             <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
-            <span class="nav-text">Dashboard</span>
+            <span class="nav-text">Tổng quan</span>
         </a>
         </li>
         <li class="nav-item">
         <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.books') }}">
             <span class="nav-icon"><i class="bi bi-book" aria-hidden="true"></i></span>
-            <span class="nav-text">Quản lý Sách</span>
+            <span class="nav-text">Quản lý sách</span>
         </a>
         </li>
 
-        <li class="nav-heading">Thuộc tính Sách</li>
+        <li class="nav-heading">Thông tin sách</li>
         
         <li class="nav-item">
             <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.categories') }}">
                 <span class="nav-icon"><i class="bi bi-tags" aria-hidden="true"></i></span>
-                <span class="nav-text">Danh mục Sách</span>
+                <span class="nav-text">Danh mục sách</span>
             </a>
         </li>
         
@@ -50,7 +50,7 @@
         <li class="nav-item">
             <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.majors') }}">
                 <span class="nav-icon"><i class="bi bi-journal-album" aria-hidden="true"></i></span>
-                <span class="nav-text">Ngành học & Môn học</span>
+                <span class="nav-text">Ngành học & học phần</span>
             </a>
         </li>
 
@@ -86,7 +86,7 @@
     <li class="nav-item">
         <a wire:navigate class="nav-link" :class="path === new URL($el.href).pathname ? 'active' : ''" :aria-current="path === new URL($el.href).pathname ? 'page' : null" href="{{ route('admin.chatbot') }}">
             <span class="nav-icon"><i class="bi bi-robot" aria-hidden="true"></i></span>
-            <span class="nav-text">Dữ liệu AI Chatbot</span>
+            <span class="nav-text">Chatbot</span>
         </a>
     </li>
 
@@ -107,8 +107,8 @@
     </nav>
 
     <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{ asset('assets/admin/images/avatar/avatar.jpg') }}" alt="Admin">
-        <strong>{{ auth('admin')->user()->name ?? 'Administrator' }}</strong>
+        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{ asset('assets/admin/images/avatar/avatar.jpg') }}" alt="Ảnh đại diện quản trị viên">
+        <strong>{{ auth('admin')->user()->name ?? 'Quản trị viên' }}</strong>
         <small>Quản trị viên</small>
     </div>
 

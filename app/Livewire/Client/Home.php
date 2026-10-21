@@ -65,22 +65,22 @@ class Home extends Component
         
         // Cập nhật sự kiện để navbar update số lượng
         $this->dispatch('cart-updated');
-        session()->flash('message', 'Đã thêm sách vào giỏ hàng!');
+        session()->flash('message', 'Đã thêm vào giỏ hàng.');
     }
 
     public function toggleWishlist($bookId, WishlistService $wishlistService)
     {
         if (!Auth::check()) {
-            return redirect()->route('login')->with('message', 'Vui lòng đăng nhập để thêm vào danh sách yêu thích.');
+            return redirect()->route('login')->with('message', 'Vui lòng đăng nhập để lưu sách yêu thích.');
         }
 
         $wishlistService->toggle($bookId);
         $this->dispatch('wishlist-updated');
         
         if ($wishlistService->isWishlisted($bookId)) {
-            session()->flash('message', 'Đã thêm vào danh sách yêu thích!');
+            session()->flash('message', 'Đã thêm vào yêu thích.');
         } else {
-            session()->flash('message', 'Đã xóa khỏi danh sách yêu thích!');
+            session()->flash('message', 'Đã bỏ yêu thích.');
         }
     }
 

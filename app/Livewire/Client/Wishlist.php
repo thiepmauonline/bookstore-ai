@@ -28,7 +28,7 @@ class Wishlist extends Component
 
         if ($wishlist) {
             $wishlist->delete();
-            session()->flash('message', 'Đã xóa khỏi danh sách yêu thích!');
+            session()->flash('message', 'Đã bỏ yêu thích.');
             $this->dispatch('wishlist-updated');
         }
     }
@@ -42,13 +42,13 @@ class Wishlist extends Component
             return;
         }
         $this->dispatch('cart-updated');
-        session()->flash('message', 'Đã thêm sách vào giỏ hàng!');
+        session()->flash('message', 'Đã thêm vào giỏ hàng.');
     }
 
     public function render()
     {
         if (!Auth::check()) {
-            return redirect()->route('login')->with('message', 'Vui lòng đăng nhập để xem danh sách yêu thích.');
+            return redirect()->route('login')->with('message', 'Vui lòng đăng nhập để xem sách yêu thích.');
         }
 
         $wishlistItems = WishlistModel::where('user_id', Auth::id())

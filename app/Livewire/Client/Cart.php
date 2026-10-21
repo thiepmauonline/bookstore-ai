@@ -41,7 +41,7 @@ class Cart extends Component
         $cartService->remove($bookId);
         $this->loadCart($cartService);
         $this->dispatch('cart-updated');
-        session()->flash('message', 'Đã xóa sản phẩm khỏi giỏ hàng!');
+        session()->flash('message', 'Đã xóa khỏi giỏ hàng.');
     }
 
     public function clearCart(CartService $cartService)
@@ -49,7 +49,7 @@ class Cart extends Component
         $cartService->clear();
         $this->loadCart($cartService);
         $this->dispatch('cart-updated');
-        session()->flash('message', 'Đã xóa toàn bộ giỏ hàng!');
+        session()->flash('message', 'Đã làm trống giỏ hàng.');
     }
 
     public function render()

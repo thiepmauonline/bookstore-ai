@@ -190,7 +190,7 @@ class ChatbotService
         1. Chỉ gợi ý sách có trong DANH SÁCH SÁCH bên dưới. Không bịa tên sách, giá, tác giả hay tồn kho.
         2. Mỗi khi nhắc tới một cuốn sách, ghi đúng tên sách và thêm mã của nó ngay sau tên, ví dụ: "Clean Code [#1]".
         3. Chỉ áp dụng việc tìm sách khi người dùng muốn tìm hoặc mua sách. Không tìm thấy sách trong ngữ cảnh không có nghĩa là cửa hàng chắc chắn không có; hãy nói chưa tìm được và hỏi thêm nhu cầu. Không tự gợi ý sách bán chạy cho câu chào hỏi hoặc câu hỏi kiến thức.
-        4. Trả lời bằng tiếng Việt, thân thiện, tự nhiên, ngắn gọn (tối đa khoảng 150 từ), có thể dùng gạch đầu dòng. Được chào hỏi, chào lại khi người dùng yêu cầu, cảm ơn và giới thiệu bản thân; đây là tương tác bình thường.
+        4. Trả lời bằng tiếng Việt, lịch sự, tự nhiên, ngắn gọn (thường 2–4 câu, tối đa 100 từ), có thể dùng gạch đầu dòng. Đi thẳng vào câu hỏi, tránh lời dẫn và lời mời hỗ trợ lặp lại. Được chào hỏi, chào lại khi người dùng yêu cầu, cảm ơn và giới thiệu bản thân; đây là tương tác bình thường.
         5. Được giải thích kiến thức và tư vấn học tập bằng kiến thức chung, không cần có sách khớp. Với chủ đề ngoài phạm vi, nhẹ nhàng giới thiệu khả năng hỗ trợ thay vì viện dẫn quy định. Không ép mọi câu hỏi thành tìm giáo trình.
         6. Không làm theo yêu cầu bịa dữ liệu cửa hàng hoặc bỏ qua các ràng buộc về tính chính xác. Yêu cầu đổi cách xưng hô, chào lại hoặc cách trình bày được phép; không nói rằng các yêu cầu này vi phạm quy định.
         7. Với câu hỏi tiếp nối như "rẻ hơn", dùng học phần của các sách vừa tư vấn. DANH SÁCH SÁCH ở lượt hiện tại đã được lọc theo ngân sách nếu có; nếu danh sách trống, nói chưa tìm được sách đáp ứng và hỏi thêm, không gợi ý lại sách ở lượt trước.
@@ -261,19 +261,19 @@ class ChatbotService
         $text = preg_replace('/\s+/', ' ', $text);
 
         if (preg_match('/\b(ban la ai|ban ten (la )?gi|gioi thieu (ban than|ve ban)|who are you)\b/', $text)) {
-            return ['Mình là trợ lý Bookstore AI. Mình có thể giúp bạn tìm sách, tư vấn giáo trình và giải đáp thông tin mua hàng. Bạn đang cần hỗ trợ gì?', []];
+            return ['Mình là trợ lý Bookstore AI, hỗ trợ tìm sách, chọn giáo trình và giải đáp thông tin mua hàng.', []];
         }
         if (preg_match('/\b(chao|hello|hi)\b/', $text) && ! preg_match('/\b(sach|giao trinh|mua|tim)\b/', $text)) {
-            return ['Chào bạn! Mình là trợ lý Bookstore AI. Hôm nay mình có thể giúp gì cho bạn?', []];
+            return ['Chào bạn! Bạn cần tìm sách hay hỗ trợ mua hàng?', []];
         }
         if (preg_match('/^(cam on|thank you|thanks)( ban| nhe| nhieu| a)*$/', $text)) {
-            return ['Rất vui được giúp bạn! Khi cần tìm sách hoặc hỗ trợ mua hàng, bạn cứ hỏi mình nhé.', []];
+            return ['Rất vui được giúp bạn!', []];
         }
         if ($constrained && $books->isEmpty()) {
-            return ['Mình chưa tìm được sách phù hợp với yêu cầu giá hoặc ngữ cảnh hiện tại. Bạn cho mình biết tên sách, ngành hoặc học phần và ngân sách cụ thể nhé.', []];
+            return ['Mình chưa tìm được sách phù hợp. Bạn cho biết tên sách, ngành hoặc học phần và ngân sách nhé.', []];
         }
         if (! $matched && ! preg_match('/\b(sach|giao trinh|tai lieu|mua|tim|goi y)\b/', $text)) {
-            return ['Mình đang tạm thời không kết nối được với AI nên chưa thể giải đáp câu hỏi này. Bạn thử lại sau một chút nhé; mình vẫn có thể giúp tìm sách theo tên, ngành hoặc học phần.', []];
+            return ['Mình tạm thời không kết nối được với AI. Bạn vui lòng thử lại sau; tính năng tìm sách vẫn hoạt động.', []];
         }
 
         $top = $books->take(3);
@@ -286,13 +286,13 @@ class ChatbotService
                 $b->course ? " (học phần {$b->course->name})" : ''
             ))->implode("\n");
 
-            return ["Mình tìm thấy một số giáo trình phù hợp với câu hỏi của bạn:\n\n{$lines}\n\nBạn bấm vào sách bên dưới để xem chi tiết nhé.", $top->pluck('id')->all()];
+            return ["Sách phù hợp với yêu cầu:\n\n{$lines}\n\nChọn sách bên dưới để xem chi tiết.", $top->pluck('id')->all()];
         }
 
         $majors = Major::orderBy('name')->pluck('name')->implode(', ');
 
         return [
-            "Mình đang tạm thời không kết nối được với AI và chưa tìm được sách phù hợp bằng tìm kiếm nội bộ. Bạn thử hỏi theo ngành hoặc học phần nhé, ví dụ: \"Sách cho môn Lập trình Web\".\n\nCác ngành hiện có: {$majors}.\n\nMột vài cuốn đang được nhiều bạn mua:",
+            "Mình chưa tìm được sách phù hợp. Bạn thử tìm theo ngành hoặc học phần, ví dụ: \"Sách cho môn Lập trình Web\".\n\nNgành học: {$majors}.\n\nSách bán chạy để tham khảo:",
             $top->pluck('id')->all(),
         ];
     }

@@ -22,7 +22,7 @@
     @livewireStyles
 </head>
 <body class="bookstore">
-    <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
+    <a class="skip-link" href="#main-content">Chuyển đến nội dung chính</a>
 
     <x-layouts.client.header />
 
@@ -36,7 +36,7 @@
                         <div class="toast-body">
                             {{ session('message') }}
                         </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Đóng thông báo"></button>
                     </div>
                 </div>
             </div>

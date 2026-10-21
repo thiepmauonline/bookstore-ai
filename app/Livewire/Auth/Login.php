@@ -45,7 +45,7 @@ class Login extends Component
             && User::where('email', $credentials['email'])->value('status') !== 'active';
 
         $this->addError('email', $isLocked
-            ? 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ cửa hàng để được hỗ trợ.'
+            ? 'Tài khoản đã bị khóa. Vui lòng liên hệ cửa hàng.'
             : 'Thông tin đăng nhập không chính xác.');
     }
 

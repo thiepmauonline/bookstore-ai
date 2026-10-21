@@ -36,7 +36,7 @@ class StorefrontTest extends TestCase
     {
         $this->seed(DatabaseSeeder::class);
         Livewire::test(Home::class)->set('search', 'no-such-book-xyz')
-            ->assertSee('Chưa tìm thấy cuốn sách phù hợp')
+            ->assertSee('Không tìm thấy sách')
             ->call('resetFilters')
             ->assertViewHas('books', fn ($books) => $books->total() === 30);
     }

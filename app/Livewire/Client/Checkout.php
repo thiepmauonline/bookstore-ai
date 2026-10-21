@@ -47,7 +47,7 @@ class Checkout extends Component
     {
         // Redirect if cart is empty
         if ($cartService->getCount() == 0) {
-            return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
+            return redirect()->route('cart')->with('error', 'Giỏ hàng đang trống.');
         }
 
         // Must be logged in
@@ -107,7 +107,7 @@ class Checkout extends Component
 
         $this->appliedCoupon = $coupon;
         $this->calculateTotal();
-        session()->flash('coupon_message', 'Áp dụng mã giảm giá thành công!');
+        session()->flash('coupon_message', 'Đã áp dụng mã giảm giá.');
     }
 
     public function removeCoupon()
@@ -150,7 +150,7 @@ class Checkout extends Component
         $cartService->clear();
         $this->dispatch('cart-updated');
 
-        return redirect()->route('my.orders')->with('message', 'Đặt hàng thành công! Mã đơn hàng của bạn là '.$order->order_code);
+        return redirect()->route('my.orders')->with('message', 'Đặt hàng thành công. Mã đơn hàng: '.$order->order_code);
     }
 
     public function render()

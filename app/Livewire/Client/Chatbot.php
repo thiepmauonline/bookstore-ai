@@ -25,7 +25,7 @@ class Chatbot extends Component
     public const SUGGESTIONS = [
         'Sách cho môn Lập trình Web',
         'Giáo trình Kinh tế vĩ mô',
-        'Mình học ngành Y, nên mua sách gì?',
+        'Sách nào phù hợp với ngành Y?',
         'Sách luyện thi TOEIC',
     ];
 
@@ -35,12 +35,12 @@ class Chatbot extends Component
     {
         $this->validate(
             ['question' => 'required|string|max:'.ChatbotService::MAX_QUESTION_LENGTH],
-            ['question.required' => 'Bạn hãy nhập câu hỏi nhé.', 'question.max' => 'Câu hỏi quá dài.']
+            ['question.required' => 'Vui lòng nhập câu hỏi.', 'question.max' => 'Câu hỏi không được quá :max ký tự.']
         );
 
         $key = 'chatbot:'.$this->sessionId();
         if (RateLimiter::tooManyAttempts($key, self::MAX_PER_MINUTE)) {
-            $this->addError('question', 'Bạn hỏi hơi nhanh, vui lòng chờ '.RateLimiter::availableIn($key).' giây.');
+            $this->addError('question', 'Quá nhiều câu hỏi. Thử lại sau '.RateLimiter::availableIn($key).' giây.');
 
             return;
         }

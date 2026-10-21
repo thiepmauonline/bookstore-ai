@@ -27,6 +27,10 @@ class MajorManager extends Component
     public $course_name;
     public $isCourseEditMode = false;
 
+    protected $validationAttributes = [
+        'name' => 'tên ngành học',
+    ];
+
     protected $rules = [
         'name' => 'required|string|max:255',
     ];
@@ -54,7 +58,7 @@ class MajorManager extends Component
         $this->validate(['name' => 'required|string|max:255']);
         Major::create(['name' => $this->name]);
         $this->dispatch('hide-major-modal');
-        session()->flash('message', 'Thêm ngành học thành công!');
+        session()->flash('message', 'Đã thêm ngành học.');
     }
 
     public function edit($id)
@@ -74,7 +78,7 @@ class MajorManager extends Component
         $item = Major::findOrFail($this->major_id);
         $item->update(['name' => $this->name]);
         $this->dispatch('hide-major-modal');
-        session()->flash('message', 'Cập nhật ngành học thành công!');
+        session()->flash('message', 'Đã cập nhật ngành học.');
     }
 
     public function delete($id)
@@ -83,12 +87,12 @@ class MajorManager extends Component
 
         // CSDL không dùng khóa ngoại nên phải tự kiểm tra dữ liệu đang tham chiếu trước khi xóa.
         if ($major->courses_count > 0) {
-            session()->flash('error', "Không thể xóa vì ngành đang có {$major->courses_count} học phần. Hãy xóa các học phần trước.");
+            session()->flash('error', "Không thể xóa ngành học đang có {$major->courses_count} học phần. Hãy xóa các học phần trước.");
             return;
         }
 
         $major->delete();
-        session()->flash('message', 'Đã xóa ngành học thành công!');
+        session()->flash('message', 'Đã xóa ngành học.');
     }
 
     // --- Course Management ---
@@ -122,13 +126,13 @@ class MajorManager extends Component
         if ($this->isCourseEditMode) {
             $course = Course::findOrFail($this->course_id);
             $course->update(['name' => $this->course_name]);
-            session()->flash('course_message', 'Cập nhật học phần thành công!');
+            session()->flash('course_message', 'Đã cập nhật học phần.');
         } else {
             Course::create([
                 'major_id' => $this->managingCoursesFor->id,
                 'name' => $this->course_name
             ]);
-            session()->flash('course_message', 'Thêm học phần thành công!');
+            session()->flash('course_message', 'Đã thêm học phần.');
         }
 
         $this->managingCoursesFor->load('courses'); // Refresh relationships
@@ -140,13 +144,13 @@ class MajorManager extends Component
         $course = Course::withCount('books')->findOrFail($courseId);
 
         if ($course->books_count > 0) {
-            session()->flash('course_error', "Không thể xóa vì đang có {$course->books_count} sách thuộc học phần này!");
+            session()->flash('course_error', "Không thể xóa học phần đang có {$course->books_count} sách. Hãy đổi học phần cho các sách trước.");
             return;
         }
 
         $course->delete();
         $this->managingCoursesFor->load('courses');
-        session()->flash('course_message', 'Đã xóa học phần!');
+        session()->flash('course_message', 'Đã xóa học phần.');
     }
 
     public function render()

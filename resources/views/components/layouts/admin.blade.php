@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Bookstore AI admin dashboard">
+    <meta name="description" content="Trang quản trị Bookstore AI">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Dashboard | Bookstore AI' }}</title>
+    <title>{{ $title ?? 'Quản trị | Bookstore AI' }}</title>
 
     <link rel="stylesheet" href="{{ asset('assets/admin/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/admin/vendors/bootstrap-icons/bootstrap-icons.css') }}">
@@ -31,8 +31,8 @@
 
             <footer class="admin-footer">
                 <div class="container-fluid px-3 px-lg-4">
-                    <span>Copyright 2026 Bookstore AI.</span>
-                    <span>Hệ thống Quản trị viên.</span>
+                    <span>Bản quyền 2026 Bookstore AI.</span>
+                    <span>Trang quản trị.</span>
                 </div>
             </footer>
         </div>

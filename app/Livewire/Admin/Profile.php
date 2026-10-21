@@ -39,7 +39,7 @@ class Profile extends Component
             'phone' => $this->phone,
         ]);
 
-        session()->flash('profile_message', 'Cập nhật thông tin hồ sơ thành công!');
+        session()->flash('profile_message', 'Đã cập nhật hồ sơ.');
     }
 
     public function updatePassword()
@@ -63,7 +63,7 @@ class Profile extends Component
 
         $this->reset(['current_password', 'new_password', 'new_password_confirmation']);
         
-        session()->flash('password_message', 'Đổi mật khẩu thành công!');
+        session()->flash('password_message', 'Đã đổi mật khẩu.');
         $this->dispatch('close-modal', modalId: 'changePasswordModal');
     }
 

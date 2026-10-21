@@ -34,7 +34,7 @@
                         <button type="submit" class="btn btn-primary w-100 mb-3">Đăng ký</button>
                         
                         <div class="text-center">
-                            <p>Đã có tài khoản? <a href="{{ route('login') }}">Đăng nhập ngay</a></p>
+                            <p>Đã có tài khoản? <a href="{{ route('login') }}">Đăng nhập</a></p>
                         </div>
                     </form>
                 </div>

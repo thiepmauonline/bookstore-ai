@@ -4,13 +4,13 @@
             <div class="page-heading-copy">
                 <span class="page-icon"><i class="bi bi-book" aria-hidden="true"></i></span>
                 <div>
-                    <h1 class="h3 mb-1">Quản lý Sách</h1>
-                    <p class="text-muted mb-0">Thêm, sửa, xóa thông tin sách và giáo trình.</p>
+                    <h1 class="h3 mb-1">Quản lý sách</h1>
+                    <p class="text-muted mb-0">Quản lý thông tin và tồn kho sách.</p>
                 </div>
             </div>
             <div>
                 <button wire:click="create" class="btn btn-primary" type="button">
-                    <i class="bi bi-plus-lg"></i> Thêm sách mới
+                    <i class="bi bi-plus-lg"></i> Thêm sách
                 </button>
             </div>
         </div>
@@ -18,13 +18,13 @@
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
         @if (session()->has('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 
@@ -34,7 +34,7 @@
                     <div class="col-md-4">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm kiếm tên sách...">
+                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo tên sách...">
                         </div>
                     </div>
                 </div>
@@ -43,12 +43,12 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">Ảnh Bìa</th>
-                            <th scope="col">Tên Sách</th>
-                            <th scope="col">Danh Mục</th>
-                            <th scope="col">Môn Học</th>
-                            <th scope="col">Giá Bán</th>
-                            <th scope="col">Tồn Kho</th>
+                            <th scope="col" class="ps-4">Ảnh bìa</th>
+                            <th scope="col">Tên sách</th>
+                            <th scope="col">Danh mục</th>
+                            <th scope="col">Học phần</th>
+                            <th scope="col">Giá bán</th>
+                            <th scope="col">Tồn kho</th>
                             <th scope="col" class="text-end pe-4">Thao tác</th>
                         </tr>
                     </thead>
@@ -57,9 +57,9 @@
                             <tr>
                                 <td class="ps-4">
                                     @if($book->cover_image && !str_starts_with($book->cover_image, 'assets'))
-                                        <img src="{{ asset('storage/' . $book->cover_image) }}" alt="cover" class="rounded" width="48" height="64" style="object-fit: cover;">
+                                        <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Ảnh bìa" class="rounded" width="48" height="64" style="object-fit: cover;">
                                     @elseif($book->cover_image)
-                                        <img src="{{ asset($book->cover_image) }}" alt="cover" class="rounded" width="48" height="64" style="object-fit: cover;">
+                                        <img src="{{ asset($book->cover_image) }}" alt="Ảnh bìa" class="rounded" width="48" height="64" style="object-fit: cover;">
                                     @else
                                         <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="width: 48px; height: 64px;">
                                             <i class="bi bi-image"></i>
@@ -84,7 +84,7 @@
                                     <button wire:click="edit({{ $book->id }})" class="btn btn-sm btn-outline-primary me-1" title="Sửa">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <button wire:click="delete({{ $book->id }})" wire:confirm="Bạn có chắc chắn muốn xóa cuốn sách này?" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                    <button wire:click="delete({{ $book->id }})" wire:confirm="Xóa sách này? Đánh giá, ảnh và mục yêu thích liên quan cũng sẽ bị xóa." class="btn btn-sm btn-outline-danger" title="Xóa">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </td>
@@ -93,7 +93,7 @@
                             <tr>
                                 <td colspan="7" class="text-center py-4 text-muted">
                                     <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                                    Không có dữ liệu
+                                    Không tìm thấy sách.
                                 </td>
                             </tr>
                         @endforelse
@@ -112,8 +112,8 @@
             <div class="modal-content">
                 <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="bookModalLabel">{{ $isEditMode ? 'Cập nhật thông tin sách' : 'Thêm sách mới' }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title" id="bookModalLabel">{{ $isEditMode ? 'Cập nhật sách' : 'Thêm sách' }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row g-3">
@@ -131,7 +131,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">Danh mục <span class="text-danger">*</span></label>
                                 <select wire:model="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
-                                    <option value="">-- Chọn danh mục --</option>
+                                    <option value="">Chọn danh mục</option>
                                     @foreach($categories as $cat)
                                         <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                     @endforeach
@@ -139,9 +139,9 @@
                                 @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Môn học (Học phần)</label>
+                                <label class="form-label">Học phần</label>
                                 <select wire:model="course_id" class="form-select @error('course_id') is-invalid @enderror">
-                                    <option value="">-- Sách tham khảo chung (không thuộc học phần) --</option>
+                                    <option value="">Tham khảo chung (không thuộc học phần)</option>
                                     @foreach($courses as $course)
                                         <option value="{{ $course->id }}">{{ $course->name }}</option>
                                     @endforeach
@@ -152,7 +152,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">Tác giả <span class="text-danger">*</span></label>
                                 <select wire:model="author_id" class="form-select @error('author_id') is-invalid @enderror" required>
-                                    <option value="">-- Chọn tác giả --</option>
+                                    <option value="">Chọn tác giả</option>
                                     @foreach($authors as $author)
                                         <option value="{{ $author->id }}">{{ $author->name }}</option>
                                     @endforeach
@@ -162,7 +162,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">Nhà xuất bản <span class="text-danger">*</span></label>
                                 <select wire:model="publisher_id" class="form-select @error('publisher_id') is-invalid @enderror" required>
-                                    <option value="">-- Chọn NXB --</option>
+                                    <option value="">Chọn nhà xuất bản</option>
                                     @foreach($publishers as $pub)
                                         <option value="{{ $pub->id }}">{{ $pub->name }}</option>
                                     @endforeach
@@ -176,7 +176,7 @@
                                 @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                <label class="form-label">Số lượng tồn kho <span class="text-danger">*</span></label>
                                 <input wire:model="quantity" type="number" class="form-control @error('quantity') is-invalid @enderror" required>
                                 @error('quantity') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
@@ -200,14 +200,14 @@
                                 
                                 @if ($cover_image)
                                     <div class="mt-2">
-                                        <img src="{{ $cover_image->temporaryUrl() }}" alt="Preview" class="img-thumbnail" width="100">
+                                        <img src="{{ $cover_image->temporaryUrl() }}" alt="Ảnh bìa xem trước" class="img-thumbnail" width="100">
                                     </div>
                                 @elseif($old_image)
                                     <div class="mt-2">
                                         @if(!str_starts_with($old_image, 'assets'))
-                                            <img src="{{ asset('storage/' . $old_image) }}" alt="Current" class="img-thumbnail" width="100">
+                                            <img src="{{ asset('storage/' . $old_image) }}" alt="Ảnh bìa hiện tại" class="img-thumbnail" width="100">
                                         @else
-                                            <img src="{{ asset($old_image) }}" alt="Current" class="img-thumbnail" width="100">
+                                            <img src="{{ asset($old_image) }}" alt="Ảnh bìa hiện tại" class="img-thumbnail" width="100">
                                         @endif
                                         <p class="small text-muted mt-1">Ảnh hiện tại</p>
                                     </div>
@@ -219,7 +219,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                         <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
                             <span wire:loading wire:target="{{ $isEditMode ? 'update' : 'store' }}" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Lưu thông tin
+                            Lưu
                         </button>
                     </div>
                 </form>

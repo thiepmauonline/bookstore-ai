@@ -3,8 +3,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 pe-lg-5 mb-5 mb-md-0">
-                    <h2 class="display-5 mb-4">Liên hệ với chúng tôi</h2>
-                    <p class="mb-4 text-muted">Nếu bạn có bất kỳ câu hỏi nào về hệ thống, vui lòng để lại lời nhắn. Đội ngũ Bookstore-AI sẽ liên hệ lại với bạn trong thời gian sớm nhất.</p>
+                    <h2 class="display-5 mb-4">Liên hệ</h2>
+                    <p class="mb-4 text-muted">Bạn cần hỗ trợ? Gửi tin nhắn để Bookstore AI phản hồi và giải đáp.</p>
                     
                     <ul class="list-unstyled mb-5">
                         <li class="d-flex mb-3">
@@ -34,12 +34,12 @@
                         <form wire:submit="submit">
                             <div class="mb-3">
                                 <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                <input wire:model="name" type="text" class="form-control bg-white @error('name') is-invalid @enderror" placeholder="Nhập tên của bạn">
+                                <input wire:model="name" type="text" class="form-control bg-white @error('name') is-invalid @enderror" placeholder="Nhập họ và tên">
                                 @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Email <span class="text-danger">*</span></label>
-                                <input wire:model="email" type="email" class="form-control bg-white @error('email') is-invalid @enderror" placeholder="Nhập email của bạn">
+                                <input wire:model="email" type="email" class="form-control bg-white @error('email') is-invalid @enderror" placeholder="Nhập email">
                                 @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="mb-4">
@@ -49,7 +49,7 @@
                             </div>
                             <button type="submit" wire:loading.attr="disabled" class="btn btn-primary rounded-pill px-5 py-2">
                                 <span wire:loading.remove wire:target="submit">Gửi tin nhắn</span>
-                                <span wire:loading wire:target="submit">Đang gửi...</span>
+                                <span wire:loading wire:target="submit">Đang gửi…</span>
                             </button>
                         </form>
                     </div>

@@ -18,7 +18,7 @@ class EnsureActiveCustomer
                 // Giữ giỏ hàng và phiên quản trị đang đăng nhập cùng trình duyệt.
                 $request->session()->migrate(true);
 
-                return redirect()->route('login')->with('message', 'Tài khoản của bạn đã bị khóa hoặc không còn quyền truy cập. Vui lòng liên hệ cửa hàng.');
+                return redirect()->route('login')->with('message', 'Tài khoản bị khóa hoặc không có quyền truy cập. Vui lòng liên hệ cửa hàng.');
             }
         }
 

@@ -3,12 +3,12 @@
         <div class="page-heading d-flex justify-content-between align-items-center mb-4">
             <div class="page-heading-copy">
                 <div>
-                    <h1 class="h3 mb-1">Quản lý Tác giả</h1>
+                    <h1 class="h3 mb-1">Quản lý tác giả</h1>
                 </div>
             </div>
             <div>
                 <button wire:click="create" class="btn btn-primary" type="button">
-                    <i class="bi bi-plus-lg"></i> Thêm mới
+                    <i class="bi bi-plus-lg"></i> Thêm tác giả
                 </button>
             </div>
         </div>
@@ -16,13 +16,13 @@
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
         @if (session()->has('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 
@@ -32,7 +32,7 @@
                     <div class="col-md-4">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm kiếm...">
+                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo tên tác giả...">
                         </div>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                         <tr>
                             <th scope="col" class="ps-4">ID</th>
                             <th scope="col">Tên tác giả</th>
-<th scope="col">Tiểu sử / Ghi chú</th>
+<th scope="col">Tiểu sử / ghi chú</th>
 
                             <th scope="col" class="text-end pe-4">Thao tác</th>
                         </tr>
@@ -57,11 +57,11 @@
 
                                 <td class="text-end text-nowrap pe-4">
                                     <button wire:click="edit({{ $item->id }})" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                                    <button wire:click="delete({{ $item->id }})" wire:confirm="Bạn có chắc chắn muốn xóa?" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    <button wire:click="delete({{ $item->id }})" wire:confirm="Xóa tác giả này?" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="10" class="text-center py-4 text-muted">Không có dữ liệu</td></tr>
+                            <tr><td colspan="10" class="text-center py-4 text-muted">Không tìm thấy tác giả.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -76,7 +76,7 @@
             <div class="modal-content">
                 <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật' : 'Thêm mới' }} Tác giả</h5>
+                        <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật' : 'Thêm' }} tác giả</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -86,7 +86,7 @@
                                 <input wire:model="name" type="text" class="form-control @error('name') is-invalid @enderror">
                                 @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>                            <div class="col-12">
-                                <label class="form-label">Tiểu sử / Ghi chú</label>
+                                <label class="form-label">Tiểu sử / ghi chú</label>
                                 <textarea wire:model="biography" class="form-control @error('biography') is-invalid @enderror" rows="3"></textarea>
                                 @error('biography') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>

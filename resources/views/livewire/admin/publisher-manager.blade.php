@@ -3,12 +3,12 @@
         <div class="page-heading d-flex justify-content-between align-items-center mb-4">
             <div class="page-heading-copy">
                 <div>
-                    <h1 class="h3 mb-1">Quản lý Nhà Xuất Bản</h1>
+                    <h1 class="h3 mb-1">Quản lý nhà xuất bản</h1>
                 </div>
             </div>
             <div>
                 <button wire:click="create" class="btn btn-primary" type="button">
-                    <i class="bi bi-plus-lg"></i> Thêm mới
+                    <i class="bi bi-plus-lg"></i> Thêm nhà xuất bản
                 </button>
             </div>
         </div>
@@ -16,13 +16,13 @@
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
         @if (session()->has('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 
@@ -32,7 +32,7 @@
                     <div class="col-md-4">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm kiếm...">
+                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo tên nhà xuất bản...">
                         </div>
                     </div>
                 </div>
@@ -57,11 +57,11 @@
 
                                 <td class="text-end text-nowrap pe-4">
                                     <button wire:click="edit({{ $item->id }})" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                                    <button wire:click="delete({{ $item->id }})" wire:confirm="Bạn có chắc chắn muốn xóa?" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    <button wire:click="delete({{ $item->id }})" wire:confirm="Xóa nhà xuất bản này?" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="10" class="text-center py-4 text-muted">Không có dữ liệu</td></tr>
+                            <tr><td colspan="10" class="text-center py-4 text-muted">Không tìm thấy nhà xuất bản.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -76,7 +76,7 @@
             <div class="modal-content">
                 <form wire:submit="{{ $isEditMode ? 'update' : 'store' }}">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật' : 'Thêm mới' }} Nhà Xuất Bản</h5>
+                        <h5 class="modal-title">{{ $isEditMode ? 'Cập nhật' : 'Thêm' }} nhà xuất bản</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">

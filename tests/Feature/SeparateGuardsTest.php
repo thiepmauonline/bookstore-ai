@@ -124,7 +124,7 @@ class SeparateGuardsTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             $component->call('login')->assertHasErrors('email');
         }
-        $component->call('login')->assertSee('Bạn thử đăng nhập quá nhiều lần');
+        $component->call('login')->assertSee('Đăng nhập quá nhiều lần. Thử lại sau');
         $this->loginAs(AdminLogin::class, $admin);
         $this->assertAuthenticatedAs($admin, 'admin');
     }

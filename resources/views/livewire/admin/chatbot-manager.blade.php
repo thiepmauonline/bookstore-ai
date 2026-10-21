@@ -3,13 +3,13 @@
         <div class="page-heading d-flex justify-content-between align-items-center mb-4">
             <div class="page-heading-copy">
                 <div>
-                    <h1 class="h3 mb-1">Dữ liệu AI Chatbot</h1>
+                    <h1 class="h3 mb-1">Quản lý chatbot</h1>
                     <p class="text-muted mb-0">
                         Mô hình: <code>{{ $aiModel }}</code> ·
                         @if ($aiConfigured)
-                            <span class="badge bg-success">Đã cấu hình API key</span>
+                            <span class="badge bg-success">Đã cấu hình AI</span>
                         @else
-                            <span class="badge bg-warning text-dark">Chưa có GEMINI_API_KEY, chatbot đang trả lời bằng tìm kiếm nội bộ</span>
+                            <span class="badge bg-warning text-dark">Chưa cấu hình AI. Đang trả lời bằng tìm kiếm sách.</span>
                         @endif
                     </p>
                 </div>
@@ -19,7 +19,7 @@
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 
@@ -33,23 +33,23 @@
             </div>
             <div class="col-6 col-xl-3">
                 <div class="card border-0 shadow-sm h-100"><div class="card-body">
-                    <div class="small text-muted text-uppercase fw-bold">Tỉ lệ hữu ích</div>
+                    <div class="small text-muted text-uppercase fw-bold">Tỷ lệ hữu ích</div>
                     <div class="h4 mb-0 text-success">{{ $stats['helpfulRate'] !== null ? $stats['helpfulRate'].'%' : '—' }}</div>
-                    <div class="small text-muted">trên {{ $stats['feedbackTotal'] }} lượt phản hồi</div>
+                    <div class="small text-muted">Trên {{ $stats['feedbackTotal'] }} lượt phản hồi</div>
                 </div></div>
             </div>
             <div class="col-6 col-xl-3">
                 <div class="card border-0 shadow-sm h-100"><div class="card-body">
                     <div class="small text-muted text-uppercase fw-bold">Trả lời dự phòng</div>
                     <div class="h4 mb-0 text-warning">{{ $stats['fallback'] }}</div>
-                    <div class="small text-muted">lượt không gọi được AI</div>
+                    <div class="small text-muted">lượt trả lời bằng tìm kiếm sách</div>
                 </div></div>
             </div>
             <div class="col-6 col-xl-3">
                 <div class="card border-0 shadow-sm h-100"><div class="card-body">
                     <div class="small text-muted text-uppercase fw-bold">Thời gian phản hồi AI</div>
                     <div class="h4 mb-0">{{ $stats['avgMs'] ? number_format($stats['avgMs'] / 1000, 1).' giây' : '—' }}</div>
-                    <div class="small text-muted">trung bình</div>
+                    <div class="small text-muted">Trung bình</div>
                 </div></div>
             </div>
         </div>
@@ -71,12 +71,12 @@
                     <div class="col-md-5">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm trong câu hỏi, câu trả lời...">
+                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm trong câu hỏi hoặc câu trả lời...">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <select wire:model.live="feedbackFilter" class="form-select bg-light">
-                            <option value="">-- Mọi phản hồi --</option>
+                            <option value="">Tất cả phản hồi</option>
                             <option value="helpful">Hữu ích</option>
                             <option value="unhelpful">Không hữu ích</option>
                             <option value="none">Chưa phản hồi</option>
@@ -84,9 +84,9 @@
                     </div>
                     <div class="col-md-3">
                         <select wire:model.live="sourceFilter" class="form-select bg-light">
-                            <option value="">-- Mọi nguồn trả lời --</option>
+                            <option value="">Tất cả nguồn trả lời</option>
                             <option value="ai">AI (Gemini)</option>
-                            <option value="fallback">Dự phòng (tìm kiếm nội bộ)</option>
+                            <option value="fallback">Dự phòng (tìm kiếm sách)</option>
                         </select>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4" style="width: 30%">Câu hỏi</th>
-                            <th style="width: 35%">Trả lời</th>
+                            <th style="width: 35%">Câu trả lời</th>
                             <th>Người hỏi</th>
                             <th>Nguồn</th>
                             <th>Phản hồi</th>
@@ -129,12 +129,12 @@
                                     @endif
                                 </td>
                                 <td class="text-end pe-4 text-nowrap">
-                                    <button wire:click="showDetails({{ $history->id }})" class="btn btn-sm btn-outline-primary me-1" title="Xem"><i class="bi bi-eye"></i></button>
-                                    <button wire:click="delete({{ $history->id }})" wire:confirm="Xóa lượt hỏi đáp này?" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button>
+                                    <button wire:click="showDetails({{ $history->id }})" class="btn btn-sm btn-outline-primary me-1" title="Xem chi tiết"><i class="bi bi-eye"></i></button>
+                                    <button wire:click="delete({{ $history->id }})" wire:confirm="Xóa lượt hỏi đáp này cùng phản hồi liên quan?" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center py-4 text-muted">Chưa có dữ liệu hội thoại</td></tr>
+                            <tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy lượt hỏi đáp.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

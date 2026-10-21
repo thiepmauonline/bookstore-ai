@@ -2,7 +2,7 @@
     <div class="container-fluid px-3 px-lg-4 py-4">
         <div class="page-heading mb-4">
             <h1 class="h3 mb-1">Hồ sơ cá nhân</h1>
-            <p class="text-muted">Quản lý thông tin tài khoản và bảo mật</p>
+            <p class="text-muted">Quản lý thông tin tài khoản và bảo mật.</p>
         </div>
 
         <div class="row">
@@ -14,7 +14,7 @@
                         @if (session()->has('profile_message'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 {{ session('profile_message') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                             </div>
                         @endif
 
@@ -22,7 +22,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Email đăng nhập</label>
                                 <input wire:model="email" type="email" class="form-control bg-light" disabled>
-                                <div class="form-text text-muted">Email không thể thay đổi để đảm bảo bảo mật.</div>
+                                <div class="form-text text-muted">Không thể đổi email tại đây.</div>
                             </div>
 
                             <div class="mb-3">
@@ -61,7 +61,7 @@
                 <form wire:submit="updatePassword">
                     <div class="modal-header">
                         <h5 class="modal-title">Đổi mật khẩu</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     </div>
                     <div class="modal-body">
                         @if (session()->has('password_message'))

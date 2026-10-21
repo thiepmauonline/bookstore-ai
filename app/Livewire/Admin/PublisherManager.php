@@ -21,6 +21,11 @@ class PublisherManager extends Component
     
     public $isEditMode = false;
 
+    protected $validationAttributes = [
+        'name' => 'tên nhà xuất bản',
+        'address' => 'địa chỉ liên hệ',
+    ];
+
     protected $rules = array (
   'name' => 'required|string|max:255',
   'address' => 'nullable|string',
@@ -61,7 +66,7 @@ class PublisherManager extends Component
             
         ]);
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Thêm mới thành công!');
+        session()->flash('message', 'Đã thêm nhà xuất bản.');
     }
 
     public function edit($id)
@@ -87,7 +92,7 @@ class PublisherManager extends Component
             
         ]);
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Cập nhật thành công!');
+        session()->flash('message', 'Đã cập nhật nhà xuất bản.');
     }
 
     public function delete($id)
@@ -96,12 +101,12 @@ class PublisherManager extends Component
 
         // CSDL không dùng khóa ngoại nên phải tự kiểm tra dữ liệu đang tham chiếu trước khi xóa.
         if ($item->books_count > 0) {
-            session()->flash('error', "Không thể xóa vì đang có {$item->books_count} sách thuộc mục này. Hãy chuyển các sách sang mục khác trước.");
+            session()->flash('error', "Không thể xóa nhà xuất bản đang có {$item->books_count} sách. Hãy đổi nhà xuất bản cho các sách trước.");
             return;
         }
 
         $item->delete();
-        session()->flash('message', 'Đã xóa thành công!');
+        session()->flash('message', 'Đã xóa nhà xuất bản.');
     }
 
     public function render()

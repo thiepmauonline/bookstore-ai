@@ -66,7 +66,7 @@ class DataIntegrityTest extends TestCase
     {
         $item = OrderItem::firstOrFail();
 
-        Livewire::test(BookManager::class)->call('delete', $item->book_id)->assertSee('không thể xóa');
+        Livewire::test(BookManager::class)->call('delete', $item->book_id)->assertSee('Không thể xóa sách đã có trong đơn hàng.');
         $this->assertTrue(Book::whereKey($item->book_id)->exists());
 
         Livewire::test(OrderManager::class)->call('viewDetails', $item->order_id)->assertOk();

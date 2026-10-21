@@ -3,7 +3,7 @@
         <div class="page-heading d-flex justify-content-between align-items-center mb-4">
             <div class="page-heading-copy">
                 <div>
-                    <h1 class="h3 mb-1">Quản lý Đánh giá</h1>
+                    <h1 class="h3 mb-1">Quản lý đánh giá</h1>
                     <p class="text-muted mb-0">
                         {{ $totalReviews }} đánh giá · trung bình <strong>{{ $averageRating }}</strong> <i class="bi bi-star-fill text-warning"></i>
                         · {{ $hiddenReviews }} đang ẩn
@@ -15,7 +15,7 @@
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 
@@ -25,12 +25,12 @@
                     <div class="col-md-5">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo tên sách, khách hàng, nội dung...">
+                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo tên sách, khách hàng hoặc nội dung...">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <select wire:model.live="ratingFilter" class="form-select bg-light">
-                            <option value="">-- Tất cả số sao --</option>
+                            <option value="">Tất cả số sao</option>
                             @for ($star = 5; $star >= 1; $star--)
                                 <option value="{{ $star }}">{{ $star }} sao</option>
                             @endfor
@@ -38,7 +38,7 @@
                     </div>
                     <div class="col-md-3">
                         <select wire:model.live="visibilityFilter" class="form-select bg-light">
-                            <option value="">-- Hiển thị & ẩn --</option>
+                            <option value="">Tất cả trạng thái hiển thị</option>
                             <option value="1">Đang hiển thị</option>
                             <option value="0">Đang ẩn</option>
                         </select>
@@ -53,7 +53,7 @@
                             <th>Khách hàng</th>
                             <th>Đánh giá</th>
                             <th style="width: 35%">Nội dung</th>
-                            <th>Ngày</th>
+                            <th>Ngày đánh giá</th>
                             <th class="text-end pe-4">Thao tác</th>
                         </tr>
                     </thead>
@@ -67,7 +67,7 @@
                                         <span class="text-muted">Sách đã xóa</span>
                                     @endif
                                 </td>
-                                <td>{{ $review->user->name ?? 'N/A' }}</td>
+                                <td>{{ $review->user->name ?? 'Không có thông tin' }}</td>
                                 <td class="text-warning text-nowrap">
                                     @for ($i = 1; $i <= 5; $i++)
                                         <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }}"></i>
@@ -76,7 +76,7 @@
                                 <td class="small">{{ $review->comment }}</td>
                                 <td class="small text-nowrap">{{ $review->created_at->format('d/m/Y') }}</td>
                                 <td class="text-end pe-4 text-nowrap">
-                                    <button wire:click="toggleVisibility({{ $review->id }})" class="btn btn-sm btn-outline-secondary me-1" title="{{ $review->is_visible ? 'Ẩn' : 'Hiện' }}">
+                                    <button wire:click="toggleVisibility({{ $review->id }})" class="btn btn-sm btn-outline-secondary me-1" title="{{ $review->is_visible ? 'Ẩn đánh giá' : 'Hiển thị đánh giá' }}">
                                         <i class="bi {{ $review->is_visible ? 'bi-eye-slash' : 'bi-eye' }}"></i>
                                     </button>
                                     <button wire:click="delete({{ $review->id }})" wire:confirm="Xóa vĩnh viễn đánh giá này?" class="btn btn-sm btn-outline-danger" title="Xóa">
@@ -85,7 +85,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center py-4 text-muted">Không có đánh giá nào</td></tr>
+                            <tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy đánh giá.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -3,8 +3,8 @@
         <div class="page-heading d-flex justify-content-between align-items-center mb-4">
             <div class="page-heading-copy">
                 <div>
-                    <h1 class="h3 mb-1">Quản lý Đơn hàng</h1>
-                    <p class="text-muted">Theo dõi và cập nhật trạng thái đơn hàng</p>
+                    <h1 class="h3 mb-1">Quản lý đơn hàng</h1>
+                    <p class="text-muted">Theo dõi và cập nhật trạng thái đơn hàng.</p>
                 </div>
             </div>
         </div>
@@ -12,13 +12,13 @@
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
         @if (session()->has('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         @endif
 
@@ -28,12 +28,12 @@
                     <div class="col-md-4">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm mã đơn hoặc tên khách...">
+                            <input wire:model.live.debounce.300ms="search" type="text" class="form-control border-start-0 bg-light" placeholder="Tìm theo mã đơn, tên hoặc số điện thoại...">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <select wire:model.live="statusFilter" class="form-select bg-light">
-                            <option value="">-- Tất cả trạng thái --</option>
+                            <option value="">Tất cả trạng thái</option>
                             @foreach ($statuses as $status)
                                 <option value="{{ $status->value }}">{{ $status->label() }}</option>
                             @endforeach
@@ -45,7 +45,7 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">Mã Đơn</th>
+                            <th scope="col" class="ps-4">Mã đơn</th>
                             <th scope="col">Khách hàng</th>
                             <th scope="col">Tổng tiền</th>
                             <th scope="col">Ngày đặt</th>
@@ -58,7 +58,7 @@
                             <tr>
                                 <td class="ps-4 fw-bold text-primary">{{ $order->order_code }}</td>
                                 <td>
-                                    <div>{{ $order->user->name ?? 'N/A' }}</div>
+                                    <div>{{ $order->user->name ?? 'Không có thông tin' }}</div>
                                     <div class="small text-muted">{{ $order->user->phone ?? '' }}</div>
                                 </td>
                                 <td class="fw-semibold text-danger">{{ number_format($order->total_price, 0, ',', '.') }}đ</td>
@@ -73,7 +73,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center py-4 text-muted">Không có đơn hàng nào</td></tr>
+                            <tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy đơn hàng.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -101,10 +101,10 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="card border-0 shadow-sm h-100">
-                                <div class="card-header bg-white fw-bold">Thông tin Khách hàng</div>
+                                <div class="card-header bg-white fw-bold">Thông tin khách hàng</div>
                                 <div class="card-body small">
                                     <p class="mb-1"><strong>Họ tên:</strong> {{ $viewingOrder->address->receiver_name ?? $viewingOrder->user->name }}</p>
-                                    <p class="mb-1"><strong>SĐT:</strong> {{ $viewingOrder->address->phone ?? $viewingOrder->user->phone }}</p>
+                                    <p class="mb-1"><strong>Số điện thoại:</strong> {{ $viewingOrder->address->phone ?? $viewingOrder->user->phone }}</p>
                                     <p class="mb-1"><strong>Địa chỉ:</strong> {{ $viewingOrder->address->address ?? '' }}, {{ $viewingOrder->address->ward ?? '' }}, {{ $viewingOrder->address->province ?? '' }}</p>
                                     @if($viewingOrder->note)
                                         <p class="mb-0 text-danger"><strong>Ghi chú:</strong> {{ $viewingOrder->note }}</p>
@@ -114,10 +114,10 @@
                         </div>
                         <div class="col-md-6">
                             <div class="card border-0 shadow-sm h-100">
-                                <div class="card-header bg-white fw-bold">Thông tin Thanh toán</div>
+                                <div class="card-header bg-white fw-bold">Thông tin thanh toán</div>
                                 <div class="card-body small">
                                     <p class="mb-1"><strong>Phương thức:</strong> {{ $viewingOrder->payment_method->label() }}</p>
-                                    <p class="mb-1"><strong>Trạng thái TT:</strong>
+                                    <p class="mb-1"><strong>Trạng thái thanh toán:</strong>
                                         <span class="badge {{ $viewingOrder->payment_status->badgeClass() }}">{{ $viewingOrder->payment_status->label() }}</span>
                                     </p>
                                     <p class="mb-1"><strong>Tiền hàng:</strong> {{ number_format($viewingOrder->subtotal, 0, ',', '.') }}đ</p>
@@ -141,7 +141,7 @@
                                     <tr>
                                         <th>Sản phẩm</th>
                                         <th>Đơn giá</th>
-                                        <th>SL</th>
+                                        <th>Số lượng</th>
                                         <th>Thành tiền</th>
                                     </tr>
                                 </thead>
@@ -154,7 +154,7 @@
                                                         <img src="{{ $item->book->cover_url }}" width="40" class="me-2 rounded">
                                                         <span>{{ $item->book->title }}</span>
                                                     @else
-                                                        <span class="text-muted">Sách đã bị xóa (#{{ $item->book_id }})</span>
+                                                        <span class="text-muted">Sách đã xóa (#{{ $item->book_id }})</span>
                                                     @endif
                                                 </div>
                                             </td>
@@ -170,7 +170,7 @@
                 </div>
                 <div class="modal-footer flex-wrap">
                     <div class="me-auto">
-                        <strong>Trạng thái hiện tại: </strong>
+                        <strong>Trạng thái đơn hàng: </strong>
                         <span class="badge {{ $viewingOrder->status->badgeClass() }} fs-6">{{ $viewingOrder->status->label() }}</span>
                     </div>
 
@@ -184,8 +184,8 @@
 
                     @if (in_array(\App\Enums\OrderStatus::Cancelled, $nextStatuses, true))
                         <div class="w-100 d-flex gap-2 mt-2">
-                            <input wire:model="cancelReason" type="text" class="form-control @error('cancelReason') is-invalid @enderror" placeholder="Lý do hủy đơn (bắt buộc khi hủy)">
-                            <button wire:click="updateStatus({{ $viewingOrder->id }}, 'cancelled')" wire:confirm="Hủy đơn này? Tồn kho và lượt mã giảm giá sẽ được hoàn lại." class="btn btn-outline-danger text-nowrap">Hủy đơn</button>
+                            <input wire:model="cancelReason" type="text" class="form-control @error('cancelReason') is-invalid @enderror" placeholder="Lý do hủy đơn (bắt buộc)">
+                            <button wire:click="updateStatus({{ $viewingOrder->id }}, 'cancelled')" wire:confirm="Hủy đơn hàng này? Tồn kho và lượt sử dụng mã giảm giá sẽ được hoàn lại." class="btn btn-outline-danger text-nowrap">Hủy đơn</button>
                         </div>
                         @error('cancelReason') <div class="text-danger small w-100">{{ $message }}</div> @enderror
                     @endif

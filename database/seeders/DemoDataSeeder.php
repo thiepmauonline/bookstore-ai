@@ -174,7 +174,7 @@ class DemoDataSeeder extends Seeder
                 'payment_method' => PaymentMethod::Cod,
                 'payment_status' => $status === OrderStatus::Completed ? PaymentStatus::Paid : PaymentStatus::Unpaid,
                 'status' => $status,
-                'note' => mt_rand(1, 100) <= 20 ? 'Giao giờ hành chính giúp mình nhé.' : null,
+                'note' => mt_rand(1, 100) <= 20 ? 'Vui lòng giao trong giờ hành chính.' : null,
                 'cancel_reason' => $status === OrderStatus::Cancelled ? 'Khách đặt nhầm sách' : null,
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
@@ -220,10 +220,10 @@ class DemoDataSeeder extends Seeder
     private function seedReviews($customers): void
     {
         $comments = [
-            5 => ['Sách in đẹp, nội dung đúng giáo trình trên lớp. Rất đáng mua!', 'Giao hàng nhanh, sách mới tinh. Thầy cô cũng recommend cuốn này.', 'Giải thích dễ hiểu, có nhiều ví dụ minh họa, học rất vào.'],
+            5 => ['Sách in đẹp, đúng giáo trình trên lớp.', 'Giao hàng nhanh, sách mới. Được giảng viên giới thiệu.', 'Giải thích dễ hiểu, nhiều ví dụ minh họa.'],
             4 => ['Nội dung tốt, chỉ có bìa hơi mỏng một chút.', 'Sách hay, phù hợp để ôn thi cuối kỳ.', 'Đóng gói cẩn thận, sách đúng mô tả.'],
             3 => ['Nội dung ổn nhưng hơi khó với người mới bắt đầu.', 'Sách được, nhưng giá hơi cao so với sinh viên.'],
-            2 => ['Giấy in hơi mờ ở một vài trang, mong shop kiểm tra lại.'],
+            2 => ['Một vài trang in mờ, mong cửa hàng kiểm tra lại.'],
         ];
         $ratings = [5, 5, 5, 5, 4, 4, 4, 3, 3, 2];
 
@@ -270,10 +270,10 @@ class DemoDataSeeder extends Seeder
     private function seedContacts($customers): void
     {
         $messages = [
-            ['Cửa hàng có bán giáo trình Toán cao cấp A1 không ạ? Mình tìm mãi không thấy.', true],
-            ['Cho mình hỏi đặt số lượng lớn (30 cuốn) cho cả lớp thì có giảm giá không?', false],
-            ['Đơn hàng của mình giao hơi chậm, mong shop kiểm tra giúp.', true],
-            ['Shop có ship ra Phú Quốc không ạ?', false],
+            ['Cửa hàng có giáo trình Toán cao cấp A1 không?', true],
+            ['Đặt 30 cuốn cho lớp có được giảm giá không?', false],
+            ['Đơn hàng giao chậm, nhờ cửa hàng kiểm tra giúp.', true],
+            ['Cửa hàng có giao đến Phú Quốc không?', false],
         ];
 
         foreach ($messages as $i => [$message, $handled]) {
@@ -293,7 +293,7 @@ class DemoDataSeeder extends Seeder
         Contact::create([
             'name' => 'Nguyễn Hữu Phước',
             'email' => 'phuoc.nh@gmail.com',
-            'message' => 'Mình là giảng viên, muốn đề xuất nhập thêm sách chuyên ngành Điện tử viễn thông.',
+            'message' => 'Tôi muốn đề xuất nhập thêm sách ngành Điện tử viễn thông.',
             'created_at' => now()->subDay(),
         ]);
     }
@@ -308,11 +308,11 @@ class DemoDataSeeder extends Seeder
         $bookId = fn (string $title) => Book::where('title', 'like', $title.'%')->value('id');
 
         $conversations = [
-            ['Mình học CNTT, môn Lập trình Web nên mua sách gì?', "Với học phần **Lập trình Web**, bạn có thể tham khảo:\n\n- **Lập Trình Web Căn Bản Với HTML5 & CSS3** – giáo trình tiếng Việt, phù hợp người mới.\n- **Laravel Up & Running** – khi bạn học tới phần back-end với PHP.", ['Lập Trình Web Căn Bản', 'Laravel Up'], true],
-            ['Giáo trình kinh tế vĩ mô nào dễ hiểu?', "Cho môn **Kinh tế vĩ mô**, cửa hàng có:\n\n- **Kinh Tế Học Vĩ Mô (Bản Dịch Tiếng Việt)** – dễ đọc, giá mềm.\n- **Principles of Macroeconomics** – bản gốc tiếng Anh của Mankiw.", ['Kinh Tế Học Vĩ Mô', 'Principles of Macroeconomics'], true],
-            ['Có sách luyện thi TOEIC không shop?', "Có bạn nhé! Hai cuốn được nhiều bạn chọn:\n\n- **ETS TOEIC Test 2024** – đề chuẩn cấu trúc mới.\n- **Barron's TOEIC Practice Exams** – nhiều đề thi thử kèm chiến lược.", ['ETS TOEIC', "Barron's TOEIC"], null],
-            ['Sinh viên y năm 2 cần sách sinh lý học nào?', 'Bạn có thể bắt đầu với **Giáo Trình Sinh Lý Học Tập 1** và **Tập 2**. Nếu muốn đọc sâu hơn thì có **Guyton and Hall Textbook of Medical Physiology**.', ['Giáo Trình Sinh Lý Học Tập 1', 'Giáo Trình Sinh Lý Học Tập 2', 'Guyton'], true],
-            ['Shop có bán sách nấu ăn không?', 'Hiện cửa hàng chuyên về giáo trình đại học nên chưa có sách nấu ăn. Bạn có thể hỏi mình về sách theo các ngành: Công nghệ thông tin, Quản trị kinh doanh, Y Đa Khoa, Kỹ thuật Cơ khí, Ngôn ngữ Anh nhé.', [], false],
+            ['Mình học CNTT, môn Lập trình Web nên mua sách gì?', "Sách cho học phần **Lập trình Web**:\n\n- **Lập Trình Web Căn Bản Với HTML5 & CSS3** – dành cho người mới.\n- **Laravel Up & Running** – phát triển web với PHP và Laravel.", ['Lập Trình Web Căn Bản', 'Laravel Up'], true],
+            ['Giáo trình kinh tế vĩ mô nào dễ hiểu?', "Bạn có thể tham khảo:\n\n- **Kinh Tế Học Vĩ Mô (Bản Dịch Tiếng Việt)** – bản tiếng Việt.\n- **Principles of Macroeconomics** – bản tiếng Anh của Mankiw.", ['Kinh Tế Học Vĩ Mô', 'Principles of Macroeconomics'], true],
+            ['Có sách luyện thi TOEIC không?', "Sách luyện thi TOEIC:\n\n- **ETS TOEIC Test 2024** – bộ đề kèm đáp án.\n- **Barron's TOEIC Practice Exams** – đề thi thử và chiến lược làm bài.", ['ETS TOEIC', "Barron's TOEIC"], null],
+            ['Sinh viên y năm 2 cần sách sinh lý học nào?', 'Bạn có thể bắt đầu với **Giáo Trình Sinh Lý Học Tập 1** và **Tập 2**. Tham khảo thêm **Guyton and Hall Textbook of Medical Physiology** để học chuyên sâu.', ['Giáo Trình Sinh Lý Học Tập 1', 'Giáo Trình Sinh Lý Học Tập 2', 'Guyton'], true],
+            ['Cửa hàng có sách nấu ăn không?', 'Chưa tìm thấy sách nấu ăn trong danh mục. Bạn muốn tham khảo sách ở lĩnh vực khác không?', [], false],
         ];
 
         foreach ($conversations as $i => [$question, $answer, $titles, $helpful]) {

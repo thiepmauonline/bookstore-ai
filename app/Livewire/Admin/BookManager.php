@@ -103,7 +103,7 @@ class BookManager extends Component
         ]);
 
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Thêm sách thành công!');
+        session()->flash('message', 'Đã thêm sách.');
     }
 
     public function edit($id)
@@ -161,7 +161,7 @@ class BookManager extends Component
         ]);
 
         $this->dispatch('hide-modal');
-        session()->flash('message', 'Cập nhật sách thành công!');
+        session()->flash('message', 'Đã cập nhật sách.');
     }
 
     public function delete($id)
@@ -170,7 +170,7 @@ class BookManager extends Component
 
         // Sách đã nằm trong đơn hàng thì giữ lại để không mất lịch sử bán hàng.
         if ($book->orderItems()->exists()) {
-            session()->flash('error', 'Sách này đã có trong đơn hàng nên không thể xóa. Hãy đặt số lượng tồn kho về 0 để ngừng bán.');
+            session()->flash('error', 'Không thể xóa sách đã có trong đơn hàng. Đặt tồn kho về 0 để ngừng bán.');
             return;
         }
 
@@ -181,7 +181,7 @@ class BookManager extends Component
         $book->wishlistedBy()->delete();
         $book->images()->delete();
         $book->delete();
-        session()->flash('message', 'Đã xóa sách thành công!');
+        session()->flash('message', 'Đã xóa sách.');
     }
 
     public function render()
