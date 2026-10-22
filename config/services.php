@@ -37,9 +37,10 @@ return [
 
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
-        'model' => env('GEMINI_MODEL', 'gemini-flash-latest'),
+        'model' => env('GEMINI_MODEL', 'gemini-3.5-flash-lite'),
         'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
-        'timeout' => (int) env('GEMINI_TIMEOUT', 20),
+        // Gọi tối đa 2 lần nên 2 × timeout phải nhỏ hơn max_execution_time (mặc định 30s), để kịp chuyển sang trả lời dự phòng.
+        'timeout' => (int) env('GEMINI_TIMEOUT', 12),
     ],
 
 ];

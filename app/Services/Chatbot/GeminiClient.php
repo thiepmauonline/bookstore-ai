@@ -59,7 +59,7 @@ class GeminiClient
                 'status' => $response->status(),
                 'error' => $response->json('error.message'),
             ]);
-            throw new ChatbotUnavailableException('Gemini trả về lỗi HTTP '.$response->status().'.');
+            throw new ChatbotUnavailableException(trim('Gemini trả về lỗi HTTP '.$response->status().'. '.$response->json('error.message')));
         }
 
         $text = collect($response->json('candidates.0.content.parts', []))

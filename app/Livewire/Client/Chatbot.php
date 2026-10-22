@@ -38,7 +38,8 @@ class Chatbot extends Component
             ['question.required' => 'Vui lòng nhập câu hỏi.', 'question.max' => 'Câu hỏi không được quá :max ký tự.']
         );
 
-        $key = 'chatbot:'.$this->sessionId();
+        // Giới hạn theo tài khoản hoặc IP, không theo phiên chat, để nút "Cuộc trò chuyện mới" không reset được.
+        $key = 'chatbot:'.(auth()->id() ? 'user:'.auth()->id() : 'ip:'.request()->ip());
         if (RateLimiter::tooManyAttempts($key, self::MAX_PER_MINUTE)) {
             $this->addError('question', 'Quá nhiều câu hỏi. Thử lại sau '.RateLimiter::availableIn($key).' giây.');
 

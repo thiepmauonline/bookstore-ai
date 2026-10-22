@@ -9,6 +9,7 @@ use App\Models\Course;
 use App\Models\Major;
 use App\Services\Chatbot\BookRetriever;
 use App\Services\Chatbot\ChatbotService;
+use App\Services\Chatbot\GeminiClient;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -156,6 +157,28 @@ class ChatbotTest extends TestCase
         Livewire::test(Chatbot::class)->set('question', 'bạn là ai')->call('send')->assertSee('Mình là trợ lý Bookstore AI');
         Http::assertSentCount(2);
         $this->assertSame(ChatbotHistory::SOURCE_FALLBACK, ChatbotHistory::sole()->source);
+    }
+
+    public function test_api_error_message_includes_reason_from_gemini(): void
+    {
+        config(['services.gemini.key' => 'test-key']);
+        Http::fake(['*' => Http::response(['error' => ['message' => 'Your project has been denied access.']], 403)]);
+
+        $this->expectExceptionMessage('Gemini trả về lỗi HTTP 403. Your project has been denied access.');
+        app(GeminiClient::class)->generate('system', [['role' => 'user', 'text' => 'hi']]);
+    }
+
+    public function test_new_conversation_does_not_reset_rate_limit(): void
+    {
+        config(['services.gemini.key' => null]);
+
+        $component = Livewire::test(Chatbot::class);
+        for ($i = 0; $i < 10; $i++) {
+            $component->set('question', "câu hỏi {$i}")->call('send')->assertHasNoErrors();
+        }
+
+        $component->call('newConversation')->set('question', 'câu hỏi thêm')->call('send')->assertHasErrors('question');
+        $this->assertSame(10, ChatbotHistory::count());
     }
 
     public function test_empty_question_is_rejected(): void

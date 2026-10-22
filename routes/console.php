@@ -20,7 +20,7 @@ Artisan::command('chatbot:check {question=Sách cho môn Lập trình Web}', fun
     try {
         $answer = $gemini->generate('Trả lời ngắn gọn bằng tiếng Việt.', [['role' => 'user', 'text' => $question]]);
     } catch (\App\Services\Chatbot\ChatbotUnavailableException $e) {
-        $this->error('Gọi Gemini thất bại: '.$e->getMessage().' Xem chi tiết trong storage/logs/laravel.log.');
+        $this->error('Gọi Gemini thất bại: '.$e->getMessage());
 
         return 1;
     }
