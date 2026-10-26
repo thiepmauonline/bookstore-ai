@@ -112,16 +112,30 @@ class Home extends Component
             ->orderByDesc('id')
             ->paginate(8);
 
-        // Get wishlist status for all books
-        $wishlistStatus = [];
-        if (Auth::check()) {
-            $wishlistItems = \App\Models\Wishlist::where('user_id', Auth::id())
-                ->pluck('book_id')
-                ->toArray();
-            foreach ($books as $book) {
-                $wishlistStatus[$book->id] = in_array($book->id, $wishlistItems);
-            }
-        }
+        $bestSellers = Book::with(['author', 'category'])
+            ->withSoldCount()
+            ->where('sales.sold_count', '>', 0)
+            ->orderByDesc('sold_count')
+            ->orderByDesc('books.id')
+            ->limit(4)
+            ->get();
+
+        // Sách nổi bật: điểm đánh giá trung bình cao nhất, không trùng với sách bán chạy
+        $visibleReviews = fn ($q) => $q->where('is_visible', true);
+        $featuredBooks = Book::with(['author', 'category'])
+            ->whereNotIn('id', $bestSellers->pluck('id'))
+            ->whereHas('reviews', $visibleReviews)
+            ->withAvg(['reviews as rating_avg' => $visibleReviews], 'rating')
+            ->withCount(['reviews as rating_count' => $visibleReviews])
+            ->orderByDesc('rating_avg')
+            ->orderByDesc('rating_count')
+            ->limit(4)
+            ->get();
+
+        // Sách khách đã yêu thích, dùng cho mọi thẻ sách trên trang
+        $wishlistIds = Auth::check()
+            ? \App\Models\Wishlist::where('user_id', Auth::id())->pluck('book_id')->flip()->all()
+            : [];
 
         return view('livewire.client.home', [
             'books' => $books,
@@ -129,7 +143,9 @@ class Home extends Component
             'heroBooks' => Book::whereIn('title', ['Mắt Biếc', 'Tôi Thấy Hoa Vàng Trên Cỏ Xanh', 'Cho Tôi Xin Một Vé Đi Tuổi Thơ'])->get(),
             'majors' => $majors,
             'courses' => $courses,
-            'wishlistStatus' => $wishlistStatus,
+            'bestSellers' => $bestSellers,
+            'featuredBooks' => $featuredBooks,
+            'wishlistIds' => $wishlistIds,
         ]);
     }
 }
