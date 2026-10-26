@@ -33,6 +33,17 @@ class BookRetriever
     /** Cụm từ chung chung, bỏ đi trước khi tách từ (đã bỏ dấu). */
     private const STOP_PHRASES = [
         'giao trinh', 'tai lieu', 'mon hoc', 'hoc phan', 'nganh hoc', 'goi y', 'tu van', 'cuon sach', 'quyen sach',
+        'bat dau', 'lo trinh', 'dinh huong',
+    ];
+
+    /** Cách gọi tắt/thông dụng của ngành, đổi sang tên ngành trong CSDL (đã bỏ dấu). */
+    private const ALIASES = [
+        'it' => 'cong nghe thong tin',
+        'cntt' => 'cong nghe thong tin',
+        'tin hoc' => 'cong nghe thong tin',
+        'qtkd' => 'quan tri kinh doanh',
+        'y khoa' => 'y da khoa',
+        'bac si' => 'y da khoa',
     ];
 
     /** Từ phổ biến, không mang nghĩa tìm kiếm (đã bỏ dấu). */
@@ -40,7 +51,7 @@ class BookRetriever
         'toi', 'minh', 'ban', 'em', 'anh', 'chi', 'can', 'muon', 'tim', 'mua', 'hoi', 'xin', 'giup',
         'sach', 'cuon', 'quyen', 'hoc', 'nganh', 'mon', 'cho', 've', 'gi', 'nao', 'co', 'khong', 'la',
         'cua', 'va', 'voi', 'nhe', 'nhung', 'cac', 'mot', 'hay', 'nen', 'duoc', 'thi', 'dang', 'nay',
-        'do', 'kia', 'shop', 'oi', 'ah', 'vay', 'nhu', 'nhat', 'loai', 'dau',
+        'do', 'kia', 'shop', 'oi', 'ah', 'vay', 'nhu', 'nhat', 'loai', 'dau', 'moi',
     ];
 
     /**
@@ -49,7 +60,7 @@ class BookRetriever
      */
     public function search(string $question, int $limit = 6, ?float $maxPrice = null, bool $onlyAvailable = false): array
     {
-        $tokens = $this->tokenize($question);
+        $tokens = $this->tokenize($this->withAliases($question));
         $accentedBigrams = $this->accentedBigrams($question);
 
         if ($tokens !== []) {
@@ -73,6 +84,15 @@ class BookRetriever
         }
 
         return ['books' => $this->bestSellers($limit, $maxPrice), 'matched' => false];
+    }
+
+    /** Thêm tên ngành đầy đủ khi khách dùng cách gọi tắt, ví dụ "IT" → "công nghệ thông tin". */
+    private function withAliases(string $question): string
+    {
+        $text = $this->searchable($question);
+        $expansions = array_filter(self::ALIASES, fn ($alias) => str_contains($text, ' '.$alias.' '), ARRAY_FILTER_USE_KEY);
+
+        return trim($question.' '.implode(' ', array_unique($expansions)));
     }
 
     /** @return list<string> */
@@ -172,7 +192,7 @@ class BookRetriever
     }
 
     /** @return Collection<int, Book> */
-    private function catalog(): Collection
+    public function catalog(): Collection
     {
         return Book::with(['course.major', 'category', 'author'])->get();
     }

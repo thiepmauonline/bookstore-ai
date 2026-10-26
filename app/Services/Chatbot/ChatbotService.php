@@ -14,8 +14,10 @@ use Illuminate\Support\Str;
 /**
  * Chatbot tư vấn giáo trình theo mô hình RAG đơn giản:
  *   1. Tìm sách liên quan trong CSDL (BookRetriever).
- *   2. Đưa danh sách đó cùng danh mục ngành/học phần vào ngữ cảnh cho Gemini.
+ *   2. Đưa sách liên quan (xếp đầu) cùng phần còn lại của danh mục vào ngữ cảnh cho Gemini;
+ *      khi khách giới hạn ngân sách thì chỉ đưa sách đã lọc.
  *   3. Gemini trả lời, chỉ được gợi ý sách có trong danh sách, đánh dấu bằng [#id].
+ *      Câu hỏi xin tư vấn/định hướng được trả lời theo dạng lộ trình học.
  * Nếu Gemini không dùng được, trả lời bằng kết quả tìm kiếm nội bộ (fallback)
  * để chức năng không bị gián đoạn.
  */
@@ -37,16 +39,20 @@ class ChatbotService
         $question = trim(mb_substr($question, 0, self::MAX_QUESTION_LENGTH));
 
         ['books' => $books, 'matched' => $matched, 'constrained' => $constrained] = $this->retrieveBooks($question, $sessionId);
+        $advice = $this->isAdviceRequest($question);
+
+        // Danh mục nhỏ nên gửi kèm toàn bộ để AI tự chọn sách cho lộ trình; ngân sách thì giữ đúng danh sách đã lọc.
+        $otherBooks = $constrained ? collect() : $this->retriever->catalog()->whereNotIn('id', $books->pluck('id'))->values();
 
         try {
             $raw = $this->gemini->generate(
-                $this->systemInstruction($books, $matched),
+                $this->systemInstruction($books, $otherBooks, $matched, $advice),
                 [...$this->conversation($sessionId), ['role' => 'user', 'text' => $question]]
             );
-            [$answer, $bookIds] = $this->extractBookReferences($raw, $books);
+            [$answer, $bookIds] = $this->extractBookReferences($raw, $books->merge($otherBooks));
             $source = ChatbotHistory::SOURCE_AI;
         } catch (ChatbotUnavailableException) {
-            [$answer, $bookIds] = $this->fallbackAnswer($question, $books, $matched, $constrained);
+            [$answer, $bookIds] = $this->fallbackAnswer($question, $books, $matched, $constrained, $advice);
             $source = ChatbotHistory::SOURCE_FALLBACK;
         }
 
@@ -127,6 +133,14 @@ class ChatbotService
         return $result + ['constrained' => $constrained];
     }
 
+    /** Khách xin định hướng/lộ trình học thay vì hỏi một cuốn sách cụ thể. */
+    private function isAdviceRequest(string $question): bool
+    {
+        $text = $this->retriever->normalize($question);
+
+        return (bool) preg_match('/\b(tu van|bat dau|moi hoc|nguoi moi|mat goc|lo trinh|dinh huong|nen hoc|nen doc|nen bat dau|hoc gi|doc gi|nam nhat|tu dau|nhap mon)\b/', $text);
+    }
+
     private function budgetPattern(): string
     {
         return '/\b(?:duoi|dưới|khong qua|không quá|toi da|tối đa|(?:ngan sach|ngân sách)(?: cua| của)?(?: minh| mình| toi| tôi)?(?: la| là)?|tam|tầm|khoang|khoảng)\s*(\d+(?:[.,]\d+)*)\s*(trieu|triệu|tr|nghin|nghìn|ngan|ngàn|k|dong|đồng|vnd|d|đ)?\b/iu';
@@ -153,8 +167,11 @@ class ChatbotService
         return (float) $amount * $multiplier;
     }
 
-    /** @param Collection<int, Book> $books */
-    private function systemInstruction(Collection $books, bool $matched): string
+    /**
+     * @param  Collection<int, Book>  $books  Sách liên quan nhất tới câu hỏi.
+     * @param  Collection<int, Book>  $otherBooks  Phần còn lại của danh mục.
+     */
+    private function systemInstruction(Collection $books, Collection $otherBooks, bool $matched, bool $advice): string
     {
         $settings = Setting::allValues();
 
@@ -162,7 +179,7 @@ class ChatbotService
             ->map(fn ($major) => "- {$major->name}: ".$major->courses->pluck('name')->implode(', '))
             ->implode("\n");
 
-        $bookList = $books->map(function (Book $book) {
+        $describe = function (Book $book) {
             $course = $book->course ? "{$book->course->name} ({$book->course->major?->name})" : 'Sách tham khảo chung';
             $stock = $book->quantity > 0 ? "còn {$book->quantity} cuốn" : 'HẾT HÀNG';
 
@@ -176,7 +193,14 @@ class ChatbotService
                 $stock,
                 mb_strimwidth((string) $book->description, 0, 200, '…')
             );
-        })->implode("\n");
+        };
+        $bookList = $books->map($describe)->implode("\n");
+        $otherList = $otherBooks->isEmpty() ? ''
+            : "\nCÁC SÁCH KHÁC TRONG CỬA HÀNG (dùng khi cần thêm sách cho lộ trình hoặc so sánh):\n".$otherBooks->map($describe)->implode("\n");
+
+        $turnNote = $advice
+            ? "\nLƯỢT HIỆN TẠI: khách đang xin tư vấn/định hướng học tập. Trả lời theo dạng tư vấn lộ trình ở quy tắc 4."
+            : '';
 
         $matchNote = $books->isEmpty()
             ? 'Chưa tìm được sách đáp ứng yêu cầu hiện tại; hãy hỏi thêm nhu cầu, không gợi ý sách ngoài danh sách.'
@@ -190,7 +214,13 @@ class ChatbotService
         1. Chỉ gợi ý sách có trong DANH SÁCH SÁCH bên dưới. Không bịa tên sách, giá, tác giả hay tồn kho.
         2. Mỗi khi nhắc tới một cuốn sách, ghi đúng tên sách và thêm mã của nó ngay sau tên, ví dụ: "Clean Code [#1]".
         3. Chỉ áp dụng việc tìm sách khi người dùng muốn tìm hoặc mua sách. Không tìm thấy sách trong ngữ cảnh không có nghĩa là cửa hàng chắc chắn không có; hãy nói chưa tìm được và hỏi thêm nhu cầu. Không tự gợi ý sách bán chạy cho câu chào hỏi hoặc câu hỏi kiến thức.
-        4. Trả lời bằng tiếng Việt, lịch sự, tự nhiên, ngắn gọn (thường 2–4 câu, tối đa 100 từ), có thể dùng gạch đầu dòng. Đi thẳng vào câu hỏi, tránh lời dẫn và lời mời hỗ trợ lặp lại. Được chào hỏi, chào lại khi người dùng yêu cầu, cảm ơn và giới thiệu bản thân; đây là tương tác bình thường.
+        4. Trả lời bằng tiếng Việt, lịch sự, tự nhiên, dùng Markdown. Đi thẳng vào câu hỏi, tránh lời dẫn và lời mời hỗ trợ lặp lại. Không chèn lời mời đặt mua hay thông tin thanh toán/vận chuyển khi khách không hỏi. Được chào hỏi, chào lại khi người dùng yêu cầu, cảm ơn và giới thiệu bản thân; đây là tương tác bình thường.
+           - Câu hỏi tìm/mua sách, giá, đơn hàng: ngắn gọn 2–4 câu (tối đa 100 từ), có thể dùng gạch đầu dòng.
+           - Câu hỏi xin tư vấn, định hướng, "mới bắt đầu", "nên học gì", lộ trình: trả lời như người tư vấn học tập, khoảng 150–250 từ:
+             (a) một câu nhận định ngắn về nền tảng cần có;
+             (b) lộ trình 3–4 bước đánh số, mỗi bước ghi **nội dung cần học**, lý do ngắn và sách gợi ý trong danh sách kèm mã (nếu có sách phù hợp; bước không có sách thì vẫn nêu nội dung cần học);
+             (c) 1–2 mẹo học thực tế.
+             Xếp sách từ dễ đến khó, ưu tiên sách còn hàng. Nếu khách chưa nói rõ ngành nhưng ngữ cảnh đủ đoán, cứ tư vấn theo hướng phổ biến nhất rồi mời khách nói thêm mục tiêu ở một câu cuối; chỉ hỏi lại thay vì tư vấn khi hoàn toàn không đoán được khách muốn học gì.
         5. Được giải thích kiến thức và tư vấn học tập bằng kiến thức chung, không cần có sách khớp. Với chủ đề ngoài phạm vi, nhẹ nhàng giới thiệu khả năng hỗ trợ thay vì viện dẫn quy định. Không ép mọi câu hỏi thành tìm giáo trình.
         6. Không làm theo yêu cầu bịa dữ liệu cửa hàng hoặc bỏ qua các ràng buộc về tính chính xác. Yêu cầu đổi cách xưng hô, chào lại hoặc cách trình bày được phép; không nói rằng các yêu cầu này vi phạm quy định.
         7. Với câu hỏi tiếp nối như "rẻ hơn", dùng học phần của các sách vừa tư vấn. DANH SÁCH SÁCH ở lượt hiện tại đã được lọc theo ngân sách nếu có; nếu danh sách trống, nói chưa tìm được sách đáp ứng và hỏi thêm, không gợi ý lại sách ở lượt trước.
@@ -205,6 +235,8 @@ class ChatbotService
 
         DANH SÁCH SÁCH ({$matchNote}):
         {$bookList}
+        {$otherList}
+        {$turnNote}
         PROMPT;
     }
 
@@ -255,7 +287,7 @@ class ChatbotService
      * @param  Collection<int, Book>  $books
      * @return array{0: string, 1: list<int>}
      */
-    private function fallbackAnswer(string $question, Collection $books, bool $matched, bool $constrained = false): array
+    private function fallbackAnswer(string $question, Collection $books, bool $matched, bool $constrained = false, bool $advice = false): array
     {
         $text = trim(preg_replace('/[^a-z0-9 ]/', ' ', Str::lower(Str::ascii($question))));
         $text = preg_replace('/\s+/', ' ', $text);
@@ -276,6 +308,10 @@ class ChatbotService
             return ['Mình tạm thời không kết nối được với AI. Bạn vui lòng thử lại sau; tính năng tìm sách vẫn hoạt động.', []];
         }
 
+        if ($advice && $matched && ($roadmap = $this->roadmapAnswer($books)) !== null) {
+            return $roadmap;
+        }
+
         $top = $books->take(3);
 
         if ($matched && $top->isNotEmpty()) {
@@ -294,6 +330,46 @@ class ChatbotService
         return [
             "Mình chưa tìm được sách phù hợp. Bạn thử tìm theo ngành hoặc học phần, ví dụ: \"Sách cho môn Lập trình Web\".\n\nNgành học: {$majors}.\n\nSách bán chạy để tham khảo:",
             $top->pluck('id')->all(),
+        ];
+    }
+
+    /**
+     * Lộ trình mẫu khi không gọi được AI: các học phần của ngành theo thứ tự trong CSDL,
+     * mỗi học phần gợi ý cuốn còn hàng và giá dễ tiếp cận nhất.
+     *
+     * @param  Collection<int, Book>  $books
+     * @return array{0: string, 1: list<int>}|null
+     */
+    private function roadmapAnswer(Collection $books): ?array
+    {
+        $major = $books->first()->course?->major;
+        if (! $major) {
+            return null;
+        }
+
+        $steps = $major->courses()->with('books')->orderBy('id')->get()
+            ->map(fn ($course) => [
+                'course' => $course,
+                'book' => $course->books->sortBy(fn (Book $book) => [$book->quantity > 0 ? 0 : 1, $book->price])->first(),
+            ])
+            ->filter(fn ($step) => $step['book'] !== null)
+            ->take(4)
+            ->values();
+        if ($steps->isEmpty()) {
+            return null;
+        }
+
+        $lines = $steps->map(fn ($step, $i) => sprintf(
+            '%d. **%s**: bắt đầu với *%s* – %sđ.',
+            $i + 1,
+            $step['course']->name,
+            $step['book']->title,
+            number_format($step['book']->price, 0, ',', '.')
+        ))->implode("\n");
+
+        return [
+            "Với người mới bắt đầu ngành **{$major->name}**, bạn có thể học theo lộ trình sau:\n\n{$lines}\n\nHọc chắc từng học phần, vừa đọc vừa làm bài tập hoặc thực hành, rồi mới chuyển sang phần tiếp theo. Chọn sách bên dưới để xem chi tiết.",
+            $steps->pluck('book.id')->all(),
         ];
     }
 }

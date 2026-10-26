@@ -283,4 +283,33 @@ class ChatbotTest extends TestCase
             && ! str_contains($request['system_instruction']['parts'][0]['text'], "[#{$this->webBook->id}] {$this->webBook->title}")
             && count($request['contents']) === 3);
     }
+
+    public function test_beginner_question_uses_major_alias_and_fallback_gives_roadmap(): void
+    {
+        config(['services.gemini.key' => null]);
+        $algorithms = Course::create(['major_id' => $this->webBook->course->major_id, 'name' => 'Cấu trúc dữ liệu và Giải thuật']);
+        $algoBook = Book::create(['title' => 'Introduction to Algorithms', 'course_id' => $algorithms->id, 'price' => 850000, 'quantity' => 5]);
+
+        $answer = app(ChatbotService::class)->ask('Tôi mới bắt đầu học IT thì nên học sách nào, hãy tư vấn cho tôi', 'beginner');
+
+        $this->assertSame([$this->webBook->id, $algoBook->id], $answer->book_ids);
+        $this->assertStringContainsString('lộ trình', $answer->answer);
+        $this->assertStringContainsString('Công nghệ thông tin', $answer->answer);
+    }
+
+    public function test_advice_question_sends_whole_catalog_and_roadmap_instruction_to_ai(): void
+    {
+        config(['services.gemini.key' => 'test-key']);
+        Http::fake(['*' => Http::response(['candidates' => [['content' => ['parts' => [['text' => "1. **Web**: Lập Trình Web Căn Bản [#{$this->webBook->id}]"]]]]]])]);
+
+        $answer = app(ChatbotService::class)->ask('Mới bắt đầu học CNTT nên học gì?', 'advice-ai');
+
+        $this->assertSame([$this->webBook->id], $answer->book_ids);
+        Http::assertSent(function ($request) {
+            $system = $request['system_instruction']['parts'][0]['text'];
+
+            return str_contains($system, "[#{$this->economicsBook->id}] Kinh Tế Học Vĩ Mô")
+                && str_contains($system, 'khách đang xin tư vấn');
+        });
+    }
 }
