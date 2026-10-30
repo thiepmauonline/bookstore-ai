@@ -16,7 +16,7 @@
                 <div class="row">
                     @foreach($wishlistItems as $item)
                         @if($item->book)
-                            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                            <div class="col-lg-3 col-md-4 col-6 mb-4">
                                 <div class="product-card h-100">
                                     <div class="product-img">
                                         <img src="{{ $item->book->cover_url }}" alt="{{ $item->book->title }}">

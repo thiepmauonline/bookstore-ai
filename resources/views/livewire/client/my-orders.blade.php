@@ -29,7 +29,8 @@
             
             <div class="card shadow-sm border-0">
                 <div class="card-body p-0">
-                    <div class="table-responsive">
+                    {{-- Giao diện bảng cho màn hình máy tính / tablet (>= 768px) --}}
+                    <div class="d-none d-md-block table-responsive">
                         <table class="table table-hover mb-0 align-middle">
                             <thead class="table-light">
                                 <tr>
@@ -67,6 +68,33 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    {{-- Giao diện thẻ gọn gàng cho điện thoại di động (< 768px) --}}
+                    <div class="d-md-none p-3">
+                        @forelse($orders as $order)
+                            <div class="card border rounded-3 p-3 mb-3 bg-light {{ $loop->last ? 'mb-0' : '' }}">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong class="d-block text-dark">{{ $order->order_code }}</strong>
+                                        <small class="text-muted">{{ $order->created_at->format('d/m/Y H:i') }}</small>
+                                    </div>
+                                    <span class="badge {{ $order->status->badgeClass() }}">{{ $order->status->label() }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                    <div>
+                                        <div class="text-primary fw-bold">{{ number_format($order->total_price, 0, ',', '.') }} ₫</div>
+                                        <span class="badge {{ $order->payment_status->badgeClass() }}">{{ $order->payment_status->label() }}</span>
+                                    </div>
+                                    <button wire:click="viewOrder({{ $order->id }})" class="btn btn-sm btn-outline-primary">Xem chi tiết</button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-5 text-muted">
+                                Bạn chưa có đơn hàng nào.<br>
+                                <a href="{{ route('home') }}" class="btn btn-primary mt-3">Khám phá sách</a>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>

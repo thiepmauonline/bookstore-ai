@@ -7,7 +7,7 @@
                         <h2 class="section-title">Đăng nhập</h2>
                     </div>
 
-                    <form wire:submit="login" class="bg-light p-5 rounded">
+                    <form wire:submit="login" class="bg-light p-4 p-sm-5 rounded">
                         @if (session()->has('error'))
                             <div class="alert alert-danger">
                                 {{ session('error') }}

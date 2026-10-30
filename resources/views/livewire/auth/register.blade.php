@@ -7,7 +7,7 @@
                         <h2 class="section-title">Đăng ký tài khoản</h2>
                     </div>
 
-                    <form wire:submit="register" class="bg-light p-5 rounded">
+                    <form wire:submit="register" class="bg-light p-4 p-sm-5 rounded">
                         <div class="mb-3">
                             <label for="name" class="form-label">Họ và tên</label>
                             <input wire:model="name" type="text" class="form-control @error('name') is-invalid @enderror" id="name" required autofocus>
